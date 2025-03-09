@@ -3,8 +3,7 @@
 import { UserEntity } from "@/models/entity/UserEntity";
 import { createContext, useContext, useState } from "react";
 
-import { getCookie, setCookie, deleteCookie } from "@/utils/cookieUtils";
-import { authService } from "@/utils/appModule";
+import { setCookie, deleteCookie } from "@/utils/cookieUtils";
 
 export type CustomizationProps = {
   user: UserEntity | null;
@@ -50,7 +49,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
     if (response.ok) {
       const data = await response.json();
       setUser(data.user);
-      setCookie("user", data.user.email);
+      setCookie("session", data.user.email);
       setError(null);
       return true;
     } else {
@@ -60,7 +59,11 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
   };
 
   const getSession = async (): Promise<boolean> => {
-    const response = await fetch("/api/auth/session");
+    const response = await fetch("/api/auth/session", {
+      method: "GET",
+      credentials: "include", // Ensures cookies are sent
+    });
+
     if (response.ok) {
       const data = await response.json();
       setUser(data.user);
@@ -68,6 +71,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
       return true;
     } else {
       setError("User tidak teridentifikasi!");
+      console.log("User Tidak teridentifikasi");
       return false;
     }
   };

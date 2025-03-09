@@ -2,14 +2,16 @@
 
 import { useAuth } from "@/context/AuthContext";
 import { redirect } from "next/navigation";
-import { useEffect } from "react";
+import { useEffect, useState } from "react";
 
 export default function Home() {
   const { user, getSession } = useAuth();
+  const [loading, setLoading] = useState(true);
 
   useEffect(() => {
-    getSession();
+    getSession().finally(() => setLoading(false));
   }, []);
 
-  return <div>{user ? redirect("/dashboard") : redirect("/login")}</div>;
+  if (loading) return <div>Loading...</div>;
+  return user ? redirect("/dashboard") : redirect("/login");
 }
