@@ -3,8 +3,6 @@
 import { UserEntity } from "@/models/entity/UserEntity";
 import { createContext, useContext, useState } from "react";
 
-import { setCookie, deleteCookie } from "@/utils/cookieUtils";
-
 export type CustomizationProps = {
   user: UserEntity | null;
   error: string | null;
@@ -28,10 +26,19 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
   const [error, setError] = useState<any | null>(null);
 
   const logout = async (): Promise<boolean> => {
-    setUser(null);
-    deleteCookie("user");
-    setError(null);
-    return true;
+    const response = await fetch("/api/auth/logout", {
+      method: "POST",
+      credentials: "include", // Ensures cookies are included in the request
+    });
+
+    if (response.ok) {
+      setUser(null);
+      setError(null);
+      return true;
+    } else {
+      setError("Failed to logout");
+      return false;
+    }
   };
 
   const login = async (email: string, password: string): Promise<boolean> => {
@@ -49,7 +56,6 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
     if (response.ok) {
       const data = await response.json();
       setUser(data.user);
-      setCookie("session", data.user.email);
       setError(null);
       return true;
     } else {
