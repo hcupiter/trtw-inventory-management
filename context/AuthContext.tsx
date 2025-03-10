@@ -76,7 +76,6 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
       setError(null);
       return true;
     } else {
-      setError("User tidak teridentifikasi!");
       console.log("User Tidak teridentifikasi");
       return false;
     }

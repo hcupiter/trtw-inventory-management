@@ -1,0 +1,47 @@
+.buttonBase {
+  /* Button Base Style */
+  display: flex;
+  padding: 1rem 1.5rem;
+  justify-content: center;
+  align-items: center;
+  border-radius: 0.5rem;
+  gap: 1rem;
+
+  /* Label */
+  font-family: Helvetica;
+  font-size: 1.25rem;
+  font-style: normal;
+  font-weight: 400;
+  line-height: normal;
+}
+
+.buttonPrimary {
+  color: var(--Primary-White, #fff);
+  background: var(--Primary-Blue, #276fbf);
+}
+
+.buttonPrimary:hover {
+  background: var(--Primary-DarkBlue, #183059);
+}
+
+.buttonSecondary {
+  color: var(--Primary-Blue, #276fbf);
+  border: 0.0313rem solid var(--Primary-Blue, #276fbf);
+}
+
+.buttonSecondary:hover {
+  color: var(--Primary-White, #fff);
+  border: 0.0313rem solid var(--Primary-Blue, #276fbf);
+  background: var(--Primary-Blue, #276fbf);
+}
+
+.buttonDestructive {
+  color: var(--Primary-Red, #f03a47);
+  border: 0.0313rem solid var(--Primary-Red, #f03a47);
+}
+
+.buttonDestructive:hover {
+  border: 0.0313rem solid var(--Primary-Red, #f03a47);
+  background: var(--Primary-Red, #f03a47);
+  color: var(--Primary-White, #fff);
+}

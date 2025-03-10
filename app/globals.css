@@ -3,6 +3,14 @@
 :root {
   --background: #ffffff;
   --foreground: #171717;
+}
+
+@theme inline {
+  --color-background: var(--background);
+  --color-foreground: var(--foreground);
+  --font-sans: var(--font-geist-sans);
+  --font-mono: var(--font-geist-mono);
+
   /* Primary Colors */
   --color-black: #000000;
   --color-white: #ffffff;
@@ -21,17 +29,17 @@
   --secondary-background: #d9d9d9;
 
   /* Font Sizes */
-  --font-size-3xs: 0.625rem;
-  --font-size-2xs: 0.75rem;
-  --font-size-xs: 0.8125rem;
-  --font-size-sm: 0.875rem;
-  --font-size-base: 1rem;
-  --font-size-lg: 1.25rem;
-  --font-size-xl: 1.5rem;
-  --font-size-2xl: 2rem;
-  --font-size-3xl: 2.25rem;
-  --font-size-4xl: 2.5rem;
-  --font-size-5xl: 3rem;
+  --text-3xs: 0.625rem; /* Caption 2*/
+  --text-2xs: 0.75rem; /* Caption 1*/
+  --text-xs: 0.8125rem; /* Footnote */
+  --text-sm: 0.875rem; /* Subheadline */
+  --text-base: 1rem; /* Callout */
+  --text-lg: 1.25rem; /* Body */
+  --text-xl: 1.5rem; /* Headline */
+  --text-2xl: 2rem; /* Title3 */
+  --text-3xl: 2.25rem; /* Title2 */
+  --text-4xl: 2.5rem; /* Title */
+  --text-5xl: 3rem; /* Large Title */
 
   /* Font Family */
   --font-helvetica: Helvetica, sans-serif;
@@ -44,13 +52,6 @@
   --border-radius-4: 1rem;
 }
 
-@theme inline {
-  --color-background: var(--background);
-  --color-foreground: var(--foreground);
-  --font-sans: var(--font-geist-sans);
-  --font-mono: var(--font-geist-mono);
-}
-
 @media (prefers-color-scheme: light) {
   :root {
     --background: #0a0a0a;
@@ -58,8 +59,42 @@
   }
 }
 
+html {
+  font-size: 16px;
+}
+
 body {
   background: var(--background);
   color: var(--foreground);
-  font-family: Arial, Helvetica, sans-serif;
+  font-family: Helvetica;
+}
+
+@media only screen and (max-width: 720px) {
+  html {
+    font-size: 12px;
+  }
+}
+
+@media only screen and (max-width: 480px) {
+  html {
+    font-size: 10px;
+  }
+}
+
+@media only screen and (max-width: 460px) {
+  html {
+    font-size: 9px;
+  }
+}
+
+@media only screen and (max-width: 420px) {
+  html {
+    font-size: 8px;
+  }
+}
+
+@media only screen and (max-width: 390px) {
+  html {
+    font-size: 7px;
+  }
 }
