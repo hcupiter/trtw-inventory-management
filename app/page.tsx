@@ -1,17 +1,11 @@
 "use client";
 
 import { useAuth } from "@/context/AuthContext";
-import { redirect } from "next/navigation";
-import { useEffect, useState } from "react";
+import { useRouter } from "next/router";
 
 export default function Home() {
-  const { user, getSession } = useAuth();
-  const [loading, setLoading] = useState(true);
+  const { user } = useAuth();
+  const router = useRouter();
 
-  useEffect(() => {
-    getSession().finally(() => setLoading(false));
-  }, []);
-
-  if (loading) return <div>Loading...</div>;
-  return user ? redirect("/dashboard") : redirect("/login");
+  return user ? router.replace("/dashboard") : router.replace("/login");
 }

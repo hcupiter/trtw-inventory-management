@@ -1,88 +1,74 @@
 "use client";
 
 import { UserEntity } from "@/models/entity/UserEntity";
-import { createContext, useContext, useState } from "react";
+import { createContext, useContext, useState, useEffect } from "react";
+import { useRouter } from "next/navigation";
 
-export type CustomizationProps = {
+export type AuthProps = {
   user: UserEntity | null;
   error: string | null;
-  logout: () => Promise<boolean>;
   login: (email: string, password: string) => Promise<boolean>;
-  getSession: () => Promise<boolean>;
+  logout: () => Promise<void>;
 };
 
-const initialState: CustomizationProps = {
-  user: null,
-  error: null,
-  logout: async () => false,
-  login: async (email: string, password: string) => false,
-  getSession: async () => false,
-};
-
-const AuthContext = createContext(initialState);
+const AuthContext = createContext<AuthProps | undefined>(undefined);
 
 export function AuthProvider({ children }: { children: React.ReactNode }) {
   const [user, setUser] = useState<UserEntity | null>(null);
-  const [error, setError] = useState<any | null>(null);
+  const [error, setError] = useState<string | null>(null);
+  const router = useRouter();
 
-  const logout = async (): Promise<boolean> => {
-    const response = await fetch("/api/auth/logout", {
-      method: "POST",
-      credentials: "include", // Ensures cookies are included in the request
-    });
+  // ✅ Fetch session when app starts
+  useEffect(() => {
+    const fetchSession = async () => {
+      try {
+        const response = await fetch("/api/auth/session", {
+          credentials: "include",
+        });
+        if (response.ok) {
+          const data = await response.json();
+          setUser(data.user);
+        } else {
+          setUser(null);
+        }
+      } catch (err) {
+        console.error("Session fetch failed:", err);
+      }
+    };
 
-    if (response.ok) {
-      setUser(null);
-      setError(null);
-      return true;
-    } else {
-      setError("Failed to logout");
-      return false;
-    }
-  };
+    fetchSession();
+  }, []);
 
+  // ✅ Login Function
   const login = async (email: string, password: string): Promise<boolean> => {
-    if (email.length == 0 || password.length == 0) {
-      setError("Email dan Password harus diisi!");
-      return false;
-    }
-
+    setError(null);
     const response = await fetch("/api/auth/login", {
       method: "POST",
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify({ email, password }),
+      credentials: "include",
     });
 
     if (response.ok) {
       const data = await response.json();
       setUser(data.user);
-      setError(null);
+      router.push("/dashboard"); // Redirect after login
       return true;
     } else {
-      setError("Email dan Password tidak sesuai!");
+      setError("Invalid email or password");
       return false;
     }
   };
 
-  const getSession = async (): Promise<boolean> => {
-    const response = await fetch("/api/auth/session", {
-      method: "GET",
-      credentials: "include", // Ensures cookies are sent
-    });
-
-    if (response.ok) {
-      const data = await response.json();
-      setUser(data.user);
-      setError(null);
-      return true;
-    } else {
-      console.log("User Tidak teridentifikasi");
-      return false;
-    }
+  // ✅ Logout Function
+  const logout = async () => {
+    await fetch("/api/auth/logout", { method: "POST", credentials: "include" });
+    setUser(null);
+    router.push("/login"); // Redirect after logout
   };
 
   return (
-    <AuthContext.Provider value={{ user, error, logout, login, getSession }}>
+    <AuthContext.Provider value={{ user, error, login, logout }}>
       {children}
     </AuthContext.Provider>
   );
@@ -90,7 +76,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
 
 export const useAuth = () => {
   const context = useContext(AuthContext);
-  if (context === undefined) {
+  if (!context) {
     throw new Error("useAuth must be used within an AuthProvider");
   }
   return context;
