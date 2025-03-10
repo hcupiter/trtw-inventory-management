@@ -10,10 +10,7 @@ const DashboardPage = () => {
   const { logout } = useAuth();
 
   const handleLogout = async () => {
-    const success = await logout();
-    if (success) {
-      redirect("/login");
-    }
+    logout();
   };
 
   return (
