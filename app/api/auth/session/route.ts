@@ -1,11 +1,10 @@
 import { NextResponse } from "next/server";
 import { authService } from "@/utils/appModule";
+import { cookies } from "next/headers"; // Use Next.js headers API
 
-import { cookies } from "next/headers"; // Import Next.js cookie handling
-
-export async function GET(req: Request) {
-  const cookieStore = await cookies();
-  const sessionToken = cookieStore.get("session")?.value; // Change "session" to match your actual token name
+export async function GET() {
+  const cookie = await cookies();
+  const sessionToken = cookie.get("session")?.value;
 
   if (!sessionToken) {
     return NextResponse.json({ error: "No session found" }, { status: 401 });
