@@ -17,6 +17,7 @@
 
 .buttonPrimary {
   color: var(--Primary-White, #fff);
+  font-weight: bold;
   background: var(--Primary-Blue, #276fbf);
 }
 
@@ -33,6 +34,7 @@
   color: var(--Primary-White, #fff);
   border: 0.0313rem solid var(--Primary-Blue, #276fbf);
   background: var(--Primary-Blue, #276fbf);
+  font-weight: bold;
 }
 
 .buttonDestructive {
@@ -44,4 +46,5 @@
   border: 0.0313rem solid var(--Primary-Red, #f03a47);
   background: var(--Primary-Red, #f03a47);
   color: var(--Primary-White, #fff);
+  font-weight: bold;
 }

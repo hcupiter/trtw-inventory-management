@@ -23,7 +23,7 @@ export default function LoginPage() {
   };
 
   return (
-    <div className="flex flex-col items-center justify-center w-lvw h-lvh">
+    <div className="flex flex-col items-center justify-center w-screen h-screen">
       <div className="flex flex-col items-start w-2xl gap-8">
         <div className="gap-0">
           <h1 className="text-2xl font-bold">TRDW</h1>

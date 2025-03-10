@@ -12,16 +12,42 @@ export function middleware(req: NextRequest) {
 
   const isAuthPage = req.nextUrl.pathname.startsWith("/login");
   const isHomePage = req.nextUrl.pathname === "/";
+  const isDashboard = req.nextUrl.pathname === "/dashboard";
+  const isDashboardSubpage = req.nextUrl.pathname.startsWith("/dashboard/");
 
+  // Handle Unauthorized Users (Not Logged In)
   if (!sessionToken && !isAuthPage) {
-    console.log("[Middleware] Redirecting to /login");
+    console.log("[Middleware] Redirecting unauthenticated user to /login");
     return NextResponse.redirect(new URL("/login", req.url));
   }
 
+  // Handle Logged-In Users
   if (sessionToken) {
+    // Redirect / and /login to dashboard
     if (isAuthPage || isHomePage) {
-      console.log("[Middleware] Redirecting to /dashboard");
-      return NextResponse.redirect(new URL("/dashboard", req.url));
+      console.log("[Middleware] Redirecting to /dashboard/transactions");
+      return NextResponse.redirect(new URL("/dashboard/transactions", req.url));
+    }
+
+    // Redirect /dashboard to default subpage
+    if (isDashboard) {
+      console.log(
+        "[Middleware] Redirecting /dashboard to /dashboard/transactions"
+      );
+      return NextResponse.redirect(new URL("/dashboard/transactions", req.url));
+    }
+
+    // 🚀 Handle Not Found Routes
+    const validRoutes = [
+      "/dashboard/transactions",
+      "/dashboard/items",
+      "/dashboard/vendors",
+    ];
+    if (isDashboardSubpage && !validRoutes.includes(req.nextUrl.pathname)) {
+      console.log(
+        "[Middleware] Redirecting unknown dashboard route to /dashboard/transactions"
+      );
+      return NextResponse.redirect(new URL("/dashboard/transactions", req.url));
     }
   }
 
@@ -29,7 +55,6 @@ export function middleware(req: NextRequest) {
   return NextResponse.next();
 }
 
-// Apply middleware to relevant routes
 export const config = {
-  matcher: ["/", "/login", "/dashboard/:path*"], // ✅ Protects "/dashboard" AND all subroutes
+  matcher: ["/", "/login", "/dashboard/:path*"], // ✅ Protects `/dashboard` and all subroutes
 };
