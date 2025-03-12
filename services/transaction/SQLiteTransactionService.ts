@@ -1,6 +1,7 @@
 import { TransactionDTO } from "@/models/dto/TransactionDTO";
 import { ITransactionService } from "./ITransactionService";
 import db from "@/database/db";
+import { QuerySortOrder } from "../utils/QuerySortOrder";
 
 export class SQLiteTransactionService implements ITransactionService {
   save(transaction: TransactionDTO): Promise<number | null> {
@@ -13,11 +14,12 @@ export class SQLiteTransactionService implements ITransactionService {
         transaction.totalPrice,
         transaction.transactionTypeId
       );
-      return Promise.resolve(result.lastInsertRowid as number);
+      return Promise.resolve(result.lastInsertRowid as number | null);
     } catch (error) {
       return Promise.reject(error);
     }
   }
+
   getById(id: number): Promise<TransactionDTO | null> {
     try {
       const statement = db.prepare(
@@ -29,24 +31,45 @@ export class SQLiteTransactionService implements ITransactionService {
       return Promise.reject(error);
     }
   }
-  getAll(): Promise<TransactionDTO[]> {
+
+  getAll(
+    limit: number,
+    offset: number,
+    sort: QuerySortOrder = QuerySortOrder.ASC
+  ): Promise<TransactionDTO[]> {
     try {
-      const statement = db.prepare("SELECT * FROM TransactionData LIMIT 10");
-      const transaction = statement.all();
-      return Promise.resolve(
-        transaction as TransactionDTO[] | TransactionDTO[]
-      );
+      const statement = db.prepare(`
+      SELECT * FROM TransactionData 
+      ORDER BY date ${sort} 
+      LIMIT ? OFFSET ?
+    `);
+
+      const transactions = statement.all(limit, offset);
+
+      return Promise.resolve(transactions as TransactionDTO[]);
     } catch (error) {
       return Promise.reject(error);
     }
   }
-  getAllRange(from: Date, to: Date): Promise<TransactionDTO[]> {
+
+  getAllRange(
+    from: Date,
+    to: Date,
+    limit: number,
+    offset: number,
+    sort: QuerySortOrder = QuerySortOrder.ASC
+  ): Promise<TransactionDTO[]> {
     try {
       const statement = db.prepare(
-        "SELECT * FROM TransactionData WHERE date BETWEEN ? AND ?"
+        `SELECT * FROM TransactionData WHERE date BETWEEN ? AND ? ORDER BY date ${sort} LIMIT ? OFFSET ?`
       );
 
-      const transactions = statement.all(from.toISOString(), to.toISOString());
+      const transactions = statement.all(
+        from.toISOString(),
+        to.toISOString(),
+        limit,
+        offset
+      );
 
       return Promise.resolve(
         transactions as TransactionDTO[] | TransactionDTO[]
@@ -55,6 +78,7 @@ export class SQLiteTransactionService implements ITransactionService {
       return Promise.reject(error);
     }
   }
+
   update(transaction: TransactionDTO): Promise<number | null> {
     try {
       const statement = db.prepare(
@@ -71,6 +95,7 @@ export class SQLiteTransactionService implements ITransactionService {
       return Promise.reject(error);
     }
   }
+
   delete(id: number): Promise<boolean> {
     try {
       const statement = db.prepare("DELETE FROM TransactionData WHERE id = ?");

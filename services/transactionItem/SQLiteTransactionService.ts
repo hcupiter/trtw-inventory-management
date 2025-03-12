@@ -1,6 +1,7 @@
 import { TransactionItemDTO } from "@/models/dto/TransactionItemDTO";
 import { ItransactionItemService } from "./ITransactionItemService";
 import db from "@/database/db";
+import { QuerySortOrder } from "../utils/QuerySortOrder";
 
 export class SQLiteTransactionItemService implements ItransactionItemService {
   save(transactionItem: TransactionItemDTO): Promise<string> {
@@ -24,6 +25,24 @@ export class SQLiteTransactionItemService implements ItransactionItemService {
     }
   }
 
+  getAll(
+    limit: number,
+    offset: number,
+    sort: QuerySortOrder
+  ): Promise<TransactionItemDTO[]> {
+    try {
+      const statement = db.prepare(
+        `SELECT * FROM TransactionItem ORDER BY id ${sort} LIMIT ? OFFSET ?`
+      );
+      const results = statement.all(limit, offset);
+      return Promise.resolve(
+        results as TransactionItemDTO[] | TransactionItemDTO[]
+      );
+    } catch (error) {
+      return Promise.reject(error);
+    }
+  }
+
   getByItemID(id: string): Promise<TransactionItemDTO | null> {
     try {
       const statement = db.prepare(
@@ -37,13 +56,18 @@ export class SQLiteTransactionItemService implements ItransactionItemService {
     }
   }
 
-  getByTransactionID(id: number): Promise<TransactionItemDTO[]> {
+  getByTransactionID(
+    id: number,
+    limit: number,
+    offset: number,
+    sort: QuerySortOrder
+  ): Promise<TransactionItemDTO[]> {
     try {
       const statement = db.prepare(
-        "SELECT * FROM TransactionItem WHERE transactionID = ?"
+        `SELECT * FROM TransactionItem WHERE transactionID = ? ORDER BY id ${sort} LIMIT ? OFFSET ?`
       );
 
-      const results = statement.all(id);
+      const results = statement.all(id, limit, offset);
       return Promise.resolve(
         results as TransactionItemDTO[] | TransactionItemDTO[]
       );
@@ -52,13 +76,18 @@ export class SQLiteTransactionItemService implements ItransactionItemService {
     }
   }
 
-  getByVendorID(id: string): Promise<TransactionItemDTO[]> {
+  getByVendorID(
+    id: string,
+    limit: number,
+    offset: number,
+    sort: QuerySortOrder
+  ): Promise<TransactionItemDTO[]> {
     try {
       const statement = db.prepare(
-        "SELECT * FROM TransactionItem WHERE vendorID = ?"
+        `SELECT * FROM TransactionItem WHERE vendorID = ? ORDER BY id ${sort} LIMIT ? OFFSET ?`
       );
 
-      const results = statement.all(id);
+      const results = statement.all(id, limit, offset);
       return Promise.resolve(
         results as TransactionItemDTO[] | TransactionItemDTO[]
       );
