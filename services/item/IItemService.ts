@@ -5,7 +5,7 @@ export interface IITemService {
   save(item: ItemDTO): Promise<string | null>;
   getByID(id: string): Promise<ItemDTO | null>;
   getByName(
-    name: String,
+    name: string,
     limit: number,
     offset: number,
     sort: QuerySortOrder

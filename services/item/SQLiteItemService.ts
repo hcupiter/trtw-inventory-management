@@ -34,7 +34,7 @@ export class SQLiteItemService implements IITemService {
   }
 
   getByName(
-    name: String,
+    name: string,
     limit: number,
     offset: number,
     sort: QuerySortOrder = QuerySortOrder.ASC
@@ -87,7 +87,7 @@ export class SQLiteItemService implements IITemService {
       const statement = db.prepare(
         `UPDATE Item SET name = ?, price = ?, stokQty = ?, vendorID = ? WHERE id = ?`
       );
-      const results = statement.all(
+      const results = statement.run(
         item.name,
         item.price,
         item.stokQty,
