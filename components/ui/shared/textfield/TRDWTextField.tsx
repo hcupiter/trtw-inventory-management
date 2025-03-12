@@ -2,9 +2,9 @@ import { InputHTMLAttributes, ReactNode } from "react";
 import styles from "./TextField.module.css";
 
 interface TextFieldProps extends InputHTMLAttributes<HTMLInputElement> {
-  mandatory?: boolean;
-  label?: string;
-  placeholder?: string;
+  mandatory: boolean;
+  label: string;
+  placeholder: string;
   error?: string;
 }
 

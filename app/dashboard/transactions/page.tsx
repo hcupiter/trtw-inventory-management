@@ -5,13 +5,15 @@ import TRDWButton, {
 } from "@/components/ui/shared/button/TRDWButton";
 import TRDWDatePicker from "@/components/ui/shared/datepicker/TRDWDatePicker";
 import TRDWEmptyView from "@/components/ui/shared/empty/TRDWEmptyView";
+import { useRouter } from "next/navigation";
 import { useState } from "react";
-import { start } from "repl";
 
 const TransactionsPage = () => {
   const [startDate, setStartDate] = useState<Date>(new Date());
   const [endDate, setEndDate] = useState<Date>(new Date());
   const [error, setError] = useState<string | null>();
+
+  const router = useRouter();
 
   const handleSearch = () => {
     // Validate Date
@@ -28,6 +30,11 @@ const TransactionsPage = () => {
     setError("");
   };
 
+  const handleAddTransactionTappedEvent = () => {
+    console.log("Pressed");
+    router.push("/dashboard/transactions/add");
+  };
+
   return (
     <div className="flex flex-col justify-items-start w-full h-full">
       {/* Top Title */}
@@ -36,6 +43,7 @@ const TransactionsPage = () => {
         <TRDWButton
           variant={ButtonVariant.SECONDARY}
           iconName="ic:baseline-plus"
+          onClick={handleAddTransactionTappedEvent}
         >
           Tambah transaksi
         </TRDWButton>
@@ -46,20 +54,24 @@ const TransactionsPage = () => {
         {/* Durasi Transaksi */}
         <div className="flex flex-col w-full gap-2">
           <p className="flex text-base font-bold">Durasi transaksi</p>
-          {/* Button Container */}
+          {/* Date Selection Container */}
           <div className="flex gap-4">
             <div className="flex gap-3 items-center">
               <TRDWDatePicker
                 selected={startDate}
-                onChange={(date: Date) => {
-                  setStartDate(date);
+                onChange={(date) => {
+                  if (date) {
+                    setStartDate(date);
+                  }
                 }}
               />
               <p>hingga</p>
               <TRDWDatePicker
                 selected={endDate}
-                onChange={(date: Date) => {
-                  setEndDate(date);
+                onChange={(date) => {
+                  if (date) {
+                    setEndDate(date);
+                  }
                 }}
               />
             </div>

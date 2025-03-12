@@ -43,7 +43,10 @@ export function middleware(req: NextRequest) {
       "/dashboard/items",
       "/dashboard/vendors",
     ];
-    if (isDashboardSubpage && !validRoutes.includes(req.nextUrl.pathname)) {
+    if (
+      isDashboardSubpage &&
+      !validRoutes.some((route) => req.nextUrl.pathname.startsWith(route))
+    ) {
       console.log(
         "[Middleware] Redirecting unknown dashboard route to /dashboard/transactions"
       );

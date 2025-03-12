@@ -1,11 +1,21 @@
 import DatePicker from "react-datepicker";
 import "react-datepicker/dist/react-datepicker.css";
+import { Icon } from "@iconify/react";
 
-const TRDWDatePicker = ({ ...props }) => {
+const TRDWDatePicker = ({
+  selected,
+  onChange,
+  ...props
+}: {
+  selected: Date;
+  onChange: (date: Date | null) => void;
+}) => {
   return (
-    <div>
+    <div className="bg-gray-200 rounded-lg flex w-fit items-center">
       <DatePicker
-        className="text-black px-4 py-4 bg-gray-200 rounded-lg"
+        className="text-black py-4 pl-4"
+        selected={selected}
+        onChange={onChange}
         {...props}
       />
     </div>

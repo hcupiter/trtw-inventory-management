@@ -12,7 +12,7 @@ const DashboardItems = ({
   iconName: string;
 }) => {
   const pathname = usePathname(); // Get current path
-  const isActive = pathname == href;
+  const isActive = pathname.startsWith(href);
 
   const stateStyle = isActive ? "bg-dark-blue font-bold" : "bg-blue";
   const baseStyle =
