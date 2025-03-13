@@ -16,7 +16,7 @@ export class SQLiteTransactionService implements ITransactionService {
         "INSERT INTO TransactionData (date, totalPrice, transactionTypeId) VALUES (?, ?, ?) "
       );
       const result = statement.run(
-        transaction.date,
+        transaction.date.toISOString(),
         transaction.totalPrice,
         transaction.transactionTypeId
       );

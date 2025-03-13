@@ -25,7 +25,7 @@ export class SQLiteTransactionItemService implements ItransactionItemService {
         transactionItem.transactionId
       );
 
-      return Promise.resolve(result.changes > 0 ? true : false);
+      return Promise.resolve(result.changes > 0);
     } catch (error) {
       return Promise.reject(error);
     }
@@ -102,7 +102,7 @@ export class SQLiteTransactionItemService implements ItransactionItemService {
     }
   }
 
-  updateByItemID(transactionItem: TransactionItemDTO): Promise<string | null> {
+  updateByItemID(transactionItem: TransactionItemDTO): Promise<boolean> {
     try {
       const statement = this.sqliteDb.prepare(
         "UPDATE TransactionItem SET vendorID = ?, qty = ?, sellPrice = ?, totalPrice = ?, transactionID = ? WHERE id = ?"
@@ -116,7 +116,7 @@ export class SQLiteTransactionItemService implements ItransactionItemService {
         transactionItem.id
       );
 
-      return Promise.resolve(results.changes > 0 ? transactionItem.id : null);
+      return Promise.resolve(results.changes > 0);
     } catch (error) {
       return Promise.reject(error);
     }

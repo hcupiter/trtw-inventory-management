@@ -21,6 +21,6 @@ export interface ItransactionItemService {
     offset: number,
     sort: QuerySortOrder
   ): Promise<TransactionItemDTO[]>;
-  updateByItemID(transactionItem: TransactionItemDTO): Promise<string | null>;
+  updateByItemID(transactionItem: TransactionItemDTO): Promise<boolean>;
   deleteByItemID(id: string): Promise<boolean>;
 }

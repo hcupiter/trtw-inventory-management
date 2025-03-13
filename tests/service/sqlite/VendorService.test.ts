@@ -1,11 +1,13 @@
 import { VendorDTO } from "@/models/dto/VendorDTO";
+import { QuerySortOrder } from "@/services/utils/QuerySortOrder";
+import { IVendorService } from "@/services/vendor/IVendorService";
 import { SQLiteVendorService } from "@/services/vendor/SQLiteVendorService";
 import Database from "better-sqlite3";
 
 const sortByName = (a: VendorDTO, b: VendorDTO) => a.name.localeCompare(b.name);
 
 describe("SQLiteVendorService", () => {
-  let service: SQLiteVendorService;
+  let service: IVendorService;
   let testDb: any;
 
   beforeEach(() => {
@@ -72,13 +74,28 @@ describe("SQLiteVendorService", () => {
     await service.save(vendor2);
     await service.save(vendor3);
 
-    const testcase1 = await service.getByNameOrId("toko");
+    const testcase1 = await service.getByNameOrId(
+      "toko",
+      100,
+      0,
+      QuerySortOrder.ASC
+    );
     expect(testcase1).toEqual([vendor1, vendor2, vendor3].sort(sortByName));
 
-    const testcase2 = await service.getByNameOrId("wacana");
+    const testcase2 = await service.getByNameOrId(
+      "wacana",
+      100,
+      0,
+      QuerySortOrder.ASC
+    );
     expect(testcase2).toEqual([vendor1, vendor2].sort(sortByName));
 
-    const testcase3 = await service.getByNameOrId("jakarta");
+    const testcase3 = await service.getByNameOrId(
+      "jakarta",
+      100,
+      0,
+      QuerySortOrder.ASC
+    );
     expect(testcase3).toEqual([vendor2, vendor3].sort(sortByName));
   });
 
@@ -108,7 +125,7 @@ describe("SQLiteVendorService", () => {
     await service.save(vendor2);
     await service.save(vendor3);
 
-    const testcase1 = await service.getAll(1, 0);
+    const testcase1 = await service.getAll(1, 0, QuerySortOrder.ASC);
     expect(testcase1.at(0)).toEqual(
       [vendor1, vendor2, vendor3].sort(sortByName).at(0)
     );
