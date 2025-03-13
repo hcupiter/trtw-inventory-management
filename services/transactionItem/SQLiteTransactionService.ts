@@ -4,9 +4,15 @@ import db from "@/database/db";
 import { QuerySortOrder } from "../utils/QuerySortOrder";
 
 export class SQLiteTransactionItemService implements ItransactionItemService {
+  private sqliteDb: any;
+
+  constructor(dbInstance: any = db) {
+    this.sqliteDb = dbInstance; // Use real DB if no test DB provided
+  }
+
   save(transactionItem: TransactionItemDTO): Promise<string> {
     try {
-      const statement = db.prepare(
+      const statement = this.sqliteDb.prepare(
         "INSERT INTO TransactionItem (id, vendorID, qty, sellPrice, totalPrice, transactionID) VALUES (?, ?, ?, ?, ?, ?) "
       );
 
@@ -31,7 +37,7 @@ export class SQLiteTransactionItemService implements ItransactionItemService {
     sort: QuerySortOrder
   ): Promise<TransactionItemDTO[]> {
     try {
-      const statement = db.prepare(
+      const statement = this.sqliteDb.prepare(
         `SELECT * FROM TransactionItem ORDER BY id ${sort} LIMIT ? OFFSET ?`
       );
       const results = statement.all(limit, offset);
@@ -45,7 +51,7 @@ export class SQLiteTransactionItemService implements ItransactionItemService {
 
   getByItemID(id: string): Promise<TransactionItemDTO | null> {
     try {
-      const statement = db.prepare(
+      const statement = this.sqliteDb.prepare(
         "SELECT * FROM TransactionItem WHERE id = ?"
       );
 
@@ -63,7 +69,7 @@ export class SQLiteTransactionItemService implements ItransactionItemService {
     sort: QuerySortOrder
   ): Promise<TransactionItemDTO[]> {
     try {
-      const statement = db.prepare(
+      const statement = this.sqliteDb.prepare(
         `SELECT * FROM TransactionItem WHERE transactionID = ? ORDER BY id ${sort} LIMIT ? OFFSET ?`
       );
 
@@ -83,7 +89,7 @@ export class SQLiteTransactionItemService implements ItransactionItemService {
     sort: QuerySortOrder
   ): Promise<TransactionItemDTO[]> {
     try {
-      const statement = db.prepare(
+      const statement = this.sqliteDb.prepare(
         `SELECT * FROM TransactionItem WHERE vendorID = ? ORDER BY id ${sort} LIMIT ? OFFSET ?`
       );
 
@@ -98,7 +104,7 @@ export class SQLiteTransactionItemService implements ItransactionItemService {
 
   updateByItemID(transactionItem: TransactionItemDTO): Promise<string | null> {
     try {
-      const statement = db.prepare(
+      const statement = this.sqliteDb.prepare(
         "UPDATE TransactionItem SET vendorID = ?, qty = ?, sellPrice = ?, totalPrice = ?, transactionID = ? WHERE id = ?"
       );
       const results = statement.run(
@@ -118,7 +124,9 @@ export class SQLiteTransactionItemService implements ItransactionItemService {
 
   deleteByItemID(id: string): Promise<boolean> {
     try {
-      const statement = db.prepare("DELETE FROM TransactionItem WHERE id = ?");
+      const statement = this.sqliteDb.prepare(
+        "DELETE FROM TransactionItem WHERE id = ?"
+      );
       const result = statement.run(id);
       return Promise.resolve(result.changes > 0);
     } catch (error) {

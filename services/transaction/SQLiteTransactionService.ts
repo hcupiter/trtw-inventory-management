@@ -4,9 +4,15 @@ import db from "@/database/db";
 import { QuerySortOrder } from "../utils/QuerySortOrder";
 
 export class SQLiteTransactionService implements ITransactionService {
+  private sqliteDb: any;
+
+  constructor(dbInstance: any = db) {
+    this.sqliteDb = dbInstance; // Use real DB if no test DB provided
+  }
+
   save(transaction: TransactionDTO): Promise<number | null> {
     try {
-      const statement = db.prepare(
+      const statement = this.sqliteDb.prepare(
         "INSERT INTO TransactionData (date, totalPrice, transactionTypeId) VALUES (?, ?, ?) "
       );
       const result = statement.run(
@@ -22,7 +28,7 @@ export class SQLiteTransactionService implements ITransactionService {
 
   getById(id: number): Promise<TransactionDTO | null> {
     try {
-      const statement = db.prepare(
+      const statement = this.sqliteDb.prepare(
         "SELECT * FROM TransactionData WHERE id = ?"
       );
       const transaction = statement.get(id);
@@ -38,7 +44,7 @@ export class SQLiteTransactionService implements ITransactionService {
     sort: QuerySortOrder = QuerySortOrder.ASC
   ): Promise<TransactionDTO[]> {
     try {
-      const statement = db.prepare(`
+      const statement = this.sqliteDb.prepare(`
       SELECT * FROM TransactionData 
       ORDER BY date ${sort} 
       LIMIT ? OFFSET ?
@@ -60,7 +66,7 @@ export class SQLiteTransactionService implements ITransactionService {
     sort: QuerySortOrder = QuerySortOrder.ASC
   ): Promise<TransactionDTO[]> {
     try {
-      const statement = db.prepare(
+      const statement = this.sqliteDb.prepare(
         `SELECT * FROM TransactionData WHERE date BETWEEN ? AND ? ORDER BY date ${sort} LIMIT ? OFFSET ?`
       );
 
@@ -81,7 +87,7 @@ export class SQLiteTransactionService implements ITransactionService {
 
   update(transaction: TransactionDTO): Promise<number | null> {
     try {
-      const statement = db.prepare(
+      const statement = this.sqliteDb.prepare(
         "UPDATE TransactionData SET date = ?, totalPrice = ?, transactionTypeId = ? WHERE id = ?"
       );
       const results = statement.run(
@@ -98,7 +104,9 @@ export class SQLiteTransactionService implements ITransactionService {
 
   delete(id: number): Promise<boolean> {
     try {
-      const statement = db.prepare("DELETE FROM TransactionData WHERE id = ?");
+      const statement = this.sqliteDb.prepare(
+        "DELETE FROM TransactionData WHERE id = ?"
+      );
       const results = statement.run(id);
       return Promise.resolve(results.changes > 0);
     } catch (error) {

@@ -4,9 +4,15 @@ import db from "@/database/db";
 import { QuerySortOrder } from "../utils/QuerySortOrder";
 
 export class SQLiteItemService implements IITemService {
+  private sqliteDb: any;
+
+  constructor(dbInstance: any = db) {
+    this.sqliteDb = dbInstance; // Use real DB if no test DB provided
+  }
+
   save(item: ItemDTO): Promise<string | null> {
     try {
-      const statement = db.prepare(
+      const statement = this.sqliteDb.prepare(
         "INSERT INTO Item (id, name, price, stokQty, vendorID) VALUES (?, ?, ?, ?, ?)"
       );
 
@@ -25,7 +31,9 @@ export class SQLiteItemService implements IITemService {
 
   getByID(id: string): Promise<ItemDTO | null> {
     try {
-      const statement = db.prepare("SELECT * FROM Item WHERE id = ?");
+      const statement = this.sqliteDb.prepare(
+        "SELECT * FROM Item WHERE id = ?"
+      );
       const results = statement.get(id);
       return Promise.resolve(results as ItemDTO | null);
     } catch (error) {
@@ -40,7 +48,7 @@ export class SQLiteItemService implements IITemService {
     sort: QuerySortOrder = QuerySortOrder.ASC
   ): Promise<ItemDTO[]> {
     try {
-      const statement = db.prepare(
+      const statement = this.sqliteDb.prepare(
         `SELECT * FROM Item WHERE name LIKE ? ORDER BY name ${sort} LIMIT ? OFFSET ?`
       );
       const result = statement.all(`%${name}%`, limit, offset);
@@ -56,7 +64,7 @@ export class SQLiteItemService implements IITemService {
     sort: QuerySortOrder = QuerySortOrder.ASC
   ): Promise<ItemDTO[]> {
     try {
-      const statement = db.prepare(
+      const statement = this.sqliteDb.prepare(
         `SELECT * FROM Item ORDER BY name ${sort} LIMIT ? OFFSET ?`
       );
       const results = statement.all(limit, offset);
@@ -73,7 +81,7 @@ export class SQLiteItemService implements IITemService {
     sort: QuerySortOrder = QuerySortOrder.ASC
   ): Promise<ItemDTO[]> {
     try {
-      const statement = db.prepare(
+      const statement = this.sqliteDb.prepare(
         `SELECT * FROM Item WHERE vendorID = ? ORDER BY name ${sort} LIMIT ? OFFSET ?`
       );
       const results = statement.all(id, limit, offset);
@@ -84,7 +92,7 @@ export class SQLiteItemService implements IITemService {
   }
   update(item: ItemDTO): Promise<string | null> {
     try {
-      const statement = db.prepare(
+      const statement = this.sqliteDb.prepare(
         `UPDATE Item SET name = ?, price = ?, stokQty = ?, vendorID = ? WHERE id = ?`
       );
       const results = statement.run(
@@ -102,7 +110,7 @@ export class SQLiteItemService implements IITemService {
 
   delete(id: string): Promise<boolean> {
     try {
-      const statement = db.prepare("DELETE FROM Item WHERE id = ?");
+      const statement = this.sqliteDb.prepare("DELETE FROM Item WHERE id = ?");
       const results = statement.run(id);
       return Promise.resolve(results.changes > 0);
     } catch (error) {

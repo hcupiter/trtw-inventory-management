@@ -1,12 +1,18 @@
 import { VendorDTO } from "@/models/dto/VendorDTO";
 import { QuerySortOrder } from "../utils/QuerySortOrder";
 import { IVendorService } from "./IVendorService";
-import db from "@/database/db";
+import db from "@/database/db"; // Shared DB instance
 
 export class SQLiteVendorService implements IVendorService {
+  private sqliteDb: any;
+
+  constructor(dbInstance: any = db) {
+    this.sqliteDb = dbInstance; // Use real DB if no test DB provided
+  }
+
   save(vendor: VendorDTO): Promise<string | null> {
     try {
-      const statement = db.prepare(
+      const statement = this.sqliteDb.prepare(
         `INSERT INTO Vendor (id, name, address, phone) VALUES (?, ?, ?, ?)`
       );
       const results = statement.run(
@@ -23,7 +29,9 @@ export class SQLiteVendorService implements IVendorService {
 
   getById(id: string): Promise<VendorDTO | null> {
     try {
-      const statement = db.prepare(`SELECT * FROM Vendor WHERE id = ?`);
+      const statement = this.sqliteDb.prepare(
+        `SELECT * FROM Vendor WHERE id = ?`
+      );
       const results = statement.get(id);
       return Promise.resolve(results as VendorDTO | null);
     } catch (error) {
@@ -38,7 +46,7 @@ export class SQLiteVendorService implements IVendorService {
     sort: QuerySortOrder
   ): Promise<VendorDTO[]> {
     try {
-      const statement = db.prepare(
+      const statement = this.sqliteDb.prepare(
         `SELECT * FROM Vendor WHERE name LIKE ? ORDER BY name ${sort} LIMIT ? OFFSET ?`
       );
       const results = statement.all(name, limit, offset);
@@ -53,7 +61,7 @@ export class SQLiteVendorService implements IVendorService {
     sort: QuerySortOrder
   ): Promise<VendorDTO[]> {
     try {
-      const statement = db.prepare(
+      const statement = this.sqliteDb.prepare(
         `SELECT * FROM Vendor ORDER BY name ${sort} LIMIT ? OFFSET ?`
       );
       const results = statement.all(limit, offset);
@@ -64,7 +72,7 @@ export class SQLiteVendorService implements IVendorService {
   }
   update(vendor: VendorDTO): Promise<string | null> {
     try {
-      const statement = db.prepare(
+      const statement = this.sqliteDb.prepare(
         `UPDATE Vendor SET name = ?, address = ?, phone = ? WHERE id = ?`
       );
       const results = statement.run(
@@ -81,7 +89,9 @@ export class SQLiteVendorService implements IVendorService {
 
   delete(id: string): Promise<boolean> {
     try {
-      const statement = db.prepare(`DELETE FROM Vendor WHERE id = ?`);
+      const statement = this.sqliteDb.prepare(
+        `DELETE FROM Vendor WHERE id = ?`
+      );
       const results = statement.run(id);
       return Promise.resolve(results.changes > 0);
     } catch (error) {
