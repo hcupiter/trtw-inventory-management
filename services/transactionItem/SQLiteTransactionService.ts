@@ -10,7 +10,7 @@ export class SQLiteTransactionItemService implements ItransactionItemService {
     this.sqliteDb = dbInstance; // Use real DB if no test DB provided
   }
 
-  save(transactionItem: TransactionItemDTO): Promise<string> {
+  save(transactionItem: TransactionItemDTO): Promise<boolean> {
     try {
       const statement = this.sqliteDb.prepare(
         "INSERT INTO TransactionItem (id, vendorID, qty, sellPrice, totalPrice, transactionID) VALUES (?, ?, ?, ?, ?, ?) "
@@ -25,7 +25,7 @@ export class SQLiteTransactionItemService implements ItransactionItemService {
         transactionItem.transactionId
       );
 
-      return Promise.resolve(result.lastInsertRowid as string);
+      return Promise.resolve(result.changes > 0 ? true : false);
     } catch (error) {
       return Promise.reject(error);
     }

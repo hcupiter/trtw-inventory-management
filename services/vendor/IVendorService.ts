@@ -2,10 +2,10 @@ import { VendorDTO } from "@/models/dto/VendorDTO";
 import { QuerySortOrder } from "../utils/QuerySortOrder";
 
 export interface IVendorService {
-  save(vendor: VendorDTO): Promise<string | null>;
+  save(vendor: VendorDTO): Promise<boolean>;
   getById(id: string): Promise<VendorDTO | null>;
-  getByName(
-    name: string,
+  getByNameOrId(
+    query: string,
     limit: number,
     offset: number,
     sort: QuerySortOrder
@@ -15,6 +15,6 @@ export interface IVendorService {
     offset: number,
     sort: QuerySortOrder
   ): Promise<VendorDTO[]>;
-  update(vendor: VendorDTO): Promise<string | null>;
+  update(vendor: VendorDTO): Promise<boolean>;
   delete(id: string): Promise<boolean>;
 }

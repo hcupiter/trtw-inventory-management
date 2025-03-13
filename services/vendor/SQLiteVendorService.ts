@@ -10,7 +10,7 @@ export class SQLiteVendorService implements IVendorService {
     this.sqliteDb = dbInstance; // Use real DB if no test DB provided
   }
 
-  save(vendor: VendorDTO): Promise<string | null> {
+  save(vendor: VendorDTO): Promise<boolean> {
     try {
       const statement = this.sqliteDb.prepare(
         `INSERT INTO Vendor (id, name, address, phone) VALUES (?, ?, ?, ?)`
@@ -21,7 +21,7 @@ export class SQLiteVendorService implements IVendorService {
         vendor.address,
         vendor.phone
       );
-      return Promise.resolve(results.lastInsertRowid as string | null);
+      return Promise.resolve(results.changes > 0);
     } catch (error) {
       return Promise.reject(error);
     }
@@ -33,32 +33,33 @@ export class SQLiteVendorService implements IVendorService {
         `SELECT * FROM Vendor WHERE id = ?`
       );
       const results = statement.get(id);
-      return Promise.resolve(results as VendorDTO | null);
+      return Promise.resolve((results as VendorDTO) ?? null);
     } catch (error) {
       return Promise.reject(error);
     }
   }
 
-  getByName(
-    name: string,
-    limit: number,
-    offset: number,
-    sort: QuerySortOrder
+  getByNameOrId(
+    query: string,
+    limit: number = 100,
+    offset: number = 0,
+    sort: QuerySortOrder = QuerySortOrder.ASC
   ): Promise<VendorDTO[]> {
     try {
       const statement = this.sqliteDb.prepare(
-        `SELECT * FROM Vendor WHERE name LIKE ? ORDER BY name ${sort} LIMIT ? OFFSET ?`
+        `SELECT * FROM Vendor WHERE id LIKE ? OR name LIKE ? ORDER BY name ${sort} LIMIT ? OFFSET ?`
       );
-      const results = statement.all(name, limit, offset);
+      const results = statement.all(`%${query}%`, `%${query}%`, limit, offset);
       return Promise.resolve(results as VendorDTO[] | VendorDTO[]);
     } catch (error) {
       return Promise.reject(error);
     }
   }
+
   getAll(
-    limit: number,
-    offset: number,
-    sort: QuerySortOrder
+    limit: number = 100,
+    offset: number = 0,
+    sort: QuerySortOrder = QuerySortOrder.ASC
   ): Promise<VendorDTO[]> {
     try {
       const statement = this.sqliteDb.prepare(
@@ -70,7 +71,7 @@ export class SQLiteVendorService implements IVendorService {
       return Promise.reject(error);
     }
   }
-  update(vendor: VendorDTO): Promise<string | null> {
+  update(vendor: VendorDTO): Promise<boolean> {
     try {
       const statement = this.sqliteDb.prepare(
         `UPDATE Vendor SET name = ?, address = ?, phone = ? WHERE id = ?`
@@ -81,7 +82,7 @@ export class SQLiteVendorService implements IVendorService {
         vendor.phone,
         vendor.id
       );
-      return Promise.resolve(results.changes > 0 ? vendor.id : null);
+      return Promise.resolve(results.changes > 0);
     } catch (error) {
       return Promise.reject(error);
     }

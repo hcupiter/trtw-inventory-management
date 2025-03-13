@@ -2,7 +2,7 @@ import { TransactionItemDTO } from "@/models/dto/TransactionItemDTO";
 import { QuerySortOrder } from "../utils/QuerySortOrder";
 
 export interface ItransactionItemService {
-  save(transactionItem: TransactionItemDTO): Promise<string>;
+  save(transactionItem: TransactionItemDTO): Promise<boolean>;
   getAll(
     limit: number,
     offset: number,
