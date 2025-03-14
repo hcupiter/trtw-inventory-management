@@ -13,11 +13,10 @@ export class SQLiteTransactionService implements ITransactionService {
   save(transaction: TransactionDTO): Promise<number | null> {
     try {
       const statement = this.sqliteDb.prepare(
-        "INSERT INTO TransactionData (date, totalPrice, transactionTypeId) VALUES (?, ?, ?) "
+        "INSERT INTO TransactionData (date, transactionTypeId) VALUES (?, ?) "
       );
       const result = statement.run(
-        transaction.date.toISOString(),
-        transaction.totalPrice,
+        transaction.date,
         transaction.transactionTypeId
       );
       return Promise.resolve(result.lastInsertRowid as number | null);
@@ -88,11 +87,10 @@ export class SQLiteTransactionService implements ITransactionService {
   update(transaction: TransactionDTO): Promise<number | null> {
     try {
       const statement = this.sqliteDb.prepare(
-        "UPDATE TransactionData SET date = ?, totalPrice = ?, transactionTypeId = ? WHERE id = ?"
+        "UPDATE TransactionData SET date = ?, transactionTypeId = ? WHERE id = ?"
       );
       const results = statement.run(
         transaction.date,
-        transaction.totalPrice,
         transaction.transactionTypeId,
         transaction.id
       );

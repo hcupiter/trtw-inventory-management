@@ -1,6 +1,5 @@
 export interface TransactionDTO {
   id: number;
-  date: Date;
-  totalPrice: number;
+  date: string;
   transactionTypeId: number;
 }

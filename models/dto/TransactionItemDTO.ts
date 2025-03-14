@@ -4,6 +4,5 @@ export interface TransactionItemDTO {
   name: string;
   qty: number;
   sellPrice: number;
-  totalPrice: number;
   transactionId: number;
 }

@@ -10,20 +10,20 @@ export class SQLiteItemService implements IITemService {
     this.sqliteDb = dbInstance; // Use real DB if no test DB provided
   }
 
-  save(item: ItemDTO): Promise<string | null> {
+  save(item: ItemDTO): Promise<boolean> {
     try {
       const statement = this.sqliteDb.prepare(
-        "INSERT INTO Item (id, name, price, stokQty, vendorID) VALUES (?, ?, ?, ?, ?)"
+        "INSERT INTO Item (id, name, price, stockQty, vendorID) VALUES (?, ?, ?, ?, ?)"
       );
 
       const results = statement.run(
         item.id,
         item.name,
         item.price,
-        item.stokQty,
-        item.vendorID
+        item.stockQty,
+        item.vendorId
       );
-      return Promise.resolve(results.lastInsertRowid as string | null);
+      return Promise.resolve(results.changes > 0);
     } catch (error) {
       return Promise.reject(error);
     }
@@ -90,19 +90,19 @@ export class SQLiteItemService implements IITemService {
       return Promise.reject(error);
     }
   }
-  update(item: ItemDTO): Promise<string | null> {
+  update(item: ItemDTO): Promise<boolean> {
     try {
       const statement = this.sqliteDb.prepare(
-        `UPDATE Item SET name = ?, price = ?, stokQty = ?, vendorID = ? WHERE id = ?`
+        `UPDATE Item SET name = ?, price = ?, stockQty = ?, vendorID = ? WHERE id = ?`
       );
       const results = statement.run(
         item.name,
         item.price,
-        item.stokQty,
-        item.vendorID,
+        item.stockQty,
+        item.vendorId,
         item.id
       );
-      return Promise.resolve(results.changes > 0 ? item.id : null);
+      return Promise.resolve(results.changes > 0);
     } catch (error) {
       return Promise.reject(error);
     }

@@ -7,7 +7,6 @@ export const Mocks_TransactionItemDTO: TransactionItemDTO[] = [
     name: "Patung Salib Yesus Kristus Warna Coklat",
     qty: 10,
     sellPrice: 1000,
-    totalPrice: 1000 * 10,
     transactionId: 1,
   },
 
@@ -17,7 +16,6 @@ export const Mocks_TransactionItemDTO: TransactionItemDTO[] = [
     name: "Patung Bunda Maria",
     qty: 5,
     sellPrice: 10000,
-    totalPrice: 5 * 10000,
     transactionId: 1,
   },
 
@@ -27,7 +25,6 @@ export const Mocks_TransactionItemDTO: TransactionItemDTO[] = [
     name: "Kalung Rosario",
     qty: 3,
     sellPrice: 1500,
-    totalPrice: 3 * 1500,
     transactionId: 2,
   },
 
@@ -37,7 +34,6 @@ export const Mocks_TransactionItemDTO: TransactionItemDTO[] = [
     name: "Buku Rohani",
     qty: 30,
     sellPrice: 500,
-    totalPrice: 30 * 500,
     transactionId: 3,
   },
 ];

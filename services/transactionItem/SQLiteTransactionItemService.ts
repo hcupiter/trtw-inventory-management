@@ -13,15 +13,15 @@ export class SQLiteTransactionItemService implements ItransactionItemService {
   save(transactionItem: TransactionItemDTO): Promise<boolean> {
     try {
       const statement = this.sqliteDb.prepare(
-        "INSERT INTO TransactionItem (id, vendorID, qty, sellPrice, totalPrice, transactionID) VALUES (?, ?, ?, ?, ?, ?) "
+        "INSERT INTO TransactionItem (id, vendorID, name, qty, sellPrice, transactionID) VALUES (?, ?, ?, ?, ?, ?) "
       );
 
       const result = statement.run(
         transactionItem.id,
         transactionItem.vendorId,
+        transactionItem.name,
         transactionItem.qty,
         transactionItem.sellPrice,
-        transactionItem.totalPrice,
         transactionItem.transactionId
       );
 
@@ -105,13 +105,12 @@ export class SQLiteTransactionItemService implements ItransactionItemService {
   updateByItemID(transactionItem: TransactionItemDTO): Promise<boolean> {
     try {
       const statement = this.sqliteDb.prepare(
-        "UPDATE TransactionItem SET vendorID = ?, qty = ?, sellPrice = ?, totalPrice = ?, transactionID = ? WHERE id = ?"
+        "UPDATE TransactionItem SET vendorID = ?, qty = ?, sellPrice = ?, transactionID = ? WHERE id = ?"
       );
       const results = statement.run(
         transactionItem.vendorId,
         transactionItem.qty,
         transactionItem.sellPrice,
-        transactionItem.totalPrice,
         transactionItem.transactionId,
         transactionItem.id
       );
