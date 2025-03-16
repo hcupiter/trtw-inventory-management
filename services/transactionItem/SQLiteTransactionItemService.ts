@@ -3,6 +3,10 @@ import { ItransactionItemService } from "./ITransactionItemService";
 import db from "@/database/db";
 import { QuerySortOrder } from "../utils/QuerySortOrder";
 
+const defaultOffset = 0;
+const defaultLimit = 50;
+const defaultSort = QuerySortOrder.ASC;
+
 export class SQLiteTransactionItemService implements ItransactionItemService {
   private sqliteDb: any;
 
@@ -32,9 +36,9 @@ export class SQLiteTransactionItemService implements ItransactionItemService {
   }
 
   getAll(
-    limit: number,
-    offset: number,
-    sort: QuerySortOrder
+    limit: number = defaultLimit,
+    offset: number = defaultOffset,
+    sort: QuerySortOrder = defaultSort
   ): Promise<TransactionItemDTO[]> {
     try {
       const statement = this.sqliteDb.prepare(
@@ -64,9 +68,9 @@ export class SQLiteTransactionItemService implements ItransactionItemService {
 
   getByTransactionID(
     id: number,
-    limit: number,
-    offset: number,
-    sort: QuerySortOrder
+    limit: number = defaultLimit,
+    offset: number = defaultOffset,
+    sort: QuerySortOrder = defaultSort
   ): Promise<TransactionItemDTO[]> {
     try {
       const statement = this.sqliteDb.prepare(
@@ -84,9 +88,9 @@ export class SQLiteTransactionItemService implements ItransactionItemService {
 
   getByVendorID(
     id: string,
-    limit: number,
-    offset: number,
-    sort: QuerySortOrder
+    limit: number = defaultLimit,
+    offset: number = defaultOffset,
+    sort: QuerySortOrder = defaultSort
   ): Promise<TransactionItemDTO[]> {
     try {
       const statement = this.sqliteDb.prepare(

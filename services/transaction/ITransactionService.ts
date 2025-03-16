@@ -5,16 +5,16 @@ export interface ITransactionService {
   save(transaction: TransactionDTO): Promise<number | null>;
   getById(id: number): Promise<TransactionDTO | null>;
   getAll(
-    limit: number,
-    offset: number,
-    sort: QuerySortOrder
+    limit?: number,
+    offset?: number,
+    sort?: QuerySortOrder
   ): Promise<TransactionDTO[]>;
   getAllRange(
     from: Date,
     to: Date,
-    limit: number,
-    offset: number,
-    sort: QuerySortOrder
+    limit?: number,
+    offset?: number,
+    sort?: QuerySortOrder
   ): Promise<TransactionDTO[]>;
   update(transaction: TransactionDTO): Promise<number | null>;
   delete(id: number): Promise<boolean>;

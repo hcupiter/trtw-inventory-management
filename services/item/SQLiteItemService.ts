@@ -3,6 +3,9 @@ import { IITemService } from "./IItemService";
 import db from "@/database/db";
 import { QuerySortOrder } from "../utils/QuerySortOrder";
 
+const defaultOffset = 0;
+const defaultLimit = 50;
+
 export class SQLiteItemService implements IITemService {
   private sqliteDb: any;
 
@@ -43,8 +46,8 @@ export class SQLiteItemService implements IITemService {
 
   getByName(
     name: string,
-    limit: number,
-    offset: number,
+    limit: number = defaultLimit,
+    offset: number = defaultOffset,
     sort: QuerySortOrder = QuerySortOrder.ASC
   ): Promise<ItemDTO[]> {
     try {
@@ -59,8 +62,8 @@ export class SQLiteItemService implements IITemService {
   }
 
   getAll(
-    limit: number,
-    offset: number,
+    limit: number = defaultLimit,
+    offset: number = defaultOffset,
     sort: QuerySortOrder = QuerySortOrder.ASC
   ): Promise<ItemDTO[]> {
     try {
@@ -76,8 +79,8 @@ export class SQLiteItemService implements IITemService {
 
   getByVendorID(
     id: string,
-    limit: number,
-    offset: number,
+    limit: number = defaultLimit,
+    offset: number = defaultOffset,
     sort: QuerySortOrder = QuerySortOrder.ASC
   ): Promise<ItemDTO[]> {
     try {

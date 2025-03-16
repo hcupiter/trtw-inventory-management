@@ -3,6 +3,10 @@ import { QuerySortOrder } from "../utils/QuerySortOrder";
 import { IVendorService } from "./IVendorService";
 import db from "@/database/db"; // Shared DB instance
 
+const defaultOffset = 0;
+const defaultLimit = 50;
+const defaultSort = QuerySortOrder.ASC;
+
 export class SQLiteVendorService implements IVendorService {
   private sqliteDb: any;
 
@@ -41,9 +45,9 @@ export class SQLiteVendorService implements IVendorService {
 
   getByNameOrId(
     query: string,
-    limit: number = 100,
-    offset: number = 0,
-    sort: QuerySortOrder = QuerySortOrder.ASC
+    limit: number = defaultLimit,
+    offset: number = defaultOffset,
+    sort: QuerySortOrder = defaultSort
   ): Promise<VendorDTO[]> {
     try {
       const statement = this.sqliteDb.prepare(
@@ -57,9 +61,9 @@ export class SQLiteVendorService implements IVendorService {
   }
 
   getAll(
-    limit: number = 100,
-    offset: number = 0,
-    sort: QuerySortOrder = QuerySortOrder.ASC
+    limit: number = defaultLimit,
+    offset: number = defaultOffset,
+    sort: QuerySortOrder = defaultSort
   ): Promise<VendorDTO[]> {
     try {
       const statement = this.sqliteDb.prepare(

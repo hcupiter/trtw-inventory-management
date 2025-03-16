@@ -3,6 +3,9 @@ import { ITransactionService } from "./ITransactionService";
 import db from "@/database/db";
 import { QuerySortOrder } from "../utils/QuerySortOrder";
 
+const defaultOffset = 0;
+const defaultLimit = 50;
+
 export class SQLiteTransactionService implements ITransactionService {
   private sqliteDb: any;
 
@@ -38,8 +41,8 @@ export class SQLiteTransactionService implements ITransactionService {
   }
 
   getAll(
-    limit: number,
-    offset: number,
+    limit: number = defaultLimit,
+    offset: number = defaultOffset,
     sort: QuerySortOrder = QuerySortOrder.ASC
   ): Promise<TransactionDTO[]> {
     try {
@@ -60,8 +63,8 @@ export class SQLiteTransactionService implements ITransactionService {
   getAllRange(
     from: Date,
     to: Date,
-    limit: number,
-    offset: number,
+    limit: number = defaultLimit,
+    offset: number = defaultOffset,
     sort: QuerySortOrder = QuerySortOrder.ASC
   ): Promise<TransactionDTO[]> {
     try {

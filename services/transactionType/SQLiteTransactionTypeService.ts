@@ -3,6 +3,10 @@ import { QuerySortOrder } from "../utils/QuerySortOrder";
 import { ITransactionTypeService } from "./ITransactionTypeService";
 import db from "@/database/db";
 
+const defaultOffset = 0;
+const defaultLimit = 50;
+const defaultSort = QuerySortOrder.ASC;
+
 export class SQLiteTransactionTypeService implements ITransactionTypeService {
   private sqliteDb: any;
 
@@ -23,16 +27,16 @@ export class SQLiteTransactionTypeService implements ITransactionTypeService {
   }
 
   getAll(
-    limit: number = 100,
-    offset: number = 0,
-    sort: QuerySortOrder
+    limit: number = defaultLimit,
+    offset: number = defaultOffset,
+    sort: QuerySortOrder = defaultSort
   ): Promise<TransactionTypeDTO[]> {
     try {
       const statement = this.sqliteDb.prepare(
         `SELECT * FROM TransactionType ORDER BY id ${sort} LIMIT ? OFFSET ? `
       );
 
-      const results = statement.all();
+      const results = statement.all(limit, offset);
       return Promise.resolve(results as TransactionTypeDTO[] | []);
     } catch (error) {
       return Promise.reject(error);
