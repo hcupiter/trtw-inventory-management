@@ -44,18 +44,18 @@ export class SQLiteItemService implements IITemService {
     }
   }
 
-  getByName(
-    name: string,
+  getByNameOrId(
+    query: string,
     limit: number = defaultLimit,
     offset: number = defaultOffset,
     sort: QuerySortOrder = QuerySortOrder.ASC
   ): Promise<ItemDTO[]> {
     try {
       const statement = this.sqliteDb.prepare(
-        `SELECT * FROM Item WHERE name LIKE ? ORDER BY name ${sort} LIMIT ? OFFSET ?`
+        `SELECT * FROM Item WHERE id LIKE ? OR name LIKE ? ORDER BY name ${sort} LIMIT ? OFFSET ?`
       );
-      const result = statement.all(`%${name}%`, limit, offset);
-      return Promise.resolve(result as ItemDTO[] | ItemDTO[]);
+      const result = statement.all(`%${query}%`, `%${query}%`, limit, offset);
+      return Promise.resolve(result as ItemDTO[] | []);
     } catch (error) {
       return Promise.reject(error);
     }

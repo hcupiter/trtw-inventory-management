@@ -4,8 +4,8 @@ import { QuerySortOrder } from "../utils/QuerySortOrder";
 export interface IITemService {
   save(item: ItemDTO): Promise<boolean>;
   getByID(id: string): Promise<ItemDTO | null>;
-  getByName(
-    name: string,
+  getByNameOrId(
+    query: string,
     limit?: number,
     offset?: number,
     sort?: QuerySortOrder
