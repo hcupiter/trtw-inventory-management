@@ -1,6 +1,6 @@
 import { TransactionItem } from "./TransactionItem";
 
-export interface Transaction {
+export interface TransactionData {
   id: number;
   date: Date;
   totalPrice: number;
