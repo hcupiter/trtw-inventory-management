@@ -4,15 +4,18 @@ import TRDWButton, {
   ButtonVariant,
 } from "@/components/ui/shared/button/TRDWButton";
 import TRDWEmptyView from "@/components/ui/shared/empty/TRDWEmptyView";
-import { TRDWLoadingView } from "@/components/ui/shared/loading/TRDWLoadingView";
 import TRDWSearchBar from "@/components/ui/shared/searchbar/TRDWSearchBar";
 import VendorCard from "@/components/ui/vendor/VendorCard";
-import { mapVendorToEntity, VendorDTO } from "@/models/dto/VendorDTO";
+import { mapVendorToEntity } from "@/models/dto/VendorDTO";
 import { VendorEntity } from "@/models/entity/VendorEntity";
+import { useRouter } from "next/navigation";
 import { useState, useEffect } from "react";
 
 const VendorsPage = () => {
-  const handleAddVendorTappedEvent = () => {};
+  const router = useRouter();
+  const handleAddVendorTappedEvent = () => {
+    router.push("/dashboard/vendors/add");
+  };
 
   const [searchText, setSearchText] = useState<string>("");
   const [debouncedSearch, setDebouncedSearch] = useState<string>("");
@@ -86,7 +89,7 @@ const VendorsPage = () => {
   return (
     <div className="flex flex-col justify-items-start w-full h-full gap-8">
       {/* Top Title */}
-      <div className="flex flex-row items-center justify-between w-full">
+      <div className="flex flex-row items-start justify-between w-full">
         <h1 className="text-black text-2xl font-bold">Vendor</h1>
         <TRDWButton
           variant={ButtonVariant.SECONDARY}
@@ -106,7 +109,7 @@ const VendorsPage = () => {
         />
 
         {/* Data Transaksi */}
-        <div className="w-full h-full">
+        <div className="flex flex-col w-full h-full overflow-x-scroll">
           {message && <TRDWEmptyView label={message} />}
 
           {filteredVendors.length <= 0 ? (

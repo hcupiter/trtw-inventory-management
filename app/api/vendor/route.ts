@@ -34,7 +34,10 @@ export async function POST(req: Request) {
 
     const result = await createVendorUseCase.execute(vendor);
     if (result) {
-      return NextResponse.json({ status: 200 });
+      return NextResponse.json(
+        { message: "Vendor saved successfully" },
+        { status: 200 }
+      );
     } else {
       return NextResponse.json(
         {
