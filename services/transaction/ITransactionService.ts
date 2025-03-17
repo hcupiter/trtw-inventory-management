@@ -10,8 +10,8 @@ export interface ITransactionService {
     sort?: QuerySortOrder
   ): Promise<TransactionDTO[]>;
   getAllRange(
-    from: Date,
-    to: Date,
+    from: string,
+    to: string,
     limit?: number,
     offset?: number,
     sort?: QuerySortOrder

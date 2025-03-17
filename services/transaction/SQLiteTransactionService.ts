@@ -61,8 +61,8 @@ export class SQLiteTransactionService implements ITransactionService {
   }
 
   getAllRange(
-    from: Date,
-    to: Date,
+    from: string,
+    to: string,
     limit: number = defaultLimit,
     offset: number = defaultOffset,
     sort: QuerySortOrder = QuerySortOrder.ASC
@@ -72,12 +72,7 @@ export class SQLiteTransactionService implements ITransactionService {
         `SELECT * FROM TransactionData WHERE date BETWEEN ? AND ? ORDER BY date ${sort} LIMIT ? OFFSET ?`
       );
 
-      const transactions = statement.all(
-        from.toISOString(),
-        to.toISOString(),
-        limit,
-        offset
-      );
+      const transactions = statement.all(from, to, limit, offset);
 
       return Promise.resolve(
         transactions as TransactionDTO[] | TransactionDTO[]
