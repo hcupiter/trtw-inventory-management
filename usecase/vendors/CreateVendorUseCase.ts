@@ -28,6 +28,7 @@ export class CreateVendorUseCase {
 
       // Commit Transaction if success
       this.db.commit();
+      return true;
     } catch (error) {
       this.db.rollback();
       console.error("Transaction failed:", error);

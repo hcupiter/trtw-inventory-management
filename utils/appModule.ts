@@ -13,7 +13,7 @@ import { ITransactionTypeService } from "@/services/transactionType/ITransaction
 import { SQLiteTransactionTypeService } from "@/services/transactionType/SQLiteTransactionTypeService";
 import { IVendorService } from "@/services/vendor/IVendorService";
 import { SQLiteVendorService } from "@/services/vendor/SQLiteVendorService";
-import { CreateVendorUseCase } from "@/usecase/CreateVendorUseCase";
+import { CreateVendorUseCase } from "@/usecase/vendors/CreateVendorUseCase";
 
 // Services
 export const authService: IAuthService = new SQLiteAuthService();
