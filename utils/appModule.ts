@@ -14,6 +14,7 @@ import { SQLiteTransactionTypeService } from "@/services/transactionType/SQLiteT
 import { IVendorService } from "@/services/vendor/IVendorService";
 import { SQLiteVendorService } from "@/services/vendor/SQLiteVendorService";
 import { CreateVendorUseCase } from "@/usecase/vendors/CreateVendorUseCase";
+import { UpdateVendorUseCase } from "@/usecase/vendors/UpdateVendorUseCase";
 
 // Services
 export const authService: IAuthService = new SQLiteAuthService();
@@ -29,6 +30,10 @@ export const database: IDatabase = new SQLiteDatabase();
 
 // Use Cases
 export const createVendorUseCase: CreateVendorUseCase = new CreateVendorUseCase(
+  database,
+  vendorService
+);
+export const updateVendorUseCase: UpdateVendorUseCase = new UpdateVendorUseCase(
   database,
   vendorService
 );

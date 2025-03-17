@@ -1,5 +1,10 @@
 import { VendorDTO } from "@/models/dto/VendorDTO";
-import { createVendorUseCase, vendorService } from "@/utils/appModule";
+import {
+  createVendorUseCase,
+  updateVendorUseCase,
+  vendorService,
+} from "@/utils/appModule";
+import { errorWriter } from "@/utils/errorWriter";
 import { NextResponse } from "next/server";
 
 export async function GET(req: Request) {
@@ -14,7 +19,7 @@ export async function GET(req: Request) {
     console.log(error);
     return NextResponse.json(
       {
-        error: "Something on the server went wrong",
+        error: errorWriter(error, "Something went wrong on the server!"),
       },
       {
         status: 500,
@@ -42,7 +47,36 @@ export async function POST(req: Request) {
     console.log(error);
     return NextResponse.json(
       {
-        error: "Something went wrong on the server!",
+        error: errorWriter(error, "Something went wrong on the server!"),
+      },
+      { status: 500 }
+    );
+  }
+}
+
+export async function PATCH(req: Request) {
+  try {
+    const vendor: VendorDTO = await req.json();
+    const result = await updateVendorUseCase.execute(vendor);
+
+    if (result) {
+      return NextResponse.json(
+        { message: "Vendor updated successfully" },
+        { status: 200 }
+      );
+    } else {
+      return NextResponse.json(
+        {
+          error: "Failed to update item!",
+        },
+        { status: 500 }
+      );
+    }
+  } catch (error) {
+    console.error("PATCH /api/vendors error:", error);
+    return NextResponse.json(
+      {
+        error: errorWriter(error, "Something went wrong on the server!"),
       },
       { status: 500 }
     );
@@ -78,7 +112,7 @@ export async function DELETE(req: Request) {
     console.log(error);
     return NextResponse.json(
       {
-        error: "Something went wrong on the server!",
+        error: errorWriter(error, "Something went wrong on the server!"),
       },
       { status: 500 }
     );

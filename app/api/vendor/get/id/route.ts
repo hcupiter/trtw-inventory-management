@@ -1,4 +1,5 @@
 import { vendorService } from "@/utils/appModule";
+import { errorWriter } from "@/utils/errorWriter";
 import { NextResponse } from "next/server";
 
 export async function GET(req: Request) {
@@ -27,7 +28,7 @@ export async function GET(req: Request) {
     console.log(error);
     return NextResponse.json(
       {
-        error: "Something went wrong on the server!",
+        error: errorWriter(error, "Something went wrong on the server!"),
       },
       { status: 500 }
     );

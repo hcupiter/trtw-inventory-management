@@ -2,7 +2,7 @@ import { VendorDTO } from "@/models/dto/VendorDTO";
 import { IDatabase } from "@/services/database/IDatabase";
 import { IVendorService } from "@/services/vendor/IVendorService";
 
-export class CreateVendorUseCase {
+export class UpdateVendorUseCase {
   private db: IDatabase;
   private vendorService: IVendorService;
 
@@ -15,16 +15,16 @@ export class CreateVendorUseCase {
     this.db.beginTransaction();
 
     try {
-      // Validate if vendor ID isn't created
+      // Validate if vendor ID has been found
       const validateVendorId = await this.vendorService.getById(vendor.id);
-      if (validateVendorId)
+      if (!validateVendorId)
         throw new Error(
-          `Failed to insert, Vendor ID ${vendor.id} has been created...`
+          `Failed to update, Vendor ID ${vendor.id} is not found...`
         );
 
-      // Save Vendor
-      const success = await this.vendorService.save(vendor);
-      if (!success) throw new Error(`Failed to save vendor: ${vendor.id}`);
+      // Update Vendor
+      const success = await this.vendorService.update(vendor);
+      if (!success) throw new Error(`Failed to update vendor: ${vendor.id}`);
 
       // Commit Transaction if success
       this.db.commit();
