@@ -1,4 +1,4 @@
-import { vendorService } from "@/utils/appModule";
+import { itemService, vendorService } from "@/utils/appModule";
 import { errorWriter } from "@/utils/errorWriter";
 import { NextResponse } from "next/server";
 
@@ -12,9 +12,7 @@ export async function GET(req: Request) {
     }
 
     const vendor = await vendorService.getById(id);
-    if (vendor) {
-      return NextResponse.json({ vendor }, { status: 200 });
-    } else {
+    if (!vendor) {
       return NextResponse.json(
         {
           error: `Vendor ${id} is not found`,
@@ -24,6 +22,9 @@ export async function GET(req: Request) {
         }
       );
     }
+
+    const items = await itemService.getByVendorID(id);
+    return NextResponse.json({ vendor, items }, { status: 200 });
   } catch (error) {
     console.log(error);
     return NextResponse.json(

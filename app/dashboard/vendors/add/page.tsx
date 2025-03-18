@@ -110,7 +110,7 @@ const AddVendorsPage = () => {
             className="w-7 h-7 hover:text-blue"
             onClick={goBack}
           />
-          <h1 className="text-black text-2xl font-bold">Tambah transaksi</h1>
+          <h1 className="text-black text-2xl font-bold">Tambah vendor</h1>
         </div>
 
         <TRDWButton

@@ -1,6 +1,6 @@
-import { ItemEntity } from "../entity/ItemEntity";
+import { ItemDTO } from "../dto/ItemDTO";
 
-export interface ItemDTO {
+export interface ItemEntity {
   id: string;
   name: string;
   price: number;
@@ -8,7 +8,7 @@ export interface ItemDTO {
   vendorId: string;
 }
 
-export const mapItemToEntity = (dto: ItemDTO): ItemEntity => {
+export const mapItemToDTO = (dto: ItemDTO): ItemEntity => {
   return {
     id: dto.id,
     name: dto.name,

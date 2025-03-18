@@ -24,18 +24,17 @@ const TRDWButton: React.FC<ButtonProps> = ({
   children,
   ...props
 }) => {
-  const baseStyle = styles.buttonBase;
   const variantStyle =
     variant === ButtonVariant.PRIMARY
-      ? styles.buttonPrimary
+      ? `bg-blue text-white hover:bg-dark-blue`
       : variant === ButtonVariant.SECONDARY
-      ? styles.buttonSecondary
-      : styles.buttonDestructive;
+      ? `text-blue border-blue border-1 hover:bg-blue hover:text-white`
+      : `text-red border-red border-1 hover:bg-red hover:text-white`;
   const fullWidthStyle = fullWidth ? "w-full" : null;
 
   return (
     <button
-      className={`${baseStyle} ${variantStyle} ${fullWidthStyle}`}
+      className={`flex px-4 py-3 justify-center items-center rounded-lg gap-4 text-base ${variantStyle} ${fullWidthStyle}`}
       {...props}
     >
       {iconName && <Icon icon={iconName} />}

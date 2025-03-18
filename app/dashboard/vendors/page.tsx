@@ -17,6 +17,10 @@ const VendorsPage = () => {
     router.push("/dashboard/vendors/add");
   };
 
+  const handleVendorCardTappedEvent = (id: string) => {
+    router.push(`/dashboard/vendors/${id}`);
+  };
+
   const [searchText, setSearchText] = useState<string>("");
   const [debouncedSearch, setDebouncedSearch] = useState<string>("");
 
@@ -112,15 +116,23 @@ const VendorsPage = () => {
         <div className="flex flex-col w-full h-full overflow-x-scroll">
           {message && <TRDWEmptyView label={message} />}
 
-          {filteredVendors.length <= 0 ? (
-            <TRDWEmptyView label={"Tidak ada data vendor ditemukan..."} />
-          ) : (
-            <div className="flex flex-col gap-4">
-              {filteredVendors.map((element) => (
-                <VendorCard key={element.id} vendor={element} />
-              ))}
-            </div>
-          )}
+          <div className="flex flex-col gap-8">
+            {filteredVendors.length <= 0 ? (
+              <TRDWEmptyView label={"Tidak ada data vendor ditemukan..."} />
+            ) : (
+              <div className="flex flex-col gap-8">
+                <div className="flex flex-col gap-2">
+                  {filteredVendors.map((element) => (
+                    <VendorCard
+                      key={element.id}
+                      vendor={element}
+                      onTap={() => handleVendorCardTappedEvent(element.id)}
+                    />
+                  ))}
+                </div>
+              </div>
+            )}
+          </div>
         </div>
       </div>
     </div>

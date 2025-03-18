@@ -1,4 +1,4 @@
-import { VendorDTO } from "../dto/VendorDTO";
+import { VendorDTO } from "@/models/dto/VendorDTO";
 
 export interface VendorEntity {
   id: string;
