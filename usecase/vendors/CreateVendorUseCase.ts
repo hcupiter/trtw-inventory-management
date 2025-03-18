@@ -16,10 +16,12 @@ export class CreateVendorUseCase {
 
     try {
       // Validate if vendor ID isn't created
-      const validateVendorId = await this.vendorService.getById(vendor.id);
+      const validateVendorId = await this.vendorService.getByVendorId(
+        vendor.vendorId
+      );
       if (validateVendorId)
         throw new Error(
-          `Failed to insert, Vendor ID ${vendor.id} has been created...`
+          `Failed to insert, Vendor ID ${vendor.vendorId} has been created...`
         );
 
       // Save Vendor

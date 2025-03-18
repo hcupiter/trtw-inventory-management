@@ -3,7 +3,8 @@ import { QuerySortOrder } from "../utils/QuerySortOrder";
 
 export interface IVendorService {
   save(vendor: VendorDTO): Promise<boolean>;
-  getById(id: string): Promise<VendorDTO | null>;
+  getById(id: number): Promise<VendorDTO | null>;
+  getByVendorId(vendorId: string): Promise<VendorDTO | null>;
   getByNameOrId(
     query: string,
     limit?: number,

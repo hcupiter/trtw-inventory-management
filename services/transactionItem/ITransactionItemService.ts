@@ -8,7 +8,7 @@ export interface ItransactionItemService {
     offset?: number,
     sort?: QuerySortOrder
   ): Promise<TransactionItemDTO[]>;
-  getByItemID(id: string): Promise<TransactionItemDTO | null>;
+  getByItemID(id: number): Promise<TransactionItemDTO | null>;
   getByTransactionID(
     id: number,
     limit?: number,
@@ -16,7 +16,7 @@ export interface ItransactionItemService {
     sort?: QuerySortOrder
   ): Promise<TransactionItemDTO[]>;
   getByVendorID(
-    id: string,
+    id: number,
     limit?: number,
     offset?: number,
     sort?: QuerySortOrder

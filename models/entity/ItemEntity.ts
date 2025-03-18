@@ -1,19 +1,21 @@
 import { ItemDTO } from "../dto/ItemDTO";
 
 export interface ItemEntity {
-  id: string;
+  id: number;
+  itemId: string;
   name: string;
   price: number;
   stockQty: number;
   vendorId: string;
 }
 
-export const mapItemToDTO = (dto: ItemDTO): ItemEntity => {
+export const mapItemToDTO = (entity: ItemEntity): ItemDTO => {
   return {
-    id: dto.id,
-    name: dto.name,
-    price: dto.price,
-    stockQty: dto.stockQty,
-    vendorId: dto.vendorId,
+    id: entity.id,
+    itemId: entity.itemId,
+    name: entity.name,
+    price: entity.price,
+    stockQty: entity.stockQty,
+    vendorId: entity.vendorId,
   };
 };

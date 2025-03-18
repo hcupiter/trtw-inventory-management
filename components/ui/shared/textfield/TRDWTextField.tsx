@@ -1,4 +1,4 @@
-import { InputHTMLAttributes, ReactNode } from "react";
+import { InputHTMLAttributes } from "react";
 import styles from "./TextField.module.css";
 
 interface TextFieldProps extends InputHTMLAttributes<HTMLInputElement> {
@@ -21,20 +21,22 @@ const TRDWTextField: React.FC<TextFieldProps> = ({
   const errorBorderStyle = error ? styles.containerError : styles.container;
 
   return (
-    <div className={styles.textfieldBase}>
-      <label className={styles.label}>
-        {label} {mandatory && <span className={styles.mandatory}>*</span>}
+    <div className={"flex w-full flex-col items-start justify-start gap-1"}>
+      <label className={"text-base text-black font-bold"}>
+        {label} {mandatory && <span className={"text-red"}>*</span>}
       </label>
       <div className="flex flex-col items-start w-full">
         <input
           type={type}
-          className={`${errorBorderStyle} ${styles.content}`}
+          className={`focus:outline-0 border-1 w-full rounded-lg px-4 py-3 placeholder:text-gray-400 ${
+            error ? "border-red" : "border-gray-300"
+          }`}
           placeholder={placeholder}
           value={value}
           onChange={onChange}
           {...props}
         />
-        {error && <p className={styles.errorMessage}>{error}</p>}
+        {error && <p className={"text-base text-red"}>{error}</p>}
       </div>
     </div>
   );

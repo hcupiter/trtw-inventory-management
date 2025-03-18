@@ -16,11 +16,11 @@ export class SQLiteItemService implements IITemService {
   save(item: ItemDTO): Promise<boolean> {
     try {
       const statement = this.sqliteDb.prepare(
-        "INSERT INTO Item (id, name, price, stockQty, vendorID) VALUES (?, ?, ?, ?, ?)"
+        "INSERT INTO Item (itemId, name, price, stockQty, vendorId) VALUES (?, ?, ?, ?, ?)"
       );
 
       const results = statement.run(
-        item.id,
+        item.itemId,
         item.name,
         item.price,
         item.stockQty,
@@ -32,12 +32,24 @@ export class SQLiteItemService implements IITemService {
     }
   }
 
-  getByID(id: string): Promise<ItemDTO | null> {
+  getByID(id: number): Promise<ItemDTO | null> {
     try {
       const statement = this.sqliteDb.prepare(
         "SELECT * FROM Item WHERE id = ?"
       );
       const results = statement.get(id);
+      return Promise.resolve(results as ItemDTO | null);
+    } catch (error) {
+      return Promise.reject(error);
+    }
+  }
+
+  getByItemId(itemId: string): Promise<ItemDTO | null> {
+    try {
+      const statement = this.sqliteDb.prepare(
+        "SELECT * FROM Item WHERE itemId = ?"
+      );
+      const results = statement.get(itemId);
       return Promise.resolve(results as ItemDTO | null);
     } catch (error) {
       return Promise.reject(error);
@@ -52,7 +64,7 @@ export class SQLiteItemService implements IITemService {
   ): Promise<ItemDTO[]> {
     try {
       const statement = this.sqliteDb.prepare(
-        `SELECT * FROM Item WHERE id LIKE ? OR name LIKE ? ORDER BY name ${sort} LIMIT ? OFFSET ?`
+        `SELECT * FROM Item WHERE itemId LIKE ? OR name LIKE ? ORDER BY name ${sort} LIMIT ? OFFSET ?`
       );
       const result = statement.all(`%${query}%`, `%${query}%`, limit, offset);
       return Promise.resolve(result as ItemDTO[] | []);
@@ -96,9 +108,10 @@ export class SQLiteItemService implements IITemService {
   update(item: ItemDTO): Promise<boolean> {
     try {
       const statement = this.sqliteDb.prepare(
-        `UPDATE Item SET name = ?, price = ?, stockQty = ?, vendorID = ? WHERE id = ?`
+        `UPDATE Item SET itemId = ? name = ?, price = ?, stockQty = ?, vendorID = ? WHERE id = ?`
       );
       const results = statement.run(
+        item.itemId,
         item.name,
         item.price,
         item.stockQty,

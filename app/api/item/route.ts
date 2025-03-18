@@ -62,3 +62,32 @@ export async function POST(req: Request) {
     );
   }
 }
+
+export async function PATCH(req: Request) {
+  try {
+    const item: ItemDTO = await req.json();
+
+    const result = await itemService.update(item);
+    if (result) {
+      return NextResponse.json(
+        { message: "Items saved successfully" },
+        { status: 200 }
+      );
+    } else {
+      return NextResponse.json(
+        {
+          error: "Failed to save item!",
+        },
+        { status: 500 }
+      );
+    }
+  } catch (error) {
+    console.log(error);
+    return NextResponse.json(
+      {
+        error: errorWriter(error, "Something went wrong on the server!"),
+      },
+      { status: 500 }
+    );
+  }
+}

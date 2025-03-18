@@ -17,11 +17,11 @@ export class SQLiteTransactionItemService implements ItransactionItemService {
   save(transactionItem: TransactionItemDTO): Promise<boolean> {
     try {
       const statement = this.sqliteDb.prepare(
-        "INSERT INTO TransactionItem (id, vendorID, name, qty, sellPrice, transactionID) VALUES (?, ?, ?, ?, ?, ?) "
+        "INSERT INTO TransactionItem (itemId, vendorID, name, qty, sellPrice, transactionID) VALUES (?, ?, ?, ?, ?, ?) "
       );
 
       const result = statement.run(
-        transactionItem.id,
+        transactionItem.itemId,
         transactionItem.vendorId,
         transactionItem.name,
         transactionItem.qty,
@@ -53,10 +53,10 @@ export class SQLiteTransactionItemService implements ItransactionItemService {
     }
   }
 
-  getByItemID(id: string): Promise<TransactionItemDTO | null> {
+  getByItemID(id: number): Promise<TransactionItemDTO | null> {
     try {
       const statement = this.sqliteDb.prepare(
-        "SELECT * FROM TransactionItem WHERE id = ?"
+        "SELECT * FROM TransactionItem WHERE itemId = ?"
       );
 
       const transactionItem = statement.get(id);
@@ -87,7 +87,7 @@ export class SQLiteTransactionItemService implements ItransactionItemService {
   }
 
   getByVendorID(
-    id: string,
+    id: number,
     limit: number = defaultLimit,
     offset: number = defaultOffset,
     sort: QuerySortOrder = defaultSort

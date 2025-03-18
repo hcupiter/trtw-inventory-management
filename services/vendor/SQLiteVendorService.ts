@@ -16,11 +16,13 @@ export class SQLiteVendorService implements IVendorService {
 
   save(vendor: VendorDTO): Promise<boolean> {
     try {
+      console.log("Vendor data before insertion:", vendor);
+
       const statement = this.sqliteDb.prepare(
-        `INSERT INTO Vendor (id, name, address, phone) VALUES (?, ?, ?, ?)`
+        `INSERT INTO Vendor (vendorId, name, address, phone) VALUES (?, ?, ?, ?)`
       );
       const results = statement.run(
-        vendor.id,
+        vendor.vendorId,
         vendor.name,
         vendor.address,
         vendor.phone
@@ -31,12 +33,24 @@ export class SQLiteVendorService implements IVendorService {
     }
   }
 
-  getById(id: string): Promise<VendorDTO | null> {
+  getById(id: number): Promise<VendorDTO | null> {
     try {
       const statement = this.sqliteDb.prepare(
         `SELECT * FROM Vendor WHERE id = ?`
       );
       const results = statement.get(id);
+      return Promise.resolve((results as VendorDTO) ?? null);
+    } catch (error) {
+      return Promise.reject(error);
+    }
+  }
+
+  getByVendorId(vendorId: string): Promise<VendorDTO | null> {
+    try {
+      const statement = this.sqliteDb.prepare(
+        `SELECT * FROM Vendor WHERE vendorId = ?`
+      );
+      const results = statement.get(vendorId);
       return Promise.resolve((results as VendorDTO) ?? null);
     } catch (error) {
       return Promise.reject(error);
@@ -51,7 +65,7 @@ export class SQLiteVendorService implements IVendorService {
   ): Promise<VendorDTO[]> {
     try {
       const statement = this.sqliteDb.prepare(
-        `SELECT * FROM Vendor WHERE id LIKE ? OR name LIKE ? ORDER BY name ${sort} LIMIT ? OFFSET ?`
+        `SELECT * FROM Vendor WHERE vendorId LIKE ? OR name LIKE ? ORDER BY name ${sort} LIMIT ? OFFSET ?`
       );
       const results = statement.all(`%${query}%`, `%${query}%`, limit, offset);
       return Promise.resolve(results as VendorDTO[] | VendorDTO[]);
@@ -78,9 +92,10 @@ export class SQLiteVendorService implements IVendorService {
   update(vendor: VendorDTO): Promise<boolean> {
     try {
       const statement = this.sqliteDb.prepare(
-        `UPDATE Vendor SET name = ?, address = ?, phone = ? WHERE id = ?`
+        `UPDATE Vendor SET vendorId = ?, name = ?, address = ?, phone = ? WHERE id = ?`
       );
       const results = statement.run(
+        vendor.vendorId,
         vendor.name,
         vendor.address,
         vendor.phone,

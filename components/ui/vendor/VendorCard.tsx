@@ -16,7 +16,7 @@ export const VendorCard = ({
       <div className="">
         <div className="flex gap-1 text-base font-bold">
           <p>ID:</p>
-          <p className="text-blue">{vendor.id}</p>
+          <p className="text-blue">{vendor.vendorId}</p>
         </div>
         <p className="text-base">{vendor.name}</p>
       </div>

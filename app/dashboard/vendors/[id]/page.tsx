@@ -22,6 +22,10 @@ export default function Page() {
     router.back();
   };
 
+  const handleEditVendorDataClick = () => {
+    router.push(`/dashboard/vendors/${params.id}/edit`);
+  };
+
   const [vendorData, setVendorData] = useState<VendorEntity | null>();
   const [message, setMessage] = useState<string | null>();
 
@@ -95,7 +99,11 @@ export default function Page() {
         </div>
 
         <div className="flex gap-4">
-          <TRDWButton variant={ButtonVariant.SECONDARY} iconName="bx:edit">
+          <TRDWButton
+            variant={ButtonVariant.SECONDARY}
+            iconName="bx:edit"
+            onClick={handleEditVendorDataClick}
+          >
             Edit Vendor
           </TRDWButton>
           <TRDWButton variant={ButtonVariant.DANGER} iconName="tabler:trash">
@@ -112,7 +120,7 @@ export default function Page() {
             {/* Vendor Data */}
             <div className="flex flex-col gap-6">
               <TRDWLabel title="ID">
-                <p className="text-blue">{vendorData.id}</p>
+                <p className="text-blue">{vendorData.vendorId}</p>
               </TRDWLabel>
               <TRDWLabel title="Nama" description={vendorData.name} />
               <TRDWLabel
@@ -141,6 +149,7 @@ export default function Page() {
               <div className="flex w-full h-full items-start">
                 {filteredItems.length > 0 ? (
                   <div className="flex flex-col gap-2 w-full">
+                    {/* TODO: Add Navigation to items */}
                     {filteredItems.map((element) => (
                       <ItemCard
                         key={element.id}

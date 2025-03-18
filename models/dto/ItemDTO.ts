@@ -1,7 +1,8 @@
 import { ItemEntity } from "../entity/ItemEntity";
 
 export interface ItemDTO {
-  id: string;
+  id: number;
+  itemId: string;
   name: string;
   price: number;
   stockQty: number;
@@ -11,6 +12,7 @@ export interface ItemDTO {
 export const mapItemToEntity = (dto: ItemDTO): ItemEntity => {
   return {
     id: dto.id,
+    itemId: dto.itemId,
     name: dto.name,
     price: dto.price,
     stockQty: dto.stockQty,

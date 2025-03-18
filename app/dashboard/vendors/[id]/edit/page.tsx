@@ -4,14 +4,16 @@ import TRDWButton, {
   ButtonVariant,
 } from "@/components/ui/shared/button/TRDWButton";
 import TRDWTextField from "@/components/ui/shared/textfield/TRDWTextField";
-import { useRouter } from "next/navigation";
+import { useParams, useRouter } from "next/navigation";
 import { Icon } from "@iconify/react";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { toast } from "react-toastify";
 import { errorWriter } from "@/utils/errorWriter";
-import { VendorDTO } from "@/models/dto/VendorDTO";
+import { mapVendorToEntity, VendorDTO } from "@/models/dto/VendorDTO";
+import { VendorEntity } from "@/models/entity/VendorEntity";
 
-const AddVendorsPage = () => {
+const EditVendorPage = () => {
+  const params = useParams<{ id: string }>();
   const router = useRouter();
 
   const goBack = () => {
@@ -40,9 +42,9 @@ const AddVendorsPage = () => {
         setIdError("ID Vendor maksimal 7 huruf!");
         idFlag = false;
       } else {
-        const response = await fetch(`/api/vendor/get/vendorId?id=${vendorId}`);
+        const response = await fetch(`/api/vendor/get/id?id=${vendorId}`);
         const checkVendor = await response.json();
-        if (response.ok) {
+        if (checkVendor.ok) {
           setIdError("ID sudah terdaftar sebelumnya, mohon membuat id baru");
           idFlag = false;
         }
@@ -54,18 +56,18 @@ const AddVendorsPage = () => {
       }
 
       if (idFlag && nameFlag) {
-        const success = await saveData();
-        if (success) cleanData();
+        const success = await updateData();
+        if (success) setData();
       }
     } catch (error) {
       toast.error(errorWriter(error));
     }
   };
 
-  const saveData = async () => {
+  const updateData = async () => {
     try {
-      const toSaveVendor: VendorDTO = {
-        id: -1,
+      const toUpdateVendor: VendorDTO = {
+        id: Number(params.id),
         vendorId: vendorId,
         name: name,
         address: address,
@@ -73,15 +75,15 @@ const AddVendorsPage = () => {
       };
 
       const response = await fetch("/api/vendor", {
-        method: "POST",
+        method: "PATCH",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify(toSaveVendor),
+        body: JSON.stringify(toUpdateVendor),
       });
 
       const data = await response.json();
 
       if (!response.ok) {
-        throw new Error(data.error || "Failed to save vendor");
+        throw new Error(data.error || "Failed to update vendor");
       }
 
       toast.success(data.message);
@@ -91,14 +93,31 @@ const AddVendorsPage = () => {
     }
   };
 
-  const cleanData = () => {
-    setVendorId("");
-    setName("");
-    setAddress("");
-    setPhone("");
+  const setData = (vendor?: VendorEntity) => {
+    setVendorId(vendor?.vendorId || "");
+    setName(vendor?.name || "");
+    setAddress(vendor?.address || "");
+    setPhone(vendor?.phone || "");
     setIdError("");
     setNameError("");
   };
+
+  // Setup Data
+  useEffect(() => {
+    const setupData = async () => {
+      const vendorResponse = await fetch(`/api/vendor/get/id?id=${params.id}`);
+      const vendorData = await vendorResponse.json();
+
+      if (!vendorResponse.ok) {
+        throw new Error(vendorData.error || "Failed to fetch vendor data");
+      }
+
+      const mappedVendor: VendorEntity = mapVendorToEntity(vendorData.vendor);
+      setData(mappedVendor);
+    };
+
+    setupData();
+  }, []);
 
   return (
     <div className="flex flex-col justify-items-start w-full h-full gap-8">
@@ -110,7 +129,7 @@ const AddVendorsPage = () => {
             className="w-7 h-7 hover:text-blue"
             onClick={goBack}
           />
-          <h1 className="text-black text-2xl font-bold">Tambah vendor</h1>
+          <h1 className="text-black text-2xl font-bold">Edit vendor</h1>
         </div>
 
         <TRDWButton
@@ -167,4 +186,4 @@ const AddVendorsPage = () => {
   );
 };
 
-export default AddVendorsPage;
+export default EditVendorPage;

@@ -17,7 +17,7 @@ const VendorsPage = () => {
     router.push("/dashboard/vendors/add");
   };
 
-  const handleVendorCardTappedEvent = (id: string) => {
+  const handleVendorCardTappedEvent = (id: number) => {
     router.push(`/dashboard/vendors/${id}`);
   };
 
