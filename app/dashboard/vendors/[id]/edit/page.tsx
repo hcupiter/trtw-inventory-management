@@ -11,6 +11,7 @@ import { toast } from "react-toastify";
 import { errorWriter } from "@/utils/errorWriter";
 import { mapVendorToEntity, VendorDTO } from "@/models/dto/VendorDTO";
 import { VendorEntity } from "@/models/entity/VendorEntity";
+import { TRDWLoadingView } from "@/components/ui/shared/loading/TRDWLoadingView";
 
 const EditVendorPage = () => {
   const params = useParams<{ id: string }>();
@@ -19,6 +20,8 @@ const EditVendorPage = () => {
   const goBack = () => {
     router.back();
   };
+
+  const [message, setMessage] = useState<string | null>();
 
   const [vendorId, setVendorId] = useState<string>("");
   const [name, setName] = useState<string>("");
@@ -105,19 +108,30 @@ const EditVendorPage = () => {
   // Setup Data
   useEffect(() => {
     const setupData = async () => {
-      const vendorResponse = await fetch(`/api/vendor/get/id?id=${params.id}`);
-      const vendorData = await vendorResponse.json();
+      setMessage("Mengambil data terbaru...");
+      try {
+        const vendorResponse = await fetch(
+          `/api/vendor/get/id?id=${params.id}`
+        );
+        const vendorData = await vendorResponse.json();
 
-      if (!vendorResponse.ok) {
-        throw new Error(vendorData.error || "Failed to fetch vendor data");
+        if (!vendorResponse.ok) {
+          throw new Error(vendorData.error || "Failed to fetch vendor data");
+        }
+
+        const mappedVendor: VendorEntity = mapVendorToEntity(vendorData.vendor);
+        setData(mappedVendor);
+      } catch (error) {
+        setMessage(errorWriter(error));
+      } finally {
+        setMessage(null);
       }
-
-      const mappedVendor: VendorEntity = mapVendorToEntity(vendorData.vendor);
-      setData(mappedVendor);
     };
 
     setupData();
   }, []);
+
+  if (message) return <TRDWLoadingView label={message} />;
 
   return (
     <div className="flex flex-col justify-items-start w-full h-full gap-8">
@@ -142,7 +156,7 @@ const EditVendorPage = () => {
       </div>
 
       {/* Content */}
-      <div className="flex flex-col gap-6">
+      <div className="flex flex-col gap-4">
         <TRDWTextField
           mandatory
           label={"ID Vendor"}

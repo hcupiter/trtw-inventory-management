@@ -10,7 +10,7 @@ export const VendorCard = ({
 }) => {
   return (
     <div
-      className="flex bg-white-smoke rounded-lg items-center justify-between px-5 py-3 hover:bg-gray-200"
+      className="flex bg-white-smoke rounded-lg items-center justify-between px-5 py-3 hover:bg-gray-200 select-none"
       onClick={onTap}
     >
       <div className="">

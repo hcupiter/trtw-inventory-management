@@ -102,7 +102,10 @@ export async function DELETE(req: Request) {
 
     const result = await vendorService.delete(id);
     if (result) {
-      return NextResponse.json({ status: 200 });
+      return NextResponse.json(
+        { message: "Vendor berhasil dihapus" },
+        { status: 200 }
+      );
     } else {
       return NextResponse.json(
         {

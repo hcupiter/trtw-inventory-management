@@ -13,7 +13,7 @@ export const ItemCard = ({
 }) => {
   return (
     <div
-      className="flex px-4 py-3 w-full rounded-lg bg-white-smoke justify-between hover:bg-gray-200 items-center"
+      className="flex px-4 py-3 w-full rounded-lg bg-white-smoke justify-between hover:bg-gray-200 items-center select-none"
       onClick={onTap}
     >
       {/* Data */}

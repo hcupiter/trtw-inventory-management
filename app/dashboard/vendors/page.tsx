@@ -4,6 +4,7 @@ import TRDWButton, {
   ButtonVariant,
 } from "@/components/ui/shared/button/TRDWButton";
 import TRDWEmptyView from "@/components/ui/shared/empty/TRDWEmptyView";
+import { TRDWLoadingView } from "@/components/ui/shared/loading/TRDWLoadingView";
 import TRDWSearchBar from "@/components/ui/shared/searchbar/TRDWSearchBar";
 import VendorCard from "@/components/ui/vendor/VendorCard";
 import { mapVendorToEntity } from "@/models/dto/VendorDTO";
@@ -90,6 +91,8 @@ const VendorsPage = () => {
     }
   }, [debouncedSearch, allVendors]);
 
+  if (message) return <TRDWLoadingView label={message} />;
+
   return (
     <div className="flex flex-col justify-items-start w-full h-full gap-8">
       {/* Top Title */}
@@ -114,14 +117,12 @@ const VendorsPage = () => {
 
         {/* Data Transaksi */}
         <div className="flex flex-col w-full h-full overflow-x-scroll">
-          {message && <TRDWEmptyView label={message} />}
-
           <div className="flex flex-col gap-8">
             {filteredVendors.length <= 0 ? (
               <TRDWEmptyView label={"Tidak ada data vendor ditemukan..."} />
             ) : (
               <div className="flex flex-col gap-8">
-                <div className="flex flex-col gap-2">
+                <div className="flex flex-col gap-3">
                   {filteredVendors.map((element) => (
                     <VendorCard
                       key={element.id}

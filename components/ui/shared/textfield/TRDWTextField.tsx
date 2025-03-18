@@ -1,5 +1,4 @@
 import { InputHTMLAttributes } from "react";
-import styles from "./TextField.module.css";
 
 interface TextFieldProps extends InputHTMLAttributes<HTMLInputElement> {
   mandatory?: boolean;
@@ -18,8 +17,6 @@ const TRDWTextField: React.FC<TextFieldProps> = ({
   onChange,
   ...props
 }) => {
-  const errorBorderStyle = error ? styles.containerError : styles.container;
-
   return (
     <div className={"flex w-full flex-col items-start justify-start gap-1"}>
       <label className={"text-base text-black font-bold"}>

@@ -41,7 +41,6 @@ const AddVendorsPage = () => {
         idFlag = false;
       } else {
         const response = await fetch(`/api/vendor/get/vendorId?id=${vendorId}`);
-        const checkVendor = await response.json();
         if (response.ok) {
           setIdError("ID sudah terdaftar sebelumnya, mohon membuat id baru");
           idFlag = false;
@@ -123,7 +122,7 @@ const AddVendorsPage = () => {
       </div>
 
       {/* Content */}
-      <div className="flex flex-col gap-6">
+      <div className="flex flex-col gap-4">
         <TRDWTextField
           mandatory
           label={"ID Vendor"}

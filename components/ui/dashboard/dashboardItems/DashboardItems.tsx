@@ -19,7 +19,7 @@ const DashboardItems = ({
     "flex px-5 py-5 gap-5 rounded-tl-lg rounded-bl-lg text-white w-full items-center";
 
   return (
-    <>
+    <div className="select-none">
       <Link
         href={href}
         className={`${baseStyle} ${stateStyle} hover:font-bold`}
@@ -27,7 +27,7 @@ const DashboardItems = ({
         <Icon icon={iconName} className="w-5 h-5" />
         {label}
       </Link>
-    </>
+    </div>
   );
 };
 

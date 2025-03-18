@@ -8,7 +8,7 @@ export async function GET(req: Request) {
     const id = searchParams.get("id");
 
     if (id) {
-      const items = await itemService.getByID(id);
+      const items = await itemService.getByID(Number(id));
       if (items) {
         return NextResponse.json({ items }, { status: 200 });
       } else {

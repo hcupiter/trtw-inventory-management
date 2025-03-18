@@ -34,7 +34,7 @@ const TRDWButton: React.FC<ButtonProps> = ({
 
   return (
     <button
-      className={`flex px-4 py-3 justify-center items-center rounded-lg gap-4 text-base ${variantStyle} ${fullWidthStyle}`}
+      className={`flex px-4 py-3 justify-center items-center rounded-lg gap-4 text-base ${variantStyle} ${fullWidthStyle} select-none`}
       {...props}
     >
       {iconName && <Icon icon={iconName} />}
