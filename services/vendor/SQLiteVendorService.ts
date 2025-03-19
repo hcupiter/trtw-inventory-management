@@ -4,7 +4,7 @@ import { IVendorService } from "./IVendorService";
 import db from "@/database/db"; // Shared DB instance
 
 const defaultOffset = 0;
-const defaultLimit = 50;
+const defaultLimit = 1000;
 const defaultSort = QuerySortOrder.ASC;
 
 export class SQLiteVendorService implements IVendorService {

@@ -4,7 +4,7 @@ import db from "@/database/db";
 import { QuerySortOrder } from "../utils/QuerySortOrder";
 
 const defaultOffset = 0;
-const defaultLimit = 50;
+const defaultLimit = 1000;
 
 export class SQLiteTransactionService implements ITransactionService {
   private sqliteDb: any;
