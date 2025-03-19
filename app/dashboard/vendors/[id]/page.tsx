@@ -14,6 +14,8 @@ import { mapItemToEntity } from "@/models/dto/ItemDTO";
 import { mapVendorToEntity } from "@/models/dto/VendorDTO";
 import { ItemEntity } from "@/models/entity/ItemEntity";
 import { VendorEntity } from "@/models/entity/VendorEntity";
+import { fetchItemsByVendorIdUseCase } from "@/usecase/items/fetch/FetchItemsByVendorIdUseCase";
+import { fetchVendorByIdUseCase } from "@/usecase/vendors/fetch/FetchVendorByIDUseCase";
 import { errorWriter } from "@/utils/errorWriter";
 import { Icon } from "@iconify/react";
 import { useParams, useRouter } from "next/navigation";
@@ -79,21 +81,13 @@ export default function Page() {
       setMessage("Menampilkan data...");
 
       try {
-        // Fetch Vendor
-        const vendorResponse = await fetch(
-          `/api/vendor/get/id?id=${params.id}`
+        const fetchedVendor = await fetchVendorByIdUseCase(Number(params.id));
+        const fetchedItems = await fetchItemsByVendorIdUseCase(
+          Number(params.id)
         );
-        const vendorData = await vendorResponse.json();
-
-        if (!vendorResponse.ok) {
-          throw new Error(vendorData.error || "Failed to fetch vendor data");
-        }
-
-        const mappedVendor: VendorEntity = mapVendorToEntity(vendorData.vendor);
-        setVendorData(mappedVendor);
-        const mappedItems: ItemEntity[] = vendorData.items.map(mapItemToEntity);
-        setItems(mappedItems);
-        setFilteredItems(mappedItems);
+        setVendorData(fetchedVendor);
+        setItems(fetchedItems);
+        setFilteredItems(fetchedItems);
       } catch (err: any) {
         setMessage(err.message);
       } finally {

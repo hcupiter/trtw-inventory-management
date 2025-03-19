@@ -1,9 +1,5 @@
 import { VendorDTO } from "@/models/dto/VendorDTO";
-import {
-  createVendorUseCase,
-  updateVendorUseCase,
-  vendorService,
-} from "@/utils/appModule";
+import { updateVendorUseCase, vendorService } from "@/utils/appModule";
 import { errorWriter } from "@/utils/errorWriter";
 import { NextResponse } from "next/server";
 
@@ -32,7 +28,7 @@ export async function POST(req: Request) {
   try {
     const vendor: VendorDTO = await req.json();
 
-    const result = await createVendorUseCase.execute(vendor);
+    const result = await vendorService.save(vendor);
     if (result) {
       return NextResponse.json(
         { message: "Vendor saved successfully" },

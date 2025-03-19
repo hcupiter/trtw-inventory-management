@@ -7,8 +7,9 @@ import TRDWEmptyView from "@/components/ui/shared/empty/TRDWEmptyView";
 import { TRDWLoadingView } from "@/components/ui/shared/loading/TRDWLoadingView";
 import TRDWSearchBar from "@/components/ui/shared/searchbar/TRDWSearchBar";
 import VendorCard from "@/components/ui/vendor/VendorCard";
-import { mapVendorToEntity } from "@/models/dto/VendorDTO";
 import { VendorEntity } from "@/models/entity/VendorEntity";
+import { fetchVendorUseCase } from "@/usecase/vendors/fetch/FetchVendorsUseCase";
+import { filterVendorsUseCase } from "@/usecase/vendors/FilterVendorsUseCase";
 import { useRouter } from "next/navigation";
 import { useState, useEffect } from "react";
 
@@ -23,7 +24,6 @@ const VendorsPage = () => {
   };
 
   const [searchText, setSearchText] = useState<string>("");
-  const [debouncedSearch, setDebouncedSearch] = useState<string>("");
 
   const [message, setMessage] = useState<string | null>("Mengambil data...");
   const [allVendors, setAllVendors] = useState<VendorEntity[]>([]);
@@ -35,17 +35,9 @@ const VendorsPage = () => {
       setMessage("Mengambil data...");
 
       try {
-        const response = await fetch(`/api/vendor`);
-        const data = await response.json();
-
-        if (!response.ok) {
-          throw new Error(data.error || "Failed to fetch vendors");
-        }
-
-        const mappedVendors: VendorEntity[] =
-          data.vendors.map(mapVendorToEntity);
-        setAllVendors(mappedVendors);
-        setFilteredVendors(mappedVendors); // Default: show all vendors
+        const fetched = await fetchVendorUseCase();
+        setAllVendors(fetched);
+        setFilteredVendors(fetched); // Default: show all vendors
       } catch (err: any) {
         setMessage(err.message);
       } finally {
@@ -56,40 +48,20 @@ const VendorsPage = () => {
     fetchAllVendors();
   }, []); // Run once on component mount
 
-  // Debounce effect
-  useEffect(() => {
-    const handler = setTimeout(() => {
-      setDebouncedSearch(searchText);
-    }, 500); // 500ms debounce time
-
-    return () => clearTimeout(handler);
-  }, [searchText]);
-
   const handleSearchTextInput = (value: string) => {
     setSearchText(value);
   };
 
   // Filter vendors when search changes
   useEffect(() => {
-    if (debouncedSearch.length > 0) {
-      // Convert search query to lowercase for case-insensitive matching
-      const searchLower = debouncedSearch.toLowerCase();
-
-      const filtered = allVendors.filter((vendor) => {
-        const vendorName = vendor.name.toLowerCase();
-        const vendorId = String(vendor.id).toLowerCase(); // Ensure id is a string
-
-        return (
-          vendorName.includes(searchLower) || vendorId.includes(searchLower)
-        );
-      });
-
+    if (searchText.length > 0) {
+      const filtered = filterVendorsUseCase(searchText, allVendors);
       setFilteredVendors(filtered);
     } else {
       // Show all vendors if no search query
       setFilteredVendors(allVendors);
     }
-  }, [debouncedSearch, allVendors]);
+  }, [searchText, allVendors]);
 
   if (message) return <TRDWLoadingView label={message} />;
 

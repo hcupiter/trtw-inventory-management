@@ -1,7 +1,7 @@
 import { VendorEntity } from "../entity/VendorEntity";
 
 export interface VendorDTO {
-  id: number;
+  id?: number;
   vendorId: string;
   name: string;
   address?: string;
@@ -10,7 +10,7 @@ export interface VendorDTO {
 
 export const mapVendorToEntity = (dto: VendorDTO): VendorEntity => {
   return {
-    id: dto.id,
+    id: dto.id || -1,
     vendorId: dto.vendorId,
     name: dto.name,
     address: dto.address,

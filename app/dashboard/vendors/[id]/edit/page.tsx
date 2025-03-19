@@ -12,6 +12,7 @@ import { errorWriter } from "@/utils/errorWriter";
 import { mapVendorToEntity, VendorDTO } from "@/models/dto/VendorDTO";
 import { VendorEntity } from "@/models/entity/VendorEntity";
 import { TRDWLoadingView } from "@/components/ui/shared/loading/TRDWLoadingView";
+import { fetchVendorByIdUseCase } from "@/usecase/vendors/fetch/FetchVendorByIDUseCase";
 
 const EditVendorPage = () => {
   const params = useParams<{ id: string }>();
@@ -110,17 +111,8 @@ const EditVendorPage = () => {
     const setupData = async () => {
       setMessage("Mengambil data terbaru...");
       try {
-        const vendorResponse = await fetch(
-          `/api/vendor/get/id?id=${params.id}`
-        );
-        const vendorData = await vendorResponse.json();
-
-        if (!vendorResponse.ok) {
-          throw new Error(vendorData.error || "Failed to fetch vendor data");
-        }
-
-        const mappedVendor: VendorEntity = mapVendorToEntity(vendorData.vendor);
-        setData(mappedVendor);
+        const fetched = await fetchVendorByIdUseCase(Number(params.id));
+        setData(fetched);
       } catch (error) {
         setMessage(errorWriter(error));
       } finally {

@@ -22,9 +22,7 @@ export async function GET(req: Request) {
         }
       );
     }
-
-    const items = await itemService.getByVendorID(id);
-    return NextResponse.json({ vendor, items }, { status: 200 });
+    return NextResponse.json({ vendor }, { status: 200 });
   } catch (error) {
     console.log(error);
     return NextResponse.json(

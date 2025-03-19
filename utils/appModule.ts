@@ -13,7 +13,6 @@ import { ITransactionTypeService } from "@/services/transactionType/ITransaction
 import { SQLiteTransactionTypeService } from "@/services/transactionType/SQLiteTransactionTypeService";
 import { IVendorService } from "@/services/vendor/IVendorService";
 import { SQLiteVendorService } from "@/services/vendor/SQLiteVendorService";
-import { CreateVendorUseCase } from "@/usecase/vendors/CreateVendorUseCase";
 import { UpdateVendorUseCase } from "@/usecase/vendors/UpdateVendorUseCase";
 
 // Services
@@ -29,10 +28,6 @@ export const transactionTypeService: ITransactionTypeService =
 export const database: IDatabase = new SQLiteDatabase();
 
 // Use Cases
-export const createVendorUseCase: CreateVendorUseCase = new CreateVendorUseCase(
-  database,
-  vendorService
-);
 export const updateVendorUseCase: UpdateVendorUseCase = new UpdateVendorUseCase(
   database,
   vendorService

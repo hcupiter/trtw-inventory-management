@@ -8,7 +8,7 @@ import TRDWEmptyView from "@/components/ui/shared/empty/TRDWEmptyView";
 import { TRDWLoadingView } from "@/components/ui/shared/loading/TRDWLoadingView";
 import TRDWSearchBar from "@/components/ui/shared/searchbar/TRDWSearchBar";
 import { ItemEntity } from "@/models/entity/ItemEntity";
-import { fetchAllItemsDataUseCase } from "@/usecase/items/FetchItemsDataUseCase";
+import { fetchAllItemsDataUseCase } from "@/usecase/items/fetch/FetchItemsDataUseCase";
 import { FilterItemUseCase } from "@/usecase/items/FilterItemsUseCase";
 import { useEffect, useState } from "react";
 

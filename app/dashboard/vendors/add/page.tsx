@@ -10,6 +10,7 @@ import { useState } from "react";
 import { toast } from "react-toastify";
 import { errorWriter } from "@/utils/errorWriter";
 import { VendorDTO } from "@/models/dto/VendorDTO";
+import { saveVendorUseCase } from "@/usecase/vendors/SaveVendorsUseCase";
 
 const AddVendorsPage = () => {
   const router = useRouter();
@@ -64,26 +65,14 @@ const AddVendorsPage = () => {
   const saveData = async () => {
     try {
       const toSaveVendor: VendorDTO = {
-        id: -1,
         vendorId: vendorId,
         name: name,
         address: address,
         phone: phone,
       };
 
-      const response = await fetch("/api/vendor", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify(toSaveVendor),
-      });
-
-      const data = await response.json();
-
-      if (!response.ok) {
-        throw new Error(data.error || "Failed to save vendor");
-      }
-
-      toast.success(data.message);
+      const status = await saveVendorUseCase(toSaveVendor);
+      toast.success(status);
       return true;
     } catch (error) {
       toast.error(errorWriter(error));

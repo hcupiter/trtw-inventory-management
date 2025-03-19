@@ -15,6 +15,7 @@ export class UpdateVendorUseCase {
     this.db.beginTransaction();
 
     try {
+      if (!vendor.id) throw new Error(`Missing Vendor ID!`);
       // Validate if vendor ID has been found
       const validateVendorId = await this.vendorService.getById(vendor.id);
       if (!validateVendorId)
