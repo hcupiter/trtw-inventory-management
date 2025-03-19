@@ -12,6 +12,8 @@ export const fetchItemsByVendorIdUseCase = async (
     Promise.reject(itemData.error || "Failed to fetch item data");
   }
 
-  const mappedEntity: ItemEntity[] = itemData.items.map(mapItemToEntity);
+  const mappedEntity: ItemEntity[] = await Promise.all(
+    itemData.items.map(mapItemToEntity)
+  );
   return Promise.resolve(mappedEntity);
 };

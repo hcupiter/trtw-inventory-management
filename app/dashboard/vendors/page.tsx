@@ -12,6 +12,7 @@ import { fetchVendorUseCase } from "@/usecase/vendors/fetch/FetchVendorsUseCase"
 import { filterVendorsUseCase } from "@/usecase/vendors/FilterVendorsUseCase";
 import { useRouter } from "next/navigation";
 import { useState, useEffect } from "react";
+import { v4 as uuidv4 } from "uuid";
 
 const VendorsPage = () => {
   const router = useRouter();

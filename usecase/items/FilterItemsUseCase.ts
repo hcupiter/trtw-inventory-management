@@ -8,8 +8,13 @@ export const filterItemUseCase = (
   const filtered = items.filter((item) => {
     const itemName = item.name.toLowerCase();
     const itemId = String(item.itemId).toLowerCase(); // Ensure id is a string
+    const vendorId = item.vendor.vendorId.toLowerCase();
 
-    return itemName.includes(searchLower) || itemId.includes(searchLower);
+    return (
+      itemName.includes(searchLower) ||
+      itemId.includes(searchLower) ||
+      vendorId.includes(searchLower)
+    );
   });
 
   return filtered;

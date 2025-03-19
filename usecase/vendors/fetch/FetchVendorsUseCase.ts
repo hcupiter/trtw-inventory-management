@@ -8,6 +8,8 @@ export const fetchVendorUseCase = async (): Promise<VendorEntity[]> => {
   if (!response.ok) {
     Promise.reject(data.error || "Failed to fetch vendors");
   }
-  const mappedVendors: VendorEntity[] = data.vendors.map(mapVendorToEntity);
+  const mappedVendors: VendorEntity[] = await Promise.all(
+    data.vendors.map(mapVendorToEntity)
+  );
   return Promise.resolve(mappedVendors);
 };

@@ -16,16 +16,7 @@ export const ItemCard = ({
   item: ItemEntity;
   onTap: () => void;
 }) => {
-  const [vendor, setVendor] = useState<VendorEntity | null>(null);
-
-  useEffect(() => {
-    const fetchVendor = async () => {
-      const fetched = await fetchVendorByIdUseCase(item.vendorId);
-      setVendor(fetched);
-    };
-
-    fetchVendor();
-  }, []);
+  if (!item.vendor) return <div>No Data</div>;
 
   return (
     <div
@@ -34,7 +25,7 @@ export const ItemCard = ({
     >
       {/* Data */}
       <div className="flex gap-4 text-base">
-        <VendorTag tag={vendor?.vendorId || "no-data"} />
+        <VendorTag tag={item.vendor.vendorId || "no-data"} />
         {/* ID and Items name */}
         <div className="w-72 flex flex-col">
           <div className="font-bold text-base">{`ID Barang: ${item.itemId}`}</div>

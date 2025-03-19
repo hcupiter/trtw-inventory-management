@@ -1,4 +1,5 @@
 import { ItemDTO } from "../dto/ItemDTO";
+import { VendorEntity } from "./VendorEntity";
 
 export interface ItemEntity {
   id?: number;
@@ -6,7 +7,7 @@ export interface ItemEntity {
   name: string;
   price: number;
   stockQty: number;
-  vendorId: number;
+  vendor: VendorEntity;
 }
 
 export const mapItemToDTO = (entity: ItemEntity): ItemDTO => {
@@ -16,6 +17,6 @@ export const mapItemToDTO = (entity: ItemEntity): ItemDTO => {
     name: entity.name,
     price: entity.price,
     stockQty: entity.stockQty,
-    vendorId: entity.vendorId,
+    vendorId: entity.vendor.id,
   };
 };

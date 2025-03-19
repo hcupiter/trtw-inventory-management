@@ -8,6 +8,8 @@ export const fetchAllItemsDataUseCase = async (): Promise<ItemEntity[]> => {
   if (!itemsResponse.ok)
     Promise.reject(itemsData.error || "Gagal mengambil data item");
 
-  const mappedItems: ItemEntity[] = itemsData.items.map(mapItemToEntity);
+  const mappedItems: ItemEntity[] = await Promise.all(
+    itemsData.items.map(mapItemToEntity)
+  );
   return Promise.resolve(mappedItems);
 };
