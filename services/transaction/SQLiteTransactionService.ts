@@ -16,7 +16,7 @@ export class SQLiteTransactionService implements ITransactionService {
   save(transaction: TransactionDTO): Promise<number | null> {
     try {
       const statement = this.sqliteDb.prepare(
-        "INSERT INTO TransactionData (date, transactionTypeId) VALUES (?, ?) "
+        "INSERT INTO TransactionData (date, transactionTypeId, isDeleted) VALUES (?, ?, 0) "
       );
       const result = statement.run(
         transaction.date,
@@ -31,7 +31,7 @@ export class SQLiteTransactionService implements ITransactionService {
   getById(id: number): Promise<TransactionDTO | null> {
     try {
       const statement = this.sqliteDb.prepare(
-        "SELECT * FROM TransactionData WHERE id = ?"
+        "SELECT * FROM TransactionData WHERE id = ? AND isDeleted = 0"
       );
       const transaction = statement.get(id);
       return Promise.resolve(transaction as TransactionDTO | null);
@@ -47,7 +47,7 @@ export class SQLiteTransactionService implements ITransactionService {
   ): Promise<TransactionDTO[]> {
     try {
       const statement = this.sqliteDb.prepare(`
-      SELECT * FROM TransactionData 
+      SELECT * FROM TransactionData WHERE isDeleted = 0
       ORDER BY date ${sort} 
       LIMIT ? OFFSET ?
     `);
@@ -69,7 +69,9 @@ export class SQLiteTransactionService implements ITransactionService {
   ): Promise<TransactionDTO[]> {
     try {
       const statement = this.sqliteDb.prepare(
-        `SELECT * FROM TransactionData WHERE date BETWEEN ? AND ? ORDER BY date ${sort} LIMIT ? OFFSET ?`
+        `SELECT * FROM TransactionData 
+        WHERE date BETWEEN ? AND ? AND isDeleted = 0
+        ORDER BY date ${sort} LIMIT ? OFFSET ?`
       );
 
       const transactions = statement.all(from, to, limit, offset);
@@ -85,7 +87,9 @@ export class SQLiteTransactionService implements ITransactionService {
   update(transaction: TransactionDTO): Promise<number | null> {
     try {
       const statement = this.sqliteDb.prepare(
-        "UPDATE TransactionData SET date = ?, transactionTypeId = ? WHERE id = ?"
+        `UPDATE TransactionData 
+        SET date = ?, transactionTypeId = ? 
+        WHERE id = ? AND isDeleted = 0`
       );
       const results = statement.run(
         transaction.date,
@@ -101,7 +105,9 @@ export class SQLiteTransactionService implements ITransactionService {
   delete(id: number): Promise<boolean> {
     try {
       const statement = this.sqliteDb.prepare(
-        "DELETE FROM TransactionData WHERE id = ?"
+        `UPDATE TransactionData
+        SET isDeleted = 1 
+        WHERE id = ?`
       );
       const results = statement.run(id);
       return Promise.resolve(results.changes > 0);

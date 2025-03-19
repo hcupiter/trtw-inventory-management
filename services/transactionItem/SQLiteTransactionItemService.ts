@@ -17,7 +17,9 @@ export class SQLiteTransactionItemService implements ItransactionItemService {
   save(transactionItem: TransactionItemDTO): Promise<boolean> {
     try {
       const statement = this.sqliteDb.prepare(
-        "INSERT INTO TransactionItem (itemId, vendorID, name, qty, sellPrice, transactionID) VALUES (?, ?, ?, ?, ?, ?) "
+        `INSERT INTO 
+        TransactionItem (itemId, vendorID, name, qty, sellPrice, transactionID, isDeleted) 
+        VALUES (?, ?, ?, ?, ?, ?, 0)`
       );
 
       const result = statement.run(
@@ -42,7 +44,9 @@ export class SQLiteTransactionItemService implements ItransactionItemService {
   ): Promise<TransactionItemDTO[]> {
     try {
       const statement = this.sqliteDb.prepare(
-        `SELECT * FROM TransactionItem ORDER BY id ${sort} LIMIT ? OFFSET ?`
+        `SELECT * FROM TransactionItem 
+        WHERE isDeleted = 0
+        ORDER BY id ${sort} LIMIT ? OFFSET ?`
       );
       const results = statement.all(limit, offset);
       return Promise.resolve(
@@ -56,7 +60,7 @@ export class SQLiteTransactionItemService implements ItransactionItemService {
   getByItemID(id: number): Promise<TransactionItemDTO | null> {
     try {
       const statement = this.sqliteDb.prepare(
-        "SELECT * FROM TransactionItem WHERE itemId = ?"
+        "SELECT * FROM TransactionItem WHERE itemId = ? AND isDeleted = 0"
       );
 
       const transactionItem = statement.get(id);
@@ -74,7 +78,9 @@ export class SQLiteTransactionItemService implements ItransactionItemService {
   ): Promise<TransactionItemDTO[]> {
     try {
       const statement = this.sqliteDb.prepare(
-        `SELECT * FROM TransactionItem WHERE transactionID = ? ORDER BY id ${sort} LIMIT ? OFFSET ?`
+        `SELECT * FROM TransactionItem 
+        WHERE transactionID = ? AND isDeleted = 0 
+        ORDER BY id ${sort} LIMIT ? OFFSET ?`
       );
 
       const results = statement.all(id, limit, offset);
@@ -94,7 +100,9 @@ export class SQLiteTransactionItemService implements ItransactionItemService {
   ): Promise<TransactionItemDTO[]> {
     try {
       const statement = this.sqliteDb.prepare(
-        `SELECT * FROM TransactionItem WHERE vendorID = ? ORDER BY id ${sort} LIMIT ? OFFSET ?`
+        `SELECT * FROM TransactionItem
+         WHERE vendorID = ? AND isDeleted = 0
+         ORDER BY id ${sort} LIMIT ? OFFSET ?`
       );
 
       const results = statement.all(id, limit, offset);
@@ -109,7 +117,9 @@ export class SQLiteTransactionItemService implements ItransactionItemService {
   updateByItemID(transactionItem: TransactionItemDTO): Promise<boolean> {
     try {
       const statement = this.sqliteDb.prepare(
-        "UPDATE TransactionItem SET vendorID = ?, qty = ?, sellPrice = ?, transactionID = ? WHERE id = ?"
+        `UPDATE TransactionItem 
+        SET vendorID = ?, qty = ?, sellPrice = ?, transactionID = ? 
+        WHERE id = ? AND isDeleted = 0`
       );
       const results = statement.run(
         transactionItem.vendorId,
@@ -128,7 +138,9 @@ export class SQLiteTransactionItemService implements ItransactionItemService {
   deleteByItemID(id: string): Promise<boolean> {
     try {
       const statement = this.sqliteDb.prepare(
-        "DELETE FROM TransactionItem WHERE id = ?"
+        `UPDATE TransactionItem 
+        SET isDeleted = 1
+        WHERE id = ?`
       );
       const result = statement.run(id);
       return Promise.resolve(result.changes > 0);
