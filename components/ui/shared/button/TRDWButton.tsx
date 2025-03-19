@@ -1,5 +1,4 @@
 import { ButtonHTMLAttributes, ReactNode } from "react";
-import styles from "./Button.module.css";
 import { Icon } from "@iconify/react";
 
 // Define button variants

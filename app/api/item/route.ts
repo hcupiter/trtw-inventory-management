@@ -15,7 +15,10 @@ export async function GET(req: Request) {
     console.log(error);
     return NextResponse.json(
       {
-        error: errorWriter(error, "Something on the server went wrong"),
+        error: errorWriter(
+          error,
+          "Sesuatu dalam server sedang tidak befungsi..."
+        ),
       },
       {
         status: 500,
@@ -27,12 +30,11 @@ export async function GET(req: Request) {
 export async function POST(req: Request) {
   try {
     const item: ItemDTO = await req.json();
-
-    const validateItem = await itemService.getByID(item.id);
-    if (validateItem != null) {
+    const validateItem = await itemService.getByItemId(item.itemId);
+    if (validateItem) {
       return NextResponse.json(
         {
-          error: `Items with id: ${item.id} already registered`,
+          error: `Barang dengan id: ${item.itemId} sudah terdaftar`,
         },
         { status: 500 }
       );
@@ -41,13 +43,13 @@ export async function POST(req: Request) {
     const result = await itemService.save(item);
     if (result) {
       return NextResponse.json(
-        { message: "Items saved successfully" },
+        { message: "Barang berhasil disimpan" },
         { status: 200 }
       );
     } else {
       return NextResponse.json(
         {
-          error: "Failed to save item!",
+          error: "Barang gagal disimpan!",
         },
         { status: 500 }
       );
@@ -56,7 +58,10 @@ export async function POST(req: Request) {
     console.log(error);
     return NextResponse.json(
       {
-        error: errorWriter(error, "Something went wrong on the server!"),
+        error: errorWriter(
+          error,
+          "Sesuatu dalam server sedang tidak befungsi..."
+        ),
       },
       { status: 500 }
     );
@@ -70,13 +75,13 @@ export async function PATCH(req: Request) {
     const result = await itemService.update(item);
     if (result) {
       return NextResponse.json(
-        { message: "Items saved successfully" },
+        { message: "Barang berhasil diubah" },
         { status: 200 }
       );
     } else {
       return NextResponse.json(
         {
-          error: "Failed to save item!",
+          error: "Gagal menyimpan barang",
         },
         { status: 500 }
       );
@@ -85,7 +90,10 @@ export async function PATCH(req: Request) {
     console.log(error);
     return NextResponse.json(
       {
-        error: errorWriter(error, "Something went wrong on the server!"),
+        error: errorWriter(
+          error,
+          "Sesuatu dalam server sedang tidak befungsi..."
+        ),
       },
       { status: 500 }
     );

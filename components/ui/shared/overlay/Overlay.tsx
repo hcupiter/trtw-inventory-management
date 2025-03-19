@@ -10,11 +10,11 @@ export const Overlay = () => {
 
   return createPortal(
     <div
-      className="fixed inset-0 flex items-center justify-center bg-black/50 z-50"
+      className="fixed pb-10 inset-0 flex items-center justify-center bg-black/50 z-50"
       onClick={closeOverlay}
     >
       <div
-        className="bg-white p-8 rounded-lg shadow-lg relative"
+        className="bg-white p-8 max-h-150 rounded-lg shadow-lg relative"
         onClick={(e) => e.stopPropagation()}
       >
         {content}

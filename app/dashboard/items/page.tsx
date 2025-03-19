@@ -9,11 +9,16 @@ import { TRDWLoadingView } from "@/components/ui/shared/loading/TRDWLoadingView"
 import TRDWSearchBar from "@/components/ui/shared/searchbar/TRDWSearchBar";
 import { ItemEntity } from "@/models/entity/ItemEntity";
 import { fetchAllItemsDataUseCase } from "@/usecase/items/fetch/FetchItemsDataUseCase";
-import { FilterItemUseCase } from "@/usecase/items/FilterItemsUseCase";
+import { filterItemUseCase } from "@/usecase/items/FilterItemsUseCase";
+import { useRouter } from "next/navigation";
 import { useEffect, useState } from "react";
+import { v4 as uuidv4 } from "uuid";
 
 const ItemsPage = () => {
-  const handleAddItemTappedEvent = () => {};
+  const router = useRouter();
+  const handleAddItemTappedEvent = () => {
+    router.push(`/dashboard/items/add`);
+  };
 
   const [searchText, setSearchText] = useState<string>("");
   const handleSearchTextInput = (value: string) => {
@@ -26,7 +31,7 @@ const ItemsPage = () => {
       return;
     }
 
-    const filtered = FilterItemUseCase(searchText, items);
+    const filtered = filterItemUseCase(searchText, items);
     setFilteredItems(filtered);
   }, [searchText]);
 
@@ -53,6 +58,10 @@ const ItemsPage = () => {
   }, []);
 
   const handleItemCardTappedEvent = (id: number) => {};
+
+  if (!items || items.length === 0) {
+    return <TRDWEmptyView label={"Tidak ada data barang ditemukan..."} />;
+  }
 
   if (message) return <TRDWLoadingView label={message} />;
 
@@ -105,11 +114,11 @@ const ItemsListView = ({
   return (
     <div className="flex flex-col gap-8">
       <div className="flex flex-col gap-3">
-        {items.map((element) => (
+        {items.map((item) => (
           <ItemCard
-            key={element.id}
-            item={element}
-            onTap={() => onTap(element.id)}
+            key={item.id ?? uuidv4()}
+            item={item}
+            onTap={() => onTap(item.id || -1)}
           />
         ))}
       </div>

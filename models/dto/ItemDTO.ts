@@ -1,12 +1,13 @@
+import { fetchVendorByIdUseCase } from "@/usecase/vendors/fetch/FetchVendorByIDUseCase";
 import { ItemEntity } from "../entity/ItemEntity";
 
 export interface ItemDTO {
-  id: number;
+  id?: number;
   itemId: string;
   name: string;
   price: number;
   stockQty: number;
-  vendorId: string;
+  vendorId: number;
 }
 
 export const mapItemToEntity = (dto: ItemDTO): ItemEntity => {
