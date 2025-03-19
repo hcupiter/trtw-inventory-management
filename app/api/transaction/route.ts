@@ -4,27 +4,11 @@ import { NextResponse } from "next/server";
 export async function GET(req: Request) {
   try {
     const { searchParams } = new URL(req.url);
-    const id = searchParams.get("id");
-    const from = searchParams.get("from");
-    const to = searchParams.get("to");
+    const limit: number = Number(searchParams.get("limit")) || 1000;
+    const offset: number = Number(searchParams.get("offset")) || 0;
 
-    if (id) {
-      const transaction = await transactionService.getById(Number(id));
-      if (transaction) {
-        return NextResponse.json({ transaction }, { status: 200 });
-      } else {
-        return NextResponse.json(
-          {
-            error: `Transaction ${id} is not found`,
-          },
-          {
-            status: 404,
-          }
-        );
-      }
-    } else if (from && to) {
-      const transaction = await transactionService.getAllRange(from, to);
-    }
+    const transactions = await transactionService.getAll(limit, offset);
+    return NextResponse.json({ transactions }, { status: 200 });
   } catch (error) {
     return NextResponse.json(
       {
