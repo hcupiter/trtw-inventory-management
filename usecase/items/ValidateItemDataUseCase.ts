@@ -22,7 +22,7 @@ export const validateItemId = async (itemId?: string): Promise<string> => {
 
 export const validateItemName = (name?: string): string => {
   if (!name) return "Nama barang wajib diisi";
-  if (name.length > 25) return "Nama Barang tidak boleh melebihi 25 huruf";
+  if (name.length > 40) return "Nama Barang tidak boleh melebihi 40 karakter";
   return "";
 };
 

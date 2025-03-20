@@ -1,5 +1,5 @@
 import { VendorDTO } from "@/models/dto/VendorDTO";
-import { updateVendorUseCase, vendorService } from "@/utils/appModule";
+import { vendorService } from "@/utils/appModule";
 import { errorWriter } from "@/utils/errorWriter";
 import { NextResponse } from "next/server";
 
@@ -31,7 +31,7 @@ export async function POST(req: Request) {
     const result = await vendorService.save(vendor);
     if (result) {
       return NextResponse.json(
-        { message: "Vendor saved successfully" },
+        { message: "Vendor berhasil disimpan" },
         { status: 200 }
       );
     } else {
@@ -56,11 +56,11 @@ export async function POST(req: Request) {
 export async function PATCH(req: Request) {
   try {
     const vendor: VendorDTO = await req.json();
-    const result = await updateVendorUseCase.execute(vendor);
+    const result = await vendorService.update(vendor);
 
     if (result) {
       return NextResponse.json(
-        { message: "Vendor updated successfully" },
+        { message: "Vendor Berhasil di update" },
         { status: 200 }
       );
     } else {

@@ -25,7 +25,9 @@ export const ItemCard = ({
     >
       {/* Data */}
       <div className="flex gap-4 text-base">
-        <VendorTag tag={item.vendor.vendorId || "no-data"} />
+        <div className="w-20">
+          <VendorTag tag={item.vendor.vendorId || "no-data"} />
+        </div>
         {/* ID and Items name */}
         <div className="w-72 flex flex-col">
           <div className="font-bold text-base">{`ID Barang: ${item.itemId}`}</div>

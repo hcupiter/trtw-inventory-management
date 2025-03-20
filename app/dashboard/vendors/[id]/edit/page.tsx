@@ -13,6 +13,11 @@ import { mapVendorToEntity, VendorDTO } from "@/models/dto/VendorDTO";
 import { VendorEntity } from "@/models/entity/VendorEntity";
 import { TRDWLoadingView } from "@/components/ui/shared/loading/TRDWLoadingView";
 import { fetchVendorByIdUseCase } from "@/usecase/vendors/fetch/FetchVendorByIDUseCase";
+import {
+  validateVendorId,
+  validateVendorName,
+} from "@/usecase/vendors/ValidateVendorDataUseCase";
+import { updateVendorUseCase } from "@/usecase/vendors/UpdateVendorsUseCase";
 
 const EditVendorPage = () => {
   const params = useParams<{ id: string }>();
@@ -33,35 +38,18 @@ const EditVendorPage = () => {
   const [nameError, setNameError] = useState<string>("");
 
   const validateData = async () => {
-    setIdError("");
-    setNameError("");
+    cleanError();
+
     try {
-      var idFlag = true;
-      var nameFlag = true;
+      const newIdError = await validateVendorId(vendorId);
+      const newNameError = await validateVendorName(name);
 
-      if (vendorId.length <= 0) {
-        setIdError("Mohon mengisi id vendor!");
-        idFlag = false;
-      } else if (vendorId.length > 7) {
-        setIdError("ID Vendor maksimal 7 huruf!");
-        idFlag = false;
-      } else {
-        const response = await fetch(`/api/vendor/get/id?id=${vendorId}`);
-        const checkVendor = await response.json();
-        if (checkVendor.ok) {
-          setIdError("ID sudah terdaftar sebelumnya, mohon membuat id baru");
-          idFlag = false;
-        }
-      }
+      setIdError(newIdError);
+      setNameError(newNameError);
 
-      if (name.length <= 0) {
-        setNameError("Mohon mengisi nama vendor!");
-        nameFlag = false;
-      }
-
-      if (idFlag && nameFlag) {
+      if (!newIdError && !newNameError) {
         const success = await updateData();
-        if (success) setData();
+        if (success) goBack();
       }
     } catch (error) {
       toast.error(errorWriter(error));
@@ -70,7 +58,7 @@ const EditVendorPage = () => {
 
   const updateData = async () => {
     try {
-      const toUpdateVendor: VendorDTO = {
+      const toUpdateVendor: VendorEntity = {
         id: Number(params.id),
         vendorId: vendorId,
         name: name,
@@ -78,23 +66,17 @@ const EditVendorPage = () => {
         phone: phone,
       };
 
-      const response = await fetch("/api/vendor", {
-        method: "PATCH",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify(toUpdateVendor),
-      });
-
-      const data = await response.json();
-
-      if (!response.ok) {
-        throw new Error(data.error || "Failed to update vendor");
-      }
-
-      toast.success(data.message);
+      const success = await updateVendorUseCase(toUpdateVendor);
+      toast.success(success);
       return true;
     } catch (error) {
       toast.error(errorWriter(error));
     }
+  };
+
+  const cleanError = () => {
+    setIdError("");
+    setNameError("");
   };
 
   const setData = (vendor?: VendorEntity) => {

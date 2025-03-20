@@ -59,10 +59,6 @@ const ItemsPage = () => {
 
   const handleItemCardTappedEvent = (id: number) => {};
 
-  if (!items || items.length === 0) {
-    return <TRDWEmptyView label={"Tidak ada data barang ditemukan..."} />;
-  }
-
   if (message) return <TRDWLoadingView label={message} />;
 
   return (
@@ -108,7 +104,7 @@ const ItemsListView = ({
   items: ItemEntity[];
   onTap: (id: number) => void;
 }) => {
-  if (items.length <= 0)
+  if (!items || items.length <= 0)
     return <TRDWEmptyView label={"Tidak ada data barang ditemukan..."} />;
 
   return (

@@ -1,13 +1,14 @@
-import { ItemEntity, mapItemToDTO } from "@/models/entity/ItemEntity";
+import { mapVendorToDTO, VendorEntity } from "@/models/entity/VendorEntity";
 import { errorWriter } from "@/utils/errorWriter";
 
-export const saveItemDataUseCase = async (
-  entity: ItemEntity
+export const updateVendorUseCase = async (
+  entity: VendorEntity
 ): Promise<string> => {
   try {
-    const dto = mapItemToDTO(entity);
-    const response = await fetch("/api/item", {
-      method: "POST",
+    const dto = mapVendorToDTO(entity);
+
+    const response = await fetch("/api/vendor", {
+      method: "PATCH",
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify(dto),
     });
@@ -15,9 +16,8 @@ export const saveItemDataUseCase = async (
     const data = await response.json();
 
     if (!response.ok) {
-      throw new Error(data.error || "Gagal menyimpan");
+      throw new Error(data.error || "Failed to update vendor");
     }
-
     return Promise.resolve(data.message);
   } catch (error) {
     return Promise.reject(error);

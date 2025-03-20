@@ -96,7 +96,7 @@ const AddItemsPage = () => {
           name: name,
           price: Number(price),
           stockQty: Number(stock),
-          vendorId: vendor.id,
+          vendor: vendor,
         };
 
         const result = await saveItemDataUseCase(entity);
