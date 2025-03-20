@@ -5,6 +5,7 @@ import { QuerySortOrder } from "../utils/QuerySortOrder";
 
 const defaultOffset = 0;
 const defaultLimit = 1000;
+const defaultSort = QuerySortOrder.ASC;
 
 export class SQLiteTransactionService implements ITransactionService {
   private sqliteDb: any;
@@ -88,14 +89,14 @@ export class SQLiteTransactionService implements ITransactionService {
     itemId: number,
     limit: number = defaultLimit,
     offset: number = defaultOffset,
-    sort: QuerySortOrder
+    sort: QuerySortOrder = defaultSort
   ): Promise<TransactionDTO[]> {
     try {
       const statement = this.sqliteDb.prepare(
-        `SELECT * FROM TransactionData
-        INNER JOIN TransactionItem ON TransactionData.id = TransactionItem.transactionID
-        WHERE TransactionItem.itemId = ? AND isDeleted = 0
-        ORDER BY date ${sort} LIMIT ? OFFSET ?`
+        `SELECT td.* FROM TransactionData td 
+          INNER JOIN TransactionItem ti ON td.id = ti.transactionId 
+          WHERE ti.itemId = ? AND td.isDeleted = 0 AND ti.isDeleted = 0 
+          ORDER BY td.date ${sort} LIMIT ? OFFSET ?`
       );
 
       const results = statement.all(itemId, limit, offset);

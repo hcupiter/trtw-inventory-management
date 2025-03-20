@@ -13,9 +13,9 @@ export async function GET(req: Request) {
         { status: 404 }
       );
 
-    const transaction = await transactionService.getAllByItemId(Number(id));
-    if (transaction) {
-      return NextResponse.json({ transaction }, { status: 200 });
+    const transactions = await transactionService.getAllByItemId(Number(id));
+    if (transactions) {
+      return NextResponse.json({ transactions }, { status: 200 });
     } else {
       return NextResponse.json(
         {
@@ -27,6 +27,7 @@ export async function GET(req: Request) {
       );
     }
   } catch (error) {
+    console.log(error);
     return NextResponse.json(
       {
         error: errorWriter(error, "Something on the server went wrong"),
