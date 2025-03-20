@@ -1,4 +1,13 @@
 import { VendorEntity } from "../entity/VendorEntity";
+import { z } from "zod";
+
+export const VendorSchema = z.object({
+  id: z.number().optional(),
+  vendorId: z.string().min(1, "VendorID is required"),
+  name: z.string(),
+  address: z.string().optional(),
+  phone: z.string().optional(),
+});
 
 export interface VendorDTO {
   id?: number;

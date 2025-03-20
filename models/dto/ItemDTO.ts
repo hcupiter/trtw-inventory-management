@@ -1,6 +1,15 @@
 import { fetchVendorByIdUseCase } from "@/usecase/vendors/fetch/FetchVendorByIDUseCase";
 import { ItemEntity } from "../entity/ItemEntity";
-import { errorWriter } from "@/utils/errorWriter";
+import { z } from "zod";
+
+export const ItemSchema = z.object({
+  id: z.number().optional(),
+  itemId: z.string(),
+  name: z.string(),
+  price: z.number(),
+  stockQty: z.number(),
+  vendorId: z.number(),
+});
 
 export interface ItemDTO {
   id?: number;
@@ -14,17 +23,15 @@ export interface ItemDTO {
 export const mapItemToEntity = async (dto: ItemDTO): Promise<ItemEntity> => {
   try {
     const vendor = await fetchVendorByIdUseCase(dto.vendorId);
-    return {
+    return Promise.resolve({
       id: dto.id,
       itemId: dto.itemId,
       name: dto.name,
       price: dto.price,
       stockQty: dto.stockQty,
       vendor: vendor,
-    };
+    });
   } catch (error) {
-    return Promise.reject(
-      errorWriter(error, `Gagal mapping vendor untuk item ${dto.itemId}`)
-    );
+    return Promise.reject(error);
   }
 };

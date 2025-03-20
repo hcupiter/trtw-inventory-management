@@ -1,7 +1,9 @@
-import { ItemDTO } from "@/models/dto/ItemDTO";
+import { ItemDTO, ItemSchema } from "@/models/dto/ItemDTO";
 import { itemService } from "@/utils/appModule";
+import { checkAPISchemaError } from "@/utils/checkSchemaError";
 import { errorWriter } from "@/utils/errorWriter";
 import { NextResponse } from "next/server";
+import { z } from "zod";
 
 export async function GET(req: Request) {
   try {
@@ -29,7 +31,9 @@ export async function GET(req: Request) {
 
 export async function POST(req: Request) {
   try {
-    const item: ItemDTO = await req.json();
+    const body = await req.json();
+    const item = ItemSchema.parse(body);
+
     const validateItem = await itemService.getByItemId(item.itemId);
     if (validateItem) {
       return NextResponse.json(
@@ -56,6 +60,7 @@ export async function POST(req: Request) {
     }
   } catch (error) {
     console.log(error);
+    checkAPISchemaError(error);
     return NextResponse.json(
       {
         error: errorWriter(
@@ -70,7 +75,8 @@ export async function POST(req: Request) {
 
 export async function PATCH(req: Request) {
   try {
-    const item: ItemDTO = await req.json();
+    const body = await req.json();
+    const item = ItemSchema.parse(body);
 
     const result = await itemService.update(item);
     if (result) {
@@ -88,6 +94,7 @@ export async function PATCH(req: Request) {
     }
   } catch (error) {
     console.log(error);
+    checkAPISchemaError(error);
     return NextResponse.json(
       {
         error: errorWriter(

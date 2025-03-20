@@ -1,4 +1,4 @@
-import { transactionService } from "@/utils/appModule";
+import { transactionItemService } from "@/utils/appModule";
 import { errorWriter } from "@/utils/errorWriter";
 import { NextResponse } from "next/server";
 
@@ -8,8 +8,8 @@ export async function GET(req: Request) {
     const limit: number = Number(searchParams.get("limit")) || 1000;
     const offset: number = Number(searchParams.get("offset")) || 0;
 
-    const transactions = await transactionService.getAll(limit, offset);
-    return NextResponse.json({ transactions }, { status: 200 });
+    const transactionItems = await transactionItemService.getAll(limit, offset);
+    return NextResponse.json({ transactionItems }, { status: 200 });
   } catch (error) {
     return NextResponse.json(
       {

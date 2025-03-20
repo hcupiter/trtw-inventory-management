@@ -1,5 +1,6 @@
-import { VendorDTO } from "@/models/dto/VendorDTO";
+import { VendorDTO, VendorSchema } from "@/models/dto/VendorDTO";
 import { vendorService } from "@/utils/appModule";
+import { checkAPISchemaError } from "@/utils/checkSchemaError";
 import { errorWriter } from "@/utils/errorWriter";
 import { NextResponse } from "next/server";
 
@@ -26,7 +27,8 @@ export async function GET(req: Request) {
 
 export async function POST(req: Request) {
   try {
-    const vendor: VendorDTO = await req.json();
+    const body = await req.json();
+    const vendor = VendorSchema.parse(body);
 
     const result = await vendorService.save(vendor);
     if (result) {
@@ -44,6 +46,7 @@ export async function POST(req: Request) {
     }
   } catch (error) {
     console.log(error);
+    checkAPISchemaError(error);
     return NextResponse.json(
       {
         error: errorWriter(error, "Something went wrong on the server!"),
@@ -73,6 +76,7 @@ export async function PATCH(req: Request) {
     }
   } catch (error) {
     console.error("PATCH /api/vendors error:", error);
+    checkAPISchemaError(error);
     return NextResponse.json(
       {
         error: errorWriter(error, "Something went wrong on the server!"),
