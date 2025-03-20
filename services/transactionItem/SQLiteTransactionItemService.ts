@@ -18,7 +18,7 @@ export class SQLiteTransactionItemService implements ItransactionItemService {
     try {
       const statement = this.sqliteDb.prepare(
         `INSERT INTO 
-        TransactionItem (itemId, vendorID, name, qty, sellPrice, transactionID, isDeleted) 
+        TransactionItem (itemId, vendorID, name, qty, sellPrice, transactionId, isDeleted) 
         VALUES (?, ?, ?, ?, ?, ?, 0)`
       );
 
@@ -118,7 +118,7 @@ export class SQLiteTransactionItemService implements ItransactionItemService {
     try {
       const statement = this.sqliteDb.prepare(
         `UPDATE TransactionItem 
-        SET vendorID = ?, qty = ?, sellPrice = ?, transactionID = ? 
+        SET vendorId = ?, qty = ?, sellPrice = ?, transactionId = ? 
         WHERE id = ? AND isDeleted = 0`
       );
       const results = statement.run(

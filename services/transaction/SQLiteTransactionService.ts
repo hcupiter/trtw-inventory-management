@@ -84,6 +84,27 @@ export class SQLiteTransactionService implements ITransactionService {
     }
   }
 
+  getAllByItemId(
+    itemId: number,
+    limit: number = defaultLimit,
+    offset: number = defaultOffset,
+    sort: QuerySortOrder
+  ): Promise<TransactionDTO[]> {
+    try {
+      const statement = this.sqliteDb.prepare(
+        `SELECT * FROM TransactionData
+        INNER JOIN TransactionItem ON TransactionData.id = TransactionItem.transactionID
+        WHERE TransactionItem.itemId = ? AND isDeleted = 0
+        ORDER BY date ${sort} LIMIT ? OFFSET ?`
+      );
+
+      const results = statement.all(itemId, limit, offset);
+      return Promise.resolve(results as TransactionDTO[]);
+    } catch (error) {
+      return Promise.reject(error);
+    }
+  }
+
   update(transaction: TransactionDTO): Promise<number | null> {
     try {
       const statement = this.sqliteDb.prepare(
