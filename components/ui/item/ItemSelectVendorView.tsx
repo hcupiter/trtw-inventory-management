@@ -9,6 +9,8 @@ import { errorWriter } from "@/utils/errorWriter";
 import TRDWSearchBar from "../shared/searchbar/TRDWSearchBar";
 import TRDWButton, { ButtonVariant } from "../shared/button/TRDWButton";
 import { VendorTag } from "../vendor/VendorTag";
+import { OverlayContentTitle } from "../shared/overlay/OverlayContentTitle";
+import { OverlayContentContainer } from "../shared/overlay/OverlayContentContainer";
 
 export const ItemSelectVendorView = ({
   onSelect,
@@ -45,16 +47,9 @@ export const ItemSelectVendorView = ({
   if (message) return <TRDWLoadingView label={message} />;
 
   return (
-    <div className="flex flex-col w-200 bg-white gap-6">
+    <OverlayContentContainer>
       {/* Title */}
-      <div className="flex gap-5 items-center">
-        <Icon
-          icon={"heroicons-outline:chevron-left"}
-          className="w-7 h-7 hover:text-blue"
-          onClick={onCancel}
-        />
-        <h1 className="text-black text-2xl font-bold">Pilih vendor</h1>
-      </div>
+      <OverlayContentTitle title={"Pilih Vendor"} onCancel={onCancel} />
 
       {/* Search Bar */}
       <TRDWSearchBar
@@ -77,7 +72,7 @@ export const ItemSelectVendorView = ({
           />
         ))}
       </div>
-    </div>
+    </OverlayContentContainer>
   );
 };
 

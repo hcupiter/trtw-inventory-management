@@ -4,7 +4,7 @@ import { useOverlay } from "@/context/OverlayContext";
 import { createPortal } from "react-dom";
 
 export const Overlay = () => {
-  const { isOpen, content, closeOverlay } = useOverlay();
+  const { isOpen, content, closeOverlay, fullScreen } = useOverlay();
 
   if (!isOpen) return null;
 
@@ -14,7 +14,9 @@ export const Overlay = () => {
       onClick={closeOverlay}
     >
       <div
-        className="bg-white p-8 max-h-150 rounded-lg shadow-lg relative"
+        className={`bg-white p-8 max-h-[65vh] rounded-lg shadow-lg relative overflow-y-auto ${
+          fullScreen ? "h-[90vh]" : ""
+        }`}
         onClick={(e) => e.stopPropagation()}
       >
         {content}

@@ -5,6 +5,10 @@ import TRDWButton, {
 } from "@/components/ui/shared/button/TRDWButton";
 import TRDWDatePickerLabel from "@/components/ui/shared/datepicker/TRDWDatePickerLabel";
 import TRDWDropdownLabel from "@/components/ui/shared/dropdown/TRDWDropdownLabel";
+import { TransactionItemSelectionView } from "@/components/ui/transaction/TransactionItemSelectionView";
+import { useOverlay } from "@/context/OverlayContext";
+import { ItemEntity } from "@/models/entity/ItemEntity";
+import { TransactionItemCardEntity } from "@/models/entity/TransactionItemCartEntity";
 
 import { Icon } from "@iconify/react";
 import { useRouter } from "next/navigation";
@@ -13,11 +17,28 @@ import { useState } from "react";
 const AddTransactionPage = () => {
   const [transactionDate, setTransactionDate] = useState<Date>(new Date());
   const [transactionType, setTransactionType] = useState<string>("Transaksi");
+  const [cart, setCart] = useState<TransactionItemCardEntity[]>([]);
 
   const router = useRouter();
   const goBack = () => {
     router.back();
   };
+
+  const { openOverlay, closeOverlay, makeFullScreen } = useOverlay();
+  const handleAddItemClickedEvent = () => {
+    makeFullScreen(true);
+    openOverlay(
+      <TransactionItemSelectionView
+        carts={cart}
+        onSelect={updateCart}
+        onCancel={() => {
+          closeOverlay();
+        }}
+      />
+    );
+  };
+
+  const updateCart = (item: ItemEntity) => {};
 
   return (
     <div className="flex flex-col justify-items-start w-full h-full gap-8">
@@ -60,7 +81,12 @@ const AddTransactionPage = () => {
           }}
         />
 
-        <TRDWButton iconName="ic:baseline-plus">Tambah Barang</TRDWButton>
+        <TRDWButton
+          iconName="ic:baseline-plus"
+          onClick={handleAddItemClickedEvent}
+        >
+          Tambah Barang
+        </TRDWButton>
       </div>
     </div>
   );
