@@ -2,7 +2,7 @@ import { TransactionItem } from "../entity/TransactionItem";
 import { z } from "zod";
 
 export const TransactionItemSchema = z.object({
-  id: z.string().optional(),
+  id: z.number().optional(),
   itemId: z.string(),
   vendorId: z.string(),
   name: z.string(),
@@ -12,7 +12,7 @@ export const TransactionItemSchema = z.object({
 });
 
 export interface TransactionItemDTO {
-  id?: string;
+  id?: number;
   itemId: string;
   vendorId: string;
   name: string;

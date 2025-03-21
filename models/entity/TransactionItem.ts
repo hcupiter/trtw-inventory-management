@@ -1,5 +1,5 @@
 export interface TransactionItem {
-  id?: string;
+  id?: number;
   itemId: string;
   vendorId: string;
   name: string;

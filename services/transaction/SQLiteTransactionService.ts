@@ -87,6 +87,8 @@ export class SQLiteTransactionService implements ITransactionService {
 
   getAllByItemId(
     itemId: number,
+    from: string,
+    to: string,
     limit: number = defaultLimit,
     offset: number = defaultOffset,
     sort: QuerySortOrder = defaultSort
@@ -95,11 +97,11 @@ export class SQLiteTransactionService implements ITransactionService {
       const statement = this.sqliteDb.prepare(
         `SELECT td.* FROM TransactionData td 
           INNER JOIN TransactionItem ti ON td.id = ti.transactionId 
-          WHERE ti.itemId = ? AND td.isDeleted = 0 AND ti.isDeleted = 0 
+          WHERE ti.itemId = ? AND td.isDeleted = 0 AND ti.isDeleted = 0 AND td.date BETWEEN ? AND ?
           ORDER BY td.date ${sort} LIMIT ? OFFSET ?`
       );
 
-      const results = statement.all(itemId, limit, offset);
+      const results = statement.all(itemId, from, to, limit, offset);
       return Promise.resolve(results as TransactionDTO[]);
     } catch (error) {
       return Promise.reject(error);

@@ -114,6 +114,23 @@ export class SQLiteTransactionItemService implements ItransactionItemService {
     }
   }
 
+  getByTransactionIdAndItemId(
+    transactionId: number,
+    itemId: number
+  ): Promise<TransactionItemDTO> {
+    try {
+      const statement = this.sqliteDb.prepare(
+        `SELECT * FROM TransactionItem 
+        WHERE transactionID = ? AND itemId = ? AND isDeleted = 0`
+      );
+
+      const results = statement.all(transactionId, itemId);
+      return Promise.resolve((results as TransactionItemDTO) || null);
+    } catch (error) {
+      return Promise.reject(error);
+    }
+  }
+
   updateByItemID(transactionItem: TransactionItemDTO): Promise<boolean> {
     try {
       const statement = this.sqliteDb.prepare(

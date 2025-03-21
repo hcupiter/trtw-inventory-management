@@ -1,6 +1,9 @@
 import DatePicker from "react-datepicker";
 import "react-datepicker/dist/react-datepicker.css";
-import { Icon } from "@iconify/react";
+
+const CustomInput = (props: any) => (
+  <input {...props} readOnly className="text-black py-4 pl-4" />
+);
 
 const TRDWDatePicker = ({
   selected,
@@ -17,6 +20,7 @@ const TRDWDatePicker = ({
         selected={selected}
         onChange={onChange}
         {...props}
+        customInput={<CustomInput />}
       />
     </div>
   );

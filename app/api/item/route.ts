@@ -106,3 +106,41 @@ export async function PATCH(req: Request) {
     );
   }
 }
+
+export async function DELETE(req: Request) {
+  try {
+    const { searchParams } = new URL(req.url);
+    const id = searchParams.get("id");
+
+    if (!id) {
+      return NextResponse.json(
+        {
+          error: "Tidak ada id barang untuk dihapus",
+        },
+        { status: 400 }
+      );
+    }
+
+    const result = await itemService.delete(id);
+    if (result) {
+      return NextResponse.json(
+        { message: "Barang berhasil dihapus" },
+        { status: 200 }
+      );
+    } else {
+      throw new Error("Barang gagal dihapus");
+    }
+  } catch (error) {
+    console.log(error);
+    checkAPISchemaError(error);
+    return NextResponse.json(
+      {
+        error: errorWriter(
+          error,
+          "Sesuatu dalam server sedang tidak befungsi..."
+        ),
+      },
+      { status: 500 }
+    );
+  }
+}

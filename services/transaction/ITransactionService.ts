@@ -18,6 +18,8 @@ export interface ITransactionService {
   ): Promise<TransactionDTO[]>;
   getAllByItemId(
     itemId: number,
+    from: string,
+    to: string,
     limit?: number,
     offset?: number,
     sort?: QuerySortOrder

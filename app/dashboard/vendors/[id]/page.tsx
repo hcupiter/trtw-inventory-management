@@ -10,8 +10,6 @@ import { TRDWLabel } from "@/components/ui/shared/label/TRDWLabel";
 import { TRDWLoadingView } from "@/components/ui/shared/loading/TRDWLoadingView";
 import TRDWSearchBar from "@/components/ui/shared/searchbar/TRDWSearchBar";
 import { useOverlay } from "@/context/OverlayContext";
-import { mapItemToEntity } from "@/models/dto/ItemDTO";
-import { mapVendorToEntity } from "@/models/dto/VendorDTO";
 import { ItemEntity } from "@/models/entity/ItemEntity";
 import { VendorEntity } from "@/models/entity/VendorEntity";
 import { fetchItemsByVendorIdUseCase } from "@/usecase/items/fetch/FetchItemsByVendorIdUseCase";
@@ -21,7 +19,6 @@ import { Icon } from "@iconify/react";
 import { useParams, useRouter } from "next/navigation";
 import { useEffect, useState } from "react";
 import { toast } from "react-toastify";
-import { v4 as uuidv4 } from "uuid";
 
 export default function Page() {
   const params = useParams<{ id: string }>();
@@ -116,6 +113,10 @@ export default function Page() {
     setFilteredItems(filtered);
   }, [searchText]);
 
+  const handleItemCardTappedEvent = (id: number) => {
+    router.push(`/dashboard/items/${id}`);
+  };
+
   if (message) return <TRDWLoadingView label={message} />;
 
   return (
@@ -191,7 +192,7 @@ export default function Page() {
                         key={element.id}
                         item={element}
                         onTap={() => {
-                          console.log(`${element.id} is tapped`);
+                          if (element.id) handleItemCardTappedEvent(element.id);
                         }}
                       />
                     ))}

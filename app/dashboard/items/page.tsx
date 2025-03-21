@@ -57,7 +57,9 @@ const ItemsPage = () => {
     fetchData();
   }, []);
 
-  const handleItemCardTappedEvent = (id: number) => {};
+  const handleItemCardTappedEvent = (id: number) => {
+    router.push(`/dashboard/items/${id}`);
+  };
 
   if (message) return <TRDWLoadingView label={message} />;
 
@@ -88,7 +90,9 @@ const ItemsPage = () => {
           <div className="flex flex-col gap-8">
             <ItemsListView
               items={filteredItems}
-              onTap={() => handleAddItemTappedEvent}
+              onTap={(id) => {
+                handleItemCardTappedEvent(id);
+              }}
             />
           </div>
         </div>
@@ -112,9 +116,13 @@ const ItemsListView = ({
       <div className="flex flex-col gap-3">
         {items.map((item) => (
           <ItemCard
-            key={item.id ?? uuidv4()}
+            key={item.itemId}
             item={item}
-            onTap={() => onTap(item.id || -1)}
+            onTap={() => {
+              if (item.id) {
+                onTap(item.id);
+              }
+            }}
           />
         ))}
       </div>

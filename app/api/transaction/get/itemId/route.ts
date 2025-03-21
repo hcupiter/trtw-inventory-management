@@ -7,13 +7,31 @@ export async function GET(req: Request) {
     const { searchParams } = new URL(req.url);
     const id = Number(searchParams.get("id"));
 
+    const from = searchParams.get("from");
+    const to = searchParams.get("to");
+
     if (!id)
       return NextResponse.json(
         { error: `id params required` },
         { status: 404 }
       );
 
-    const transactions = await transactionService.getAllByItemId(Number(id));
+    // If there's any parameters from and to, return transaction by range
+    if (from && to) {
+      const transactions = await transactionService.getAllByItemId(
+        Number(id),
+        from,
+        to
+      );
+      return NextResponse.json({ transactions }, { status: 200 });
+    }
+
+    const todayDateISOString = new Date().toISOString();
+    const transactions = await transactionService.getAllByItemId(
+      Number(id),
+      todayDateISOString,
+      todayDateISOString
+    );
     if (transactions) {
       return NextResponse.json({ transactions }, { status: 200 });
     } else {
