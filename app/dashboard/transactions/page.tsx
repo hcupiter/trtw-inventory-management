@@ -5,35 +5,63 @@ import TRDWButton, {
 } from "@/components/ui/shared/button/TRDWButton";
 import TRDWDatePicker from "@/components/ui/shared/datepicker/TRDWDatePicker";
 import TRDWEmptyView from "@/components/ui/shared/empty/TRDWEmptyView";
+import { ListViewContainer } from "@/components/ui/shared/listViewContainer/ListViewContainer";
+import { TRDWLoadingView } from "@/components/ui/shared/loading/TRDWLoadingView";
+import { TransactionData } from "@/models/entity/TransactionData";
+import { fetchTransactionByDate } from "@/usecase/transaction/fetch/FetchTransactionByDateUseCase";
+import { errorWriter } from "@/utils/errorWriter";
 import { useRouter } from "next/navigation";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 
 const TransactionsPage = () => {
-  const [startDate, setStartDate] = useState<Date>(new Date());
-  const [endDate, setEndDate] = useState<Date>(new Date());
-  const [error, setError] = useState<string | null>();
-
   const router = useRouter();
-
-  const handleSearch = () => {
-    // Validate Date
-    if (startDate > endDate) {
-      setError("Error! Hari awal tidak boleh melebihi hari akhir!");
-      return;
-    }
-
-    if (startDate > new Date()) {
-      setError("Error! Hari awal tidak bisa melebihi hari ini!");
-      return;
-    }
-
-    setError("");
-  };
 
   const handleAddTransactionTappedEvent = () => {
     console.log("Pressed");
     router.push("/dashboard/transactions/add");
   };
+
+  const [startDate, setStartDate] = useState<Date>(new Date());
+  const [endDate, setEndDate] = useState<Date>(new Date());
+  const [dateError, setDateError] = useState<string | null>();
+
+  const [transactions, setTransactions] = useState<TransactionData[]>([]);
+  const [message, setMessage] = useState<string>();
+
+  const handleSearch = () => {
+    // Validate Date
+    if (startDate > endDate) {
+      setDateError("Error! Hari awal tidak boleh melebihi hari akhir!");
+      return;
+    }
+
+    if (startDate > new Date()) {
+      setDateError("Error! Hari awal tidak bisa melebihi hari ini!");
+      return;
+    }
+
+    setDateError("");
+    fetchTransactionData();
+  };
+
+  const fetchTransactionData = async () => {
+    try {
+      setMessage("Sedang mengambil data...");
+      const fetchedTransaction = await fetchTransactionByDate(
+        startDate,
+        endDate
+      );
+      setTransactions(fetchedTransaction);
+    } catch (error) {
+      setMessage(errorWriter(error));
+    } finally {
+      setMessage(undefined);
+    }
+  };
+
+  useEffect(() => {
+    fetchTransactionData();
+  }, []);
 
   return (
     <div className="flex flex-col justify-items-start w-full h-full">
@@ -82,14 +110,36 @@ const TransactionsPage = () => {
               Cari
             </TRDWButton>
           </div>
-          {error && <span className="text-red">{error}</span>}
+          {dateError && <span className="text-red">{dateError}</span>}
         </div>
 
         {/* Data Transaksi */}
         <div className="w-full h-full">
-          <TRDWEmptyView label={"Tidak ada transaksi..."} />
+          <TransactionListView transactions={transactions} message={message} />
         </div>
       </div>
+    </div>
+  );
+};
+
+const TransactionListView = ({
+  transactions,
+  message,
+}: {
+  transactions: TransactionData[];
+  message?: string;
+}) => {
+  if (message) return <TRDWLoadingView label={message} />;
+  if (transactions.length <= 0)
+    return <TRDWEmptyView label={"Tidak ada transaksi..."} />;
+
+  return (
+    <div className="w-full h-full">
+      <ListViewContainer>
+        {transactions.map((transaction) => (
+          <div>{transaction.id}</div>
+        ))}
+      </ListViewContainer>
     </div>
   );
 };

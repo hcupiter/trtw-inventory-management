@@ -15,7 +15,7 @@ export async function GET(req: Request) {
       );
 
     if (from && to) {
-      const transactions = transactionService.getAllRange(from, to);
+      const transactions = await transactionService.getAllRange(from, to);
       return NextResponse.json({ transactions }, { status: 200 });
     }
   } catch (error) {
