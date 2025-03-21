@@ -133,6 +133,9 @@ export class SQLiteTransactionItemService implements ItransactionItemService {
 
   updateByItemID(transactionItem: TransactionItemDTO): Promise<boolean> {
     try {
+      if (!transactionItem.id)
+        throw new Error("Tidak ada id untuk update item transaksi");
+
       const statement = this.sqliteDb.prepare(
         `UPDATE TransactionItem 
         SET vendorId = ?, qty = ?, sellPrice = ?, transactionId = ? 

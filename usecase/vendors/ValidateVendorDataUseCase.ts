@@ -1,9 +1,14 @@
 import { errorWriter } from "@/utils/errorWriter";
 
-export const validateVendorId = async (vendorId?: string): Promise<string> => {
+export const validateVendorId = async (
+  vendorId?: string,
+  currentVendorId?: string
+): Promise<string> => {
   try {
     if (!vendorId) return Promise.resolve("Mohon mengisi id vendor");
     if (vendorId.length > 7) return Promise.resolve("ID maksimum 7 karakter");
+
+    if (vendorId === currentVendorId) return Promise.resolve("");
 
     const response = await fetch(`/api/vendor/get/id?id=${vendorId}`);
     const checkVendor = await response.json();

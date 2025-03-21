@@ -87,7 +87,7 @@ export async function PATCH(req: Request) {
     } else {
       return NextResponse.json(
         {
-          error: "Gagal menyimpan barang",
+          error: "Gagal mengubah barang",
         },
         { status: 500 }
       );

@@ -1,10 +1,17 @@
 import { VendorEntity } from "@/models/entity/VendorEntity";
 import { errorWriter } from "@/utils/errorWriter";
 
-export const validateItemId = async (itemId?: string): Promise<string> => {
+export const validateItemId = async (
+  itemId?: string,
+  currentItemId?: string
+): Promise<string> => {
   if (!itemId) return Promise.resolve("ID barang wajib diisi");
   if (itemId.length > 7)
     return Promise.resolve("ID barang maksimal 7 karakter");
+
+  if (currentItemId) {
+    if (currentItemId == itemId) return Promise.resolve("");
+  }
 
   try {
     const response = await fetch(`/api/item/get/itemId?id=${itemId}`);

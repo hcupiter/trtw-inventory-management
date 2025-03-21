@@ -110,6 +110,9 @@ export class SQLiteTransactionService implements ITransactionService {
 
   update(transaction: TransactionDTO): Promise<number | null> {
     try {
+      if (!transaction.id)
+        throw new Error("Tidak ada id untuk update transaksi");
+
       const statement = this.sqliteDb.prepare(
         `UPDATE TransactionData 
         SET date = ?, transactionTypeId = ? 

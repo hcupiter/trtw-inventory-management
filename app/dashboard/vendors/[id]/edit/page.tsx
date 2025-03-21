@@ -27,6 +27,7 @@ const EditVendorPage = () => {
     router.back();
   };
 
+  const [vendorData, setVendorData] = useState<VendorEntity>();
   const [message, setMessage] = useState<string | null>();
 
   const [vendorId, setVendorId] = useState<string>("");
@@ -38,10 +39,11 @@ const EditVendorPage = () => {
   const [nameError, setNameError] = useState<string>("");
 
   const validateData = async () => {
+    if (!vendorData) return;
     cleanError();
 
     try {
-      const newIdError = await validateVendorId(vendorId);
+      const newIdError = await validateVendorId(vendorId, vendorData.vendorId);
       const newNameError = await validateVendorName(name);
 
       setIdError(newIdError);

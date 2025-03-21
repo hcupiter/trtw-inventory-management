@@ -32,8 +32,7 @@ export default function Page() {
   };
 
   const handleEditItemDataClicked = () => {
-    // TODO
-    // router.push(`/dashboard/vendors/${params.id}/edit`);
+    router.push(`/dashboard/items/${params.id}/edit`);
   };
 
   const { openOverlay, closeOverlay } = useOverlay();
@@ -156,6 +155,7 @@ export default function Page() {
           {/* Vendor Data */}
           <div className="flex flex-col gap-6">
             <TRDWLabel title="ID barang" description={itemData.itemId} />
+            <TRDWLabel title="Nama barang" description={itemData.name} />
             <TRDWLabel
               title="Harga per biji (Rp)"
               description={priceFormatter(itemData.price)}

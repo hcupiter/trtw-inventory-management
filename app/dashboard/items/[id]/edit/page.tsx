@@ -4,9 +4,9 @@ import TRDWButton, {
   ButtonVariant,
 } from "@/components/ui/shared/button/TRDWButton";
 import TRDWTextField from "@/components/ui/shared/textfield/TRDWTextField";
-import { useRouter } from "next/navigation";
+import { useParams, useRouter } from "next/navigation";
 import { Icon } from "@iconify/react";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { toast } from "react-toastify";
 import { errorWriter } from "@/utils/errorWriter";
 import { VendorEntity } from "@/models/entity/VendorEntity";
@@ -17,19 +17,25 @@ import {
   validateItemStock,
   validateItemVendor,
 } from "@/usecase/items/ValidateItemDataUseCase";
-import { saveItemDataUseCase } from "@/usecase/items/SaveItemDataUseCase";
 import { ItemEntity } from "@/models/entity/ItemEntity";
 import { ItemSelectVendorField } from "@/components/ui/item/ItemSelectVendorField";
 import { useOverlay } from "@/context/OverlayContext";
 import { ItemSelectVendorView } from "@/components/ui/item/ItemSelectVendorView";
 import { isNumeric } from "@/utils/validateNumeric";
+import { updateItemUseCase } from "@/usecase/items/UpdateItemUseCase";
+import { fetchItemByIdUseCase } from "@/usecase/items/fetch/FetchItemByIdUseCase";
+import { TRDWLoadingView } from "@/components/ui/shared/loading/TRDWLoadingView";
 
-const AddItemsPage = () => {
+const Page = () => {
+  const params = useParams<{ id: string }>();
+  const idNumber = Number(params.id);
   const router = useRouter();
 
   const goBack = () => {
     router.back();
   };
+
+  const [itemData, setItemData] = useState<ItemEntity>();
 
   const [itemId, setItemId] = useState<string>("");
   const [name, setName] = useState<string>("");
@@ -42,6 +48,8 @@ const AddItemsPage = () => {
   const [priceError, setPriceError] = useState<string>("");
   const [stockError, setStockError] = useState<string>("");
   const [vendorError, setVendorError] = useState<string>("");
+
+  const [message, setMessage] = useState<string | undefined>();
 
   const { openOverlay, closeOverlay } = useOverlay();
   const handleChangeVendorTappedEvent = () => {
@@ -63,9 +71,10 @@ const AddItemsPage = () => {
   };
 
   const validateData = async () => {
+    if (!itemData) return;
     cleanError();
 
-    const newIdError = await validateItemId(itemId);
+    const newIdError = await validateItemId(itemId, itemData.itemId);
     const newNameError = validateItemName(name);
     const newPriceError = validateItemPrice(Number(price));
     const newStockError = validateItemStock(Number(stock));
@@ -84,14 +93,15 @@ const AddItemsPage = () => {
       !newStockError &&
       !newVendorError
     ) {
-      saveItem();
+      updateItem();
     }
   };
 
-  const saveItem = async () => {
+  const updateItem = async () => {
     try {
       if (itemId && name && price && stock && vendor) {
         const entity: ItemEntity = {
+          id: idNumber,
           itemId: itemId,
           name: name,
           price: Number(price),
@@ -99,9 +109,10 @@ const AddItemsPage = () => {
           vendor: vendor,
         };
 
-        const result = await saveItemDataUseCase(entity);
+        const result = await updateItemUseCase(entity);
         toast.success(result);
-        cleanData();
+        setData();
+        goBack();
       } else {
         throw new Error("Mohon periksa kembali data...");
       }
@@ -118,13 +129,32 @@ const AddItemsPage = () => {
     setVendorError("");
   };
 
-  const cleanData = () => {
-    setItemId("");
-    setName("");
-    setPrice("");
-    setStock("");
-    setVendor(null);
+  const setData = (entity?: ItemEntity) => {
+    setItemId(entity?.itemId || "");
+    setName(entity?.name || "");
+    setPrice(String(entity?.price) || "");
+    setStock(String(entity?.stockQty) || "");
+    setVendor(entity?.vendor || null);
   };
+
+  useEffect(() => {
+    const fetchExistingData = async () => {
+      setMessage("Sedang mengambil data...");
+      try {
+        const fetchedItemData = await fetchItemByIdUseCase(idNumber);
+        setItemData(fetchedItemData);
+        setData(fetchedItemData);
+      } catch (error) {
+        toast.error(errorWriter(error));
+      } finally {
+        setMessage(undefined);
+      }
+    };
+
+    fetchExistingData();
+  }, []);
+
+  if (message) return <TRDWLoadingView label={message} />;
 
   return (
     <div className="flex flex-col justify-items-start w-full h-full gap-8">
@@ -136,7 +166,7 @@ const AddItemsPage = () => {
             className="w-7 h-7 hover:text-blue"
             onClick={goBack}
           />
-          <h1 className="text-black text-2xl font-bold">Tambah Barang</h1>
+          <h1 className="text-black text-2xl font-bold">Edit Barang</h1>
         </div>
 
         <TRDWButton
@@ -209,4 +239,4 @@ const AddItemsPage = () => {
   );
 };
 
-export default AddItemsPage;
+export default Page;

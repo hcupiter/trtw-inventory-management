@@ -107,9 +107,11 @@ export class SQLiteItemService implements IITemService {
   }
   update(item: ItemDTO): Promise<boolean> {
     try {
+      if (!item.id) throw new Error("Tidak ada id untuk update item");
+
       const statement = this.sqliteDb.prepare(
         `UPDATE Item 
-        SET itemId = ? name = ?, price = ?, stockQty = ?, vendorID = ? 
+        SET itemId = ?, name = ?, price = ?, stockQty = ?, vendorID = ? 
         WHERE id = ? AND isDeleted = 0`
       );
       const results = statement.run(

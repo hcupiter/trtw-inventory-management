@@ -91,6 +91,8 @@ export class SQLiteVendorService implements IVendorService {
   }
   update(vendor: VendorDTO): Promise<boolean> {
     try {
+      if (!vendor.id) throw new Error("Tidak ada id untuk update vendor");
+
       const statement = this.sqliteDb.prepare(
         `UPDATE Vendor SET vendorId = ?, name = ?, address = ?, phone = ? WHERE id = ? AND isDeleted = 0`
       );
