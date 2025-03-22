@@ -5,6 +5,7 @@ import TRDWButton, {
 } from "@/components/ui/shared/button/TRDWButton";
 import TRDWDatePickerLabel from "@/components/ui/shared/datepicker/TRDWDatePickerLabel";
 import TRDWDropdownLabel from "@/components/ui/shared/dropdown/TRDWDropdownLabel";
+import { TransactionItemCartCard } from "@/components/ui/transaction/item/TransactionItemCartCard";
 import { TransactionItemSelectionView } from "@/components/ui/transaction/TransactionItemSelectionView";
 import { useOverlay } from "@/context/OverlayContext";
 import { ItemEntity } from "@/models/entity/ItemEntity";
@@ -112,11 +113,14 @@ const AddTransactionPage = () => {
         </TRDWButton>
       </div>
 
-      <ItemCartListView
-        cart={cart}
-        onAddClick={handleAddCartItemEvent}
-        onSubstractClick={handleSubstractCartItemEvent}
-      />
+      <div className="flex flex-col gap-4">
+        <h1 className="font-bold text-lg">Daftar Barang terjual</h1>
+        <ItemCartListView
+          cart={cart}
+          onAddClick={handleAddCartItemEvent}
+          onSubstractClick={handleSubstractCartItemEvent}
+        />
+      </div>
     </div>
   );
 };
@@ -133,30 +137,14 @@ const ItemCartListView = ({
   if (cart.length <= 0) return null;
 
   return (
-    <div className="size-full">
+    <div className="size-full gap-4 flex flex-col">
       {cart.map((item) => (
-        <div key={item.item.itemId} className="flex w-full justify-between">
-          <div className="flex flex-col ">
-            <p>{item.item.name} </p>
-            <p>{item.qty}</p>
-          </div>
-          <div className="flex gap-3">
-            <TRDWButton
-              onClick={() => {
-                if (item.item.id) onAddClick(item.item.id);
-              }}
-            >
-              Tambah
-            </TRDWButton>
-            <TRDWButton
-              onClick={() => {
-                if (item.item.id) onSubstractClick(item.item.id);
-              }}
-            >
-              Kurang
-            </TRDWButton>
-          </div>
-        </div>
+        <TransactionItemCartCard
+          key={item.item.itemId}
+          cartItem={item}
+          onAddClick={onAddClick}
+          onSubstractClick={onSubstractClick}
+        />
       ))}
     </div>
   );

@@ -16,15 +16,20 @@ export const TransactionItemSelectionCard = ({
 }) => {
   return (
     <CardBackground>
-      <div className="w-full flex flex-row items-center justify-between">
-        <ItemDescriptionSection itemEntity={itemEntity} carts={carts} />
-        <TRDWButton
-          onClick={() => {
-            onSelect(itemEntity);
-          }}
-        >
-          Tambah
-        </TRDWButton>
+      <div className="w-full flex flex-col">
+        <div className="flex gap-2 items-center border-b-1 mb-2 pb-2 border-gray-400/75">
+          <p className="font-bold">{itemEntity.itemId}</p>
+        </div>
+        <div className="w-full flex flex-row items-center justify-between">
+          <ItemDescriptionSection itemEntity={itemEntity} carts={carts} />
+          <TRDWButton
+            onClick={() => {
+              onSelect(itemEntity);
+            }}
+          >
+            Tambah
+          </TRDWButton>
+        </div>
       </div>
     </CardBackground>
   );
@@ -37,16 +42,6 @@ const ItemDescriptionSection = ({
   itemEntity: ItemEntity;
   carts: TransactionItemCardEntity[];
 }) => {
-  const itemInCart = carts.find((element) => element.item.id === itemEntity.id);
-
-  const stockToDisplay = (itemInCart?: TransactionItemCardEntity) => {
-    if (itemInCart) {
-      return itemEntity.stockQty - itemInCart.qty;
-    } else {
-      return itemEntity.stockQty;
-    }
-  };
-
   return (
     <div className="flex gap-2">
       <div className="flex flex-col w-16">
@@ -55,13 +50,13 @@ const ItemDescriptionSection = ({
       </div>
 
       <div className="flex flex-col w-56">
-        <p className="text-gray text-xs">{`(${itemEntity.itemId})`}</p>
+        <p className="text-gray text-xs">{`Nama Barang`}</p>
         <p className="font-bold text-xs">{itemEntity.name}</p>
       </div>
 
       <div className="flex flex-col w-24">
         <p className="text-gray text-xs">Stok</p>
-        <p className="font-bold text-xs">{stockToDisplay(itemInCart)}</p>
+        <p className="font-bold text-xs">{itemEntity.stockQty}</p>
       </div>
 
       <div className="flex flex-col w-32">
