@@ -37,9 +37,7 @@ const ItemDescriptionSection = ({
   itemEntity: ItemEntity;
   carts: TransactionItemCardEntity[];
 }) => {
-  const itemInCart = carts.find(
-    (element) => element.itemId === itemEntity.itemId
-  );
+  const itemInCart = carts.find((element) => element.item.id === itemEntity.id);
 
   const stockToDisplay = (itemInCart?: TransactionItemCardEntity) => {
     if (itemInCart) {

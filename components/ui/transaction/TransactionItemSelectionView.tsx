@@ -12,6 +12,7 @@ import { errorWriter } from "@/utils/errorWriter";
 import { fetchAllItemsDataUseCase } from "@/usecase/items/fetch/FetchItemsDataUseCase";
 import { TRDWLoadingView } from "../shared/loading/TRDWLoadingView";
 import { filterItemUseCase } from "@/usecase/items/FilterItemsUseCase";
+import { filterItemNotInCartUseCase } from "@/usecase/transaction/FilterItemNotInCartUseCase";
 
 export const TransactionItemSelectionView = ({
   carts,
@@ -31,8 +32,12 @@ export const TransactionItemSelectionView = ({
     try {
       setMessage("Sedang mengambil data barang...");
       const fetchedItems = await fetchAllItemsDataUseCase();
-      setItemList(fetchedItems);
-      setFilteredItemList(fetchedItems);
+      const filteredItemsNotInCart = filterItemNotInCartUseCase(
+        fetchedItems,
+        carts
+      );
+      setItemList(filteredItemsNotInCart);
+      setFilteredItemList(filteredItemsNotInCart);
     } catch (error) {
       toast.error(errorWriter(error));
     } finally {
@@ -43,9 +48,11 @@ export const TransactionItemSelectionView = ({
   const handleSearchTextInput = (query: string) => {
     setSearchText(query);
     const filteredItems = filterItemUseCase(query, itemList);
-    const filteredItemsNotInCart = filteredItems.filter(
-      (item) => !carts.some((cartItem) => cartItem.id === item.id)
+    const filteredItemsNotInCart = filterItemNotInCartUseCase(
+      filteredItems,
+      carts
     );
+
     setFilteredItemList(filteredItemsNotInCart);
   };
 

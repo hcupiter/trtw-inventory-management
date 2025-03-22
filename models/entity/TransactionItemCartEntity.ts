@@ -1,7 +1,6 @@
+import { ItemEntity } from "./ItemEntity";
+
 export interface TransactionItemCardEntity {
-  id: number;
-  itemId: string;
-  vendorId: string;
+  item: ItemEntity;
   qty: number;
-  price: number;
 }

@@ -9,6 +9,10 @@ import { TransactionItemSelectionView } from "@/components/ui/transaction/Transa
 import { useOverlay } from "@/context/OverlayContext";
 import { ItemEntity } from "@/models/entity/ItemEntity";
 import { TransactionItemCardEntity } from "@/models/entity/TransactionItemCartEntity";
+import {
+  addTransactionCartItemUseCase,
+  removeTransactionCartItemUseCase,
+} from "@/usecase/transaction/ModifyTransactionCartItemUseCase";
 
 import { Icon } from "@iconify/react";
 import { useRouter } from "next/navigation";
@@ -25,7 +29,7 @@ const AddTransactionPage = () => {
   };
 
   const { openOverlay, closeOverlay, makeFullScreen } = useOverlay();
-  const handleAddItemClickedEvent = () => {
+  const handleAddItemToCartClickedEvent = () => {
     makeFullScreen(true);
     openOverlay(
       <TransactionItemSelectionView
@@ -38,7 +42,26 @@ const AddTransactionPage = () => {
     );
   };
 
-  const updateCart = (item: ItemEntity) => {};
+  const updateCart = (item: ItemEntity) => {
+    if (cart.some((element) => element.item.id == item.id)) return;
+    const toSubmit: TransactionItemCardEntity = {
+      item: item,
+      qty: 1,
+    };
+
+    setCart((prevCart) => [...prevCart, toSubmit]);
+    closeOverlay();
+  };
+
+  const handleAddCartItemEvent = (selectedItemId: number) => {
+    const updatedCart = addTransactionCartItemUseCase(cart, selectedItemId);
+    setCart(updatedCart);
+  };
+
+  const handleSubstractCartItemEvent = (selectedItemId: number) => {
+    const updatedCart = removeTransactionCartItemUseCase(cart, selectedItemId);
+    setCart(updatedCart);
+  };
 
   return (
     <div className="flex flex-col justify-items-start w-full h-full gap-8">
@@ -83,11 +106,58 @@ const AddTransactionPage = () => {
 
         <TRDWButton
           iconName="ic:baseline-plus"
-          onClick={handleAddItemClickedEvent}
+          onClick={handleAddItemToCartClickedEvent}
         >
           Tambah Barang
         </TRDWButton>
       </div>
+
+      <ItemCartListView
+        cart={cart}
+        onAddClick={handleAddCartItemEvent}
+        onSubstractClick={handleSubstractCartItemEvent}
+      />
+    </div>
+  );
+};
+
+const ItemCartListView = ({
+  cart,
+  onAddClick,
+  onSubstractClick,
+}: {
+  cart: TransactionItemCardEntity[];
+  onAddClick: (selectedItemId: number) => void;
+  onSubstractClick: (selectedItemId: number) => void;
+}) => {
+  if (cart.length <= 0) return null;
+
+  return (
+    <div className="size-full">
+      {cart.map((item) => (
+        <div key={item.item.itemId} className="flex w-full justify-between">
+          <div className="flex flex-col ">
+            <p>{item.item.name} </p>
+            <p>{item.qty}</p>
+          </div>
+          <div className="flex gap-3">
+            <TRDWButton
+              onClick={() => {
+                if (item.item.id) onAddClick(item.item.id);
+              }}
+            >
+              Tambah
+            </TRDWButton>
+            <TRDWButton
+              onClick={() => {
+                if (item.item.id) onSubstractClick(item.item.id);
+              }}
+            >
+              Kurang
+            </TRDWButton>
+          </div>
+        </div>
+      ))}
     </div>
   );
 };
