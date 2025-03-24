@@ -1,9 +1,8 @@
-import { ItemDTO, ItemSchema } from "@/models/dto/ItemDTO";
+import { ItemSchema } from "@/models/dto/ItemDTO";
 import { itemService } from "@/utils/appModule";
 import { checkAPISchemaError } from "@/utils/checkSchemaError";
 import { errorWriter } from "@/utils/errorWriter";
 import { NextResponse } from "next/server";
-import { z } from "zod";
 
 export async function GET(req: Request) {
   try {

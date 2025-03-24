@@ -6,8 +6,6 @@ export const OverlayContentContainer = ({
   children: ReactNode;
 }) => {
   return (
-    <div className="flex flex-col w-200 max-h-[80vh] bg-white gap-6 overflow-y-auto">
-      {children}
-    </div>
+    <div className="flex flex-col w-[40vw] bg-white gap-6">{children}</div>
   );
 };

@@ -7,17 +7,19 @@ import TRDWButton, {
 import { OverlayConfirmation } from "@/components/ui/shared/confirmation/OverlayConfirmation";
 import TRDWEmptyView from "@/components/ui/shared/empty/TRDWEmptyView";
 import { TRDWLabel } from "@/components/ui/shared/label/TRDWLabel";
+import { ListViewContainer } from "@/components/ui/shared/listViewContainer/ListViewContainer";
 import { TRDWLoadingView } from "@/components/ui/shared/loading/TRDWLoadingView";
 import TRDWSearchBar from "@/components/ui/shared/searchbar/TRDWSearchBar";
 import { useOverlay } from "@/context/OverlayContext";
 import { ItemEntity } from "@/models/entity/ItemEntity";
 import { VendorEntity } from "@/models/entity/VendorEntity";
 import { fetchItemsByVendorIdUseCase } from "@/usecase/items/fetch/FetchItemsByVendorIdUseCase";
+import { filterItemUseCase } from "@/usecase/items/FilterItemsUseCase";
 import { fetchVendorByIdUseCase } from "@/usecase/vendors/fetch/FetchVendorByIDUseCase";
 import { errorWriter } from "@/utils/errorWriter";
 import { Icon } from "@iconify/react";
 import { useParams, useRouter } from "next/navigation";
-import { useEffect, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import { toast } from "react-toastify";
 
 export default function Page() {
@@ -33,14 +35,17 @@ export default function Page() {
 
   const { openOverlay, closeOverlay } = useOverlay();
   const handleDeleteVendorDataClick = () => {
-    openOverlay(
-      <OverlayConfirmation
-        title={"Konfirmasi Hapus"}
-        description={"Apakah anda yakin untuk menghapus vendor ini?"}
-        onConfirm={deleteVendor}
-        onCancel={closeOverlay}
-      />
-    );
+    openOverlay({
+      overlayContent: (
+        <OverlayConfirmation
+          title={"Konfirmasi Hapus"}
+          description={"Apakah anda yakin untuk menghapus vendor ini?"}
+          onConfirm={deleteVendor}
+          onCancel={closeOverlay}
+        />
+      ),
+      isFullScreen: false,
+    });
   };
 
   const deleteVendor = async () => {
@@ -67,7 +72,6 @@ export default function Page() {
 
   const [searchText, setSearchText] = useState<string>("");
   const [items, setItems] = useState<ItemEntity[]>([]);
-  const [filteredItems, setFilteredItems] = useState<ItemEntity[]>([]);
 
   const handleSearchTextInput = (query: string) => {
     setSearchText(query);
@@ -85,33 +89,20 @@ export default function Page() {
         );
         setVendorData(fetchedVendor);
         setItems(fetchedItems);
-        setFilteredItems(fetchedItems);
-      } catch (err: any) {
-        setMessage(err.message);
+      } catch (error) {
+        setMessage(errorWriter(error));
       } finally {
         setMessage(null);
       }
     };
 
     fetchVendorData();
-  }, []);
+  }, [params.id]);
 
-  useEffect(() => {
-    if (searchText.length <= 0) {
-      setFilteredItems(items);
-      return;
-    }
-
-    const searchLower = searchText.toLowerCase();
-    const filtered = items.filter((item) => {
-      const itemName = item.name.toLowerCase();
-      const itemId = String(item.id).toLowerCase(); // Ensure id is a string
-
-      return itemName.includes(searchLower) || itemId.includes(searchLower);
-    });
-
-    setFilteredItems(filtered);
-  }, [searchText]);
+  const filteredItems = useMemo(() => {
+    if (searchText.length <= 0) return items;
+    return filterItemUseCase(searchText, items);
+  }, [searchText, items]);
 
   const handleItemCardTappedEvent = (id: number) => {
     router.push(`/dashboard/items/${id}`);
@@ -183,26 +174,10 @@ export default function Page() {
                 </div>
               </div>
 
-              <div className="flex w-full h-full items-start">
-                {filteredItems.length > 0 ? (
-                  <div className="flex flex-col gap-2 w-full">
-                    {/* TODO: Add Navigation to items */}
-                    {filteredItems.map((element) => (
-                      <ItemCard
-                        key={element.id}
-                        item={element}
-                        onTap={() => {
-                          if (element.id) handleItemCardTappedEvent(element.id);
-                        }}
-                      />
-                    ))}
-                  </div>
-                ) : (
-                  <TRDWEmptyView
-                    label={"Tidak ada barang terdaftar untuk vendor.."}
-                  />
-                )}
-              </div>
+              <VendorItemListView
+                items={filteredItems}
+                onClick={handleItemCardTappedEvent}
+              />
             </div>
           </div>
         )}
@@ -210,3 +185,30 @@ export default function Page() {
     </div>
   );
 }
+
+const VendorItemListView = ({
+  items,
+  onClick,
+}: {
+  items: ItemEntity[];
+  onClick: (id: number) => void;
+}) => {
+  if (items.length <= 0)
+    return (
+      <TRDWEmptyView label={"Tidak ada barang terdaftar untuk vendor.."} />
+    );
+
+  return (
+    <ListViewContainer>
+      {items.map((element) => (
+        <ItemCard
+          key={element.id}
+          item={element}
+          onTap={() => {
+            if (element.id) onClick(element.id);
+          }}
+        />
+      ))}
+    </ListViewContainer>
+  );
+};

@@ -58,7 +58,7 @@ const DashboardLayout = ({ children }: { children: React.ReactNode }) => {
       </aside>
 
       {/* Page Content */}
-      <main className="flex p-6 w-full h-full"> {children} </main>
+      <main className="flex p-6 w-full h-full overflow-hidden">{children}</main>
     </div>
   );
 };

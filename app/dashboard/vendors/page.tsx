@@ -4,12 +4,14 @@ import TRDWButton, {
   ButtonVariant,
 } from "@/components/ui/shared/button/TRDWButton";
 import TRDWEmptyView from "@/components/ui/shared/empty/TRDWEmptyView";
+import { ListViewContainer } from "@/components/ui/shared/listViewContainer/ListViewContainer";
 import { TRDWLoadingView } from "@/components/ui/shared/loading/TRDWLoadingView";
 import TRDWSearchBar from "@/components/ui/shared/searchbar/TRDWSearchBar";
 import VendorCard from "@/components/ui/vendor/VendorCard";
 import { VendorEntity } from "@/models/entity/VendorEntity";
 import { fetchVendorUseCase } from "@/usecase/vendors/fetch/FetchVendorsUseCase";
 import { filterVendorsUseCase } from "@/usecase/vendors/FilterVendorsUseCase";
+import { errorWriter } from "@/utils/errorWriter";
 import { useRouter } from "next/navigation";
 import { useState, useEffect } from "react";
 
@@ -38,8 +40,8 @@ const VendorsPage = () => {
         const fetched = await fetchVendorUseCase();
         setAllVendors(fetched);
         setFilteredVendors(fetched); // Default: show all vendors
-      } catch (err: any) {
-        setMessage(err.message);
+      } catch (error) {
+        setMessage(errorWriter(error));
       } finally {
         setMessage(null);
       }
@@ -88,27 +90,34 @@ const VendorsPage = () => {
         />
 
         {/* Data Transaksi */}
-        <div className="flex flex-col w-full h-full overflow-x-scroll">
-          <div className="flex flex-col gap-8">
-            {filteredVendors.length <= 0 ? (
-              <TRDWEmptyView label={"Tidak ada data vendor ditemukan..."} />
-            ) : (
-              <div className="flex flex-col gap-8">
-                <div className="flex flex-col gap-3">
-                  {filteredVendors.map((element) => (
-                    <VendorCard
-                      key={element.id}
-                      vendor={element}
-                      onTap={() => handleVendorCardTappedEvent(element.id)}
-                    />
-                  ))}
-                </div>
-              </div>
-            )}
-          </div>
-        </div>
+        <VendorListView
+          vendors={filteredVendors}
+          onClick={handleVendorCardTappedEvent}
+        />
       </div>
     </div>
+  );
+};
+
+const VendorListView = ({
+  vendors,
+  onClick,
+}: {
+  vendors: VendorEntity[];
+  onClick: (id: number) => void;
+}) => {
+  if (vendors.length <= 0)
+    return <TRDWEmptyView label={"Tidak ada data vendor ditemukan..."} />;
+  return (
+    <ListViewContainer>
+      {vendors.map((element) => (
+        <VendorCard
+          key={element.id}
+          vendor={element}
+          onTap={() => onClick(element.id)}
+        />
+      ))}
+    </ListViewContainer>
   );
 };
 

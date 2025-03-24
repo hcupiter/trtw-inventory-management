@@ -11,7 +11,7 @@ import { TransactionData } from "@/models/entity/TransactionData";
 import { fetchTransactionByDate } from "@/usecase/transaction/fetch/FetchTransactionByDateUseCase";
 import { errorWriter } from "@/utils/errorWriter";
 import { useRouter } from "next/navigation";
-import { useEffect, useState } from "react";
+import { useCallback, useEffect, useState } from "react";
 
 const TransactionsPage = () => {
   const router = useRouter();
@@ -44,7 +44,7 @@ const TransactionsPage = () => {
     fetchTransactionData();
   };
 
-  const fetchTransactionData = async () => {
+  const fetchTransactionData = useCallback(async () => {
     try {
       setMessage("Sedang mengambil data...");
       const fetchedTransaction = await fetchTransactionByDate(
@@ -57,11 +57,11 @@ const TransactionsPage = () => {
     } finally {
       setMessage(undefined);
     }
-  };
+  }, [startDate, endDate]);
 
   useEffect(() => {
     fetchTransactionData();
-  }, []);
+  }, [fetchTransactionData]);
 
   return (
     <div className="flex flex-col justify-items-start w-full h-full">
@@ -137,7 +137,7 @@ const TransactionListView = ({
     <div className="w-full h-full">
       <ListViewContainer>
         {transactions.map((transaction) => (
-          <div>{transaction.id}</div>
+          <div key={transaction.id}>{transaction.id}</div>
         ))}
       </ListViewContainer>
     </div>

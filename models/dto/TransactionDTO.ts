@@ -6,13 +6,13 @@ import { FetchTransactionTypeByIdUseCase } from "@/usecase/transaction/type/Fetc
 import { TransactionItem } from "../entity/TransactionItem";
 
 export const TransactionSchema = z.object({
-  id: z.number(),
+  id: z.number().optional(),
   date: z.string(),
   transactionTypeId: z.number(),
 });
 
 export interface TransactionDTO {
-  id: number;
+  id?: number;
   date: string;
   transactionTypeId: number;
 }
@@ -21,6 +21,7 @@ export const mapTransactionDataToEntity = async (
   dto: TransactionDTO
 ): Promise<TransactionData> => {
   try {
+    if (!dto.id) throw new Error("Tidak ada id transaksi");
     const transactionItems: TransactionItem[] =
       await fetchTransactionItemsByTransactionIdUseCase(dto.id);
 

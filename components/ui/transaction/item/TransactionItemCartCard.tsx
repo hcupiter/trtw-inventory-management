@@ -1,7 +1,6 @@
 import { TransactionItemCardEntity } from "@/models/entity/TransactionItemCartEntity";
 import { CardBackground } from "../../shared/cardBackground/CardBackground";
 import { priceFormatter } from "@/utils/priceFormatter";
-import { VendorTag } from "../../vendor/VendorTag";
 import TRDWButton, { ButtonVariant } from "../../shared/button/TRDWButton";
 
 export const TransactionItemCartCard = ({

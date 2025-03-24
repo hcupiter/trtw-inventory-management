@@ -9,7 +9,7 @@ import { fetchItemByIdUseCase } from "@/usecase/items/fetch/FetchItemByIdUseCase
 import { fetchItemTransactionReportUseCase } from "@/usecase/items/fetch/FetchItemTransactionReportUseCase";
 import { errorWriter } from "@/utils/errorWriter";
 import { useParams, useRouter } from "next/navigation";
-import { useEffect, useState } from "react";
+import { useCallback, useEffect, useState } from "react";
 import { toast } from "react-toastify";
 import { Icon } from "@iconify/react";
 import TRDWButton, {
@@ -37,14 +37,17 @@ export default function Page() {
 
   const { openOverlay, closeOverlay } = useOverlay();
   const handleDeleteItemDataClicked = () => {
-    openOverlay(
-      <OverlayConfirmation
-        title={"Konfirmasi Hapus"}
-        description={"Apakah anda yakin untuk menghapus barang ini?"}
-        onConfirm={deleteItem}
-        onCancel={closeOverlay}
-      />
-    );
+    openOverlay({
+      overlayContent: (
+        <OverlayConfirmation
+          title={"Konfirmasi Hapus"}
+          description={"Apakah anda yakin untuk menghapus barang ini?"}
+          onConfirm={deleteItem}
+          onCancel={closeOverlay}
+        />
+      ),
+      isFullScreen: false,
+    });
   };
 
   const deleteItem = async () => {
@@ -74,20 +77,20 @@ export default function Page() {
   >([]);
   const [reportMessage, setReportMessage] = useState<string | undefined>();
 
-  const fetchItemData = async () => {
+  const fetchItemData = useCallback(async () => {
     setMessage("Menampilkan data...");
 
     try {
       const fetchedItemData = await fetchItemByIdUseCase(idNumber);
       setItemData(fetchedItemData);
-    } catch (err: any) {
-      setMessage(err.message);
+    } catch (error) {
+      setMessage(errorWriter(error));
     } finally {
       setMessage(null);
     }
-  };
+  }, [idNumber]);
 
-  const fetchTransactionReportData = async () => {
+  const fetchTransactionReportData = useCallback(async () => {
     setReportMessage("Mengambil data...");
     try {
       const fetchedTransactionReports = await fetchItemTransactionReportUseCase(
@@ -101,19 +104,22 @@ export default function Page() {
     } finally {
       setReportMessage(undefined);
     }
-  };
+  }, [idNumber, startDate, endDate]);
 
   // Fetch Vendor Details
   useEffect(() => {
     fetchItemData();
     fetchTransactionReportData();
-  }, []);
+  }, [fetchItemData, fetchTransactionReportData]);
 
   const handleSearchClicked = () => {
     fetchTransactionReportData();
   };
 
-  const handleItemReportClicked = (transactionId: number) => {};
+  const handleItemReportClicked = (transactionId: number) => {
+    // TODO
+    console.log(`transactionId ${transactionId} is clicked`);
+  };
 
   if (message) return <TRDWLoadingView label={message} />;
   if (!itemData) return <TRDWEmptyView label="Tidak ada data barang" />;
@@ -208,7 +214,11 @@ const ItemTransactionReportListView = ({
     <div className="flex w-full h-full items-start">
       <ListViewContainer>
         {transactionReports.map((element) => (
-          <ItemTransactionReportCard report={element} onClick={onItemClick} />
+          <ItemTransactionReportCard
+            key={element.transactionId}
+            report={element}
+            onClick={onItemClick}
+          />
         ))}
       </ListViewContainer>
     </div>

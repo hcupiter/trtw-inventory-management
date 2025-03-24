@@ -7,8 +7,13 @@ type OverlayContextType = {
   isOpen: boolean;
   content: ReactNode;
   fullScreen: boolean;
-  makeFullScreen: (status: boolean) => void;
-  openOverlay: (content: ReactNode) => void;
+  openOverlay: ({
+    overlayContent,
+    isFullScreen,
+  }: {
+    overlayContent: ReactNode;
+    isFullScreen?: boolean;
+  }) => void;
   closeOverlay: () => void;
 };
 
@@ -17,20 +22,25 @@ const OverlayContext = createContext<OverlayContextType | undefined>(undefined);
 export const OverlayProvider = ({ children }: { children: ReactNode }) => {
   const [isOpen, setIsOpen] = useState(false);
   const [content, setContent] = useState<ReactNode>(null);
-  const [fullScreen, setFullScreen] = useState(false);
+  const [fullScreen, setFullScreen] = useState(false); // ✅ Added fullScreen state
 
-  const openOverlay = (overlayContent: ReactNode) => {
+  const openOverlay = ({
+    overlayContent,
+    isFullScreen = false,
+  }: {
+    overlayContent: ReactNode;
+    isFullScreen?: boolean;
+  }) => {
     setContent(overlayContent);
+    if (isFullScreen) setFullScreen(isFullScreen);
+    else setFullScreen(false);
     setIsOpen(true);
   };
 
   const closeOverlay = () => {
     setIsOpen(false);
+    setFullScreen(false);
     setContent(null);
-  };
-
-  const makeFullScreen = (status: boolean) => {
-    setFullScreen(status);
   };
 
   return (
@@ -38,14 +48,13 @@ export const OverlayProvider = ({ children }: { children: ReactNode }) => {
       value={{
         isOpen,
         content,
+        fullScreen,
         openOverlay,
         closeOverlay,
-        fullScreen,
-        makeFullScreen,
       }}
     >
       {children}
-      {isOpen && <Overlay />}
+      {isOpen && <Overlay fullScreen={fullScreen} />}
     </OverlayContext.Provider>
   );
 };

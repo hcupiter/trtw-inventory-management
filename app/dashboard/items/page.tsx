@@ -5,14 +5,15 @@ import TRDWButton, {
   ButtonVariant,
 } from "@/components/ui/shared/button/TRDWButton";
 import TRDWEmptyView from "@/components/ui/shared/empty/TRDWEmptyView";
+import { ListViewContainer } from "@/components/ui/shared/listViewContainer/ListViewContainer";
 import { TRDWLoadingView } from "@/components/ui/shared/loading/TRDWLoadingView";
 import TRDWSearchBar from "@/components/ui/shared/searchbar/TRDWSearchBar";
 import { ItemEntity } from "@/models/entity/ItemEntity";
 import { fetchAllItemsDataUseCase } from "@/usecase/items/fetch/FetchItemsDataUseCase";
 import { filterItemUseCase } from "@/usecase/items/FilterItemsUseCase";
+import { errorWriter } from "@/utils/errorWriter";
 import { useRouter } from "next/navigation";
-import { useEffect, useState } from "react";
-import { v4 as uuidv4 } from "uuid";
+import { useEffect, useMemo, useState } from "react";
 
 const ItemsPage = () => {
   const router = useRouter();
@@ -20,24 +21,18 @@ const ItemsPage = () => {
     router.push(`/dashboard/items/add`);
   };
 
+  const [message, setMessage] = useState<string | null>();
+  const [items, setItems] = useState<ItemEntity[]>([]);
+
   const [searchText, setSearchText] = useState<string>("");
   const handleSearchTextInput = (value: string) => {
     setSearchText(value);
   };
 
-  useEffect(() => {
-    if (searchText.length <= 0) {
-      setFilteredItems(items);
-      return;
-    }
-
-    const filtered = filterItemUseCase(searchText, items);
-    setFilteredItems(filtered);
-  }, [searchText]);
-
-  const [message, setMessage] = useState<string | null>();
-  const [items, setItems] = useState<ItemEntity[]>([]);
-  const [filteredItems, setFilteredItems] = useState<ItemEntity[]>([]);
+  const filteredItems = useMemo(() => {
+    if (searchText.length <= 0) return items;
+    return filterItemUseCase(searchText, items);
+  }, [searchText, items]);
 
   // Fetch Items Data
   useEffect(() => {
@@ -46,9 +41,8 @@ const ItemsPage = () => {
       try {
         const itemsData = await fetchAllItemsDataUseCase();
         setItems(itemsData);
-        setFilteredItems(itemsData);
-      } catch (error: any) {
-        setMessage(error.message);
+      } catch (error) {
+        setMessage(errorWriter(error));
       } finally {
         setMessage(null);
       }
@@ -86,16 +80,12 @@ const ItemsPage = () => {
         />
 
         {/* Data Items */}
-        <div className="flex flex-col w-full h-full overflow-x-scroll">
-          <div className="flex flex-col gap-8">
-            <ItemsListView
-              items={filteredItems}
-              onTap={(id) => {
-                handleItemCardTappedEvent(id);
-              }}
-            />
-          </div>
-        </div>
+        <ItemsListView
+          items={filteredItems}
+          onTap={(id) => {
+            handleItemCardTappedEvent(id);
+          }}
+        />
       </div>
     </div>
   );
@@ -112,21 +102,19 @@ const ItemsListView = ({
     return <TRDWEmptyView label={"Tidak ada data barang ditemukan..."} />;
 
   return (
-    <div className="flex flex-col gap-8">
-      <div className="flex flex-col gap-3">
-        {items.map((item) => (
-          <ItemCard
-            key={item.itemId}
-            item={item}
-            onTap={() => {
-              if (item.id) {
-                onTap(item.id);
-              }
-            }}
-          />
-        ))}
-      </div>
-    </div>
+    <ListViewContainer>
+      {items.map((item) => (
+        <ItemCard
+          key={item.itemId}
+          item={item}
+          onTap={() => {
+            if (item.id) {
+              onTap(item.id);
+            }
+          }}
+        />
+      ))}
+    </ListViewContainer>
   );
 };
 

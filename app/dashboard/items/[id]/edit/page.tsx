@@ -152,7 +152,7 @@ const Page = () => {
     };
 
     fetchExistingData();
-  }, []);
+  }, [idNumber]);
 
   if (message) return <TRDWLoadingView label={message} />;
 

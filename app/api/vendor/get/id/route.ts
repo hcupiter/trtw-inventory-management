@@ -1,4 +1,4 @@
-import { itemService, vendorService } from "@/utils/appModule";
+import { vendorService } from "@/utils/appModule";
 import { errorWriter } from "@/utils/errorWriter";
 import { NextResponse } from "next/server";
 

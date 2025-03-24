@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import { useCallback, useEffect, useState } from "react";
 import { OverlayContentContainer } from "../shared/overlay/OverlayContentContainer";
 import { OverlayContentTitle } from "../shared/overlay/OverlayContentTitle";
 import TRDWSearchBar from "../shared/searchbar/TRDWSearchBar";
@@ -28,7 +28,7 @@ export const TransactionItemSelectionView = ({
   const [itemList, setItemList] = useState<ItemEntity[]>([]);
   const [filteredItemList, setFilteredItemList] = useState<ItemEntity[]>([]);
 
-  const fetchItemEntity = async () => {
+  const fetchItemEntity = useCallback(async () => {
     try {
       setMessage("Sedang mengambil data barang...");
       const fetchedItems = await fetchAllItemsDataUseCase();
@@ -43,7 +43,7 @@ export const TransactionItemSelectionView = ({
     } finally {
       setMessage(undefined);
     }
-  };
+  }, [carts]);
 
   const handleSearchTextInput = (query: string) => {
     setSearchText(query);
@@ -58,7 +58,7 @@ export const TransactionItemSelectionView = ({
 
   useEffect(() => {
     fetchItemEntity();
-  }, []);
+  }, [fetchItemEntity]);
 
   return (
     <OverlayContentContainer>
@@ -84,7 +84,6 @@ export const TransactionItemSelectionView = ({
 };
 
 const ItemListView = ({
-  carts,
   message,
   itemList,
   onSelect,
@@ -99,13 +98,12 @@ const ItemListView = ({
     return <TRDWEmptyView label={"Tidak ada data barang..."} />;
 
   return (
-    <div className="w-full">
+    <div className="w-full max-h-[40vh]">
       <ListViewContainer>
         {itemList.map((item) => (
           <TransactionItemSelectionCard
             key={item.itemId}
             itemEntity={item}
-            carts={carts}
             onSelect={onSelect}
           />
         ))}

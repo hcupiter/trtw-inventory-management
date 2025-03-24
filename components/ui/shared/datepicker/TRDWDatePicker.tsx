@@ -1,7 +1,7 @@
 import DatePicker from "react-datepicker";
 import "react-datepicker/dist/react-datepicker.css";
 
-const CustomInput = (props: any) => (
+const CustomInput = (props: React.ComponentPropsWithoutRef<"input">) => (
   <input {...props} readOnly className="text-black py-4 pl-4" />
 );
 

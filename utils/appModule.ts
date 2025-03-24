@@ -15,13 +15,14 @@ import { IVendorService } from "@/services/vendor/IVendorService";
 import { SQLiteVendorService } from "@/services/vendor/SQLiteVendorService";
 
 // Services
-export const authService: IAuthService = new SQLiteAuthService();
-export const transactionService: ITransactionService =
-  new SQLiteTransactionService();
-export const transactionItemService: ItransactionItemService =
-  new SQLiteTransactionItemService();
-export const itemService: IITemService = new SQLiteItemService();
-export const vendorService: IVendorService = new SQLiteVendorService();
-export const transactionTypeService: ITransactionTypeService =
-  new SQLiteTransactionTypeService();
 export const database: IDatabase = new SQLiteDatabase();
+
+export const authService: IAuthService = new SQLiteAuthService(database);
+export const transactionService: ITransactionService =
+  new SQLiteTransactionService(database);
+export const transactionItemService: ItransactionItemService =
+  new SQLiteTransactionItemService(database);
+export const itemService: IITemService = new SQLiteItemService(database);
+export const vendorService: IVendorService = new SQLiteVendorService(database);
+export const transactionTypeService: ITransactionTypeService =
+  new SQLiteTransactionTypeService(database);

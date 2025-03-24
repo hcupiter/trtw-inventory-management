@@ -9,7 +9,6 @@ import { Icon } from "@iconify/react";
 import { useEffect, useState } from "react";
 import { toast } from "react-toastify";
 import { errorWriter } from "@/utils/errorWriter";
-import { mapVendorToEntity, VendorDTO } from "@/models/dto/VendorDTO";
 import { VendorEntity } from "@/models/entity/VendorEntity";
 import { TRDWLoadingView } from "@/components/ui/shared/loading/TRDWLoadingView";
 import { fetchVendorByIdUseCase } from "@/usecase/vendors/fetch/FetchVendorByIDUseCase";
@@ -96,6 +95,7 @@ const EditVendorPage = () => {
       setMessage("Mengambil data terbaru...");
       try {
         const fetched = await fetchVendorByIdUseCase(Number(params.id));
+        setVendorData(fetched);
         setData(fetched);
       } catch (error) {
         setMessage(errorWriter(error));
@@ -105,7 +105,7 @@ const EditVendorPage = () => {
     };
 
     setupData();
-  }, []);
+  }, [params.id]);
 
   if (message) return <TRDWLoadingView label={message} />;
 

@@ -1,7 +1,6 @@
 "use client";
 
 import { VendorEntity } from "@/models/entity/VendorEntity";
-import { Icon } from "@iconify/react";
 import { useEffect, useState } from "react";
 import { TRDWLoadingView } from "../shared/loading/TRDWLoadingView";
 import { fetchVendorUseCase } from "@/usecase/vendors/fetch/FetchVendorsUseCase";

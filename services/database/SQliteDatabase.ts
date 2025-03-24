@@ -19,4 +19,8 @@ export class SQLiteDatabase implements IDatabase {
   rollback(): void {
     this.db.prepare("ROLLBACK").run();
   }
+
+  getInstance(): any {
+    return this.db;
+  }
 }

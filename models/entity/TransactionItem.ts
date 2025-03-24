@@ -1,7 +1,9 @@
+import { VendorEntity } from "./VendorEntity";
+
 export interface TransactionItem {
   id?: number;
   itemId: string;
-  vendorId: string;
+  vendor: VendorEntity;
   name: string;
   qty: number;
   sellPrice: number;

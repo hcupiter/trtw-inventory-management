@@ -10,7 +10,11 @@ export const ItemTransactionReportCard = ({
   onClick: (transactionId: number) => void;
 }) => {
   return (
-    <CardBackground>
+    <CardBackground
+      onClick={() => {
+        onClick(report.transactionId);
+      }}
+    >
       <TRDWCardLabel
         width={200}
         title={"Id transaksi"}

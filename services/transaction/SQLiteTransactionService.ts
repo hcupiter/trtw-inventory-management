@@ -1,24 +1,27 @@
 import { TransactionDTO } from "@/models/dto/TransactionDTO";
 import { ITransactionService } from "./ITransactionService";
-import db from "@/database/db";
 import { QuerySortOrder } from "../utils/QuerySortOrder";
+import { IDatabase } from "../database/IDatabase";
+import { database } from "@/utils/appModule";
 
 const defaultOffset = 0;
 const defaultLimit = 1000;
 const defaultSort = QuerySortOrder.ASC;
 
 export class SQLiteTransactionService implements ITransactionService {
-  private sqliteDb: any;
+  private sqliteDb: IDatabase;
 
-  constructor(dbInstance: any = db) {
+  constructor(dbInstance: IDatabase = database) {
     this.sqliteDb = dbInstance; // Use real DB if no test DB provided
   }
 
   save(transaction: TransactionDTO): Promise<number | null> {
     try {
-      const statement = this.sqliteDb.prepare(
-        "INSERT INTO TransactionData (date, transactionTypeId, isDeleted) VALUES (?, ?, 0) "
-      );
+      const statement = this.sqliteDb
+        .getInstance()
+        .prepare(
+          "INSERT INTO TransactionData (date, transactionTypeId, isDeleted) VALUES (?, ?, 0) "
+        );
       const result = statement.run(
         transaction.date,
         transaction.transactionTypeId
@@ -31,9 +34,11 @@ export class SQLiteTransactionService implements ITransactionService {
 
   getById(id: number): Promise<TransactionDTO | null> {
     try {
-      const statement = this.sqliteDb.prepare(
-        "SELECT * FROM TransactionData WHERE id = ? AND isDeleted = 0"
-      );
+      const statement = this.sqliteDb
+        .getInstance()
+        .prepare(
+          "SELECT * FROM TransactionData WHERE id = ? AND isDeleted = 0"
+        );
       const transaction = statement.get(id);
       return Promise.resolve(transaction as TransactionDTO | null);
     } catch (error) {
@@ -47,7 +52,7 @@ export class SQLiteTransactionService implements ITransactionService {
     sort: QuerySortOrder = QuerySortOrder.ASC
   ): Promise<TransactionDTO[]> {
     try {
-      const statement = this.sqliteDb.prepare(`
+      const statement = this.sqliteDb.getInstance().prepare(`
       SELECT * FROM TransactionData WHERE isDeleted = 0
       ORDER BY date ${sort} 
       LIMIT ? OFFSET ?
@@ -69,7 +74,7 @@ export class SQLiteTransactionService implements ITransactionService {
     sort: QuerySortOrder = QuerySortOrder.ASC
   ): Promise<TransactionDTO[]> {
     try {
-      const statement = this.sqliteDb.prepare(
+      const statement = this.sqliteDb.getInstance().prepare(
         `SELECT * FROM TransactionData 
         WHERE date BETWEEN ? AND ? AND isDeleted = 0
         ORDER BY date ${sort} LIMIT ? OFFSET ?`
@@ -94,7 +99,7 @@ export class SQLiteTransactionService implements ITransactionService {
     sort: QuerySortOrder = defaultSort
   ): Promise<TransactionDTO[]> {
     try {
-      const statement = this.sqliteDb.prepare(
+      const statement = this.sqliteDb.getInstance().prepare(
         `SELECT td.* FROM TransactionData td 
           INNER JOIN TransactionItem ti ON td.id = ti.transactionId 
           WHERE ti.itemId = ? AND td.isDeleted = 0 AND ti.isDeleted = 0 AND td.date BETWEEN ? AND ?
@@ -113,7 +118,7 @@ export class SQLiteTransactionService implements ITransactionService {
       if (!transaction.id)
         throw new Error("Tidak ada id untuk update transaksi");
 
-      const statement = this.sqliteDb.prepare(
+      const statement = this.sqliteDb.getInstance().prepare(
         `UPDATE TransactionData 
         SET date = ?, transactionTypeId = ? 
         WHERE id = ? AND isDeleted = 0`
@@ -131,7 +136,7 @@ export class SQLiteTransactionService implements ITransactionService {
 
   delete(id: number): Promise<boolean> {
     try {
-      const statement = this.sqliteDb.prepare(
+      const statement = this.sqliteDb.getInstance().prepare(
         `UPDATE TransactionData
         SET isDeleted = 1 
         WHERE id = ?`

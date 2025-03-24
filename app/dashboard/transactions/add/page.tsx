@@ -5,23 +5,35 @@ import TRDWButton, {
 } from "@/components/ui/shared/button/TRDWButton";
 import TRDWDatePickerLabel from "@/components/ui/shared/datepicker/TRDWDatePickerLabel";
 import TRDWDropdownLabel from "@/components/ui/shared/dropdown/TRDWDropdownLabel";
+import TRDWEmptyView from "@/components/ui/shared/empty/TRDWEmptyView";
 import { TransactionItemCartCard } from "@/components/ui/transaction/item/TransactionItemCartCard";
 import { TransactionItemSelectionView } from "@/components/ui/transaction/TransactionItemSelectionView";
 import { useOverlay } from "@/context/OverlayContext";
 import { ItemEntity } from "@/models/entity/ItemEntity";
-import { TransactionItemCardEntity } from "@/models/entity/TransactionItemCartEntity";
+import { TransactionData } from "@/models/entity/TransactionData";
+import {
+  mapToTransactionItem,
+  TransactionItemCardEntity,
+} from "@/models/entity/TransactionItemCartEntity";
+import { mapToTransactionType } from "@/models/entity/TransactionType";
+import { calculateTotalCartPriceUseCase } from "@/usecase/transaction/CalculateTotalCartPriceUseCase";
 import {
   addTransactionCartItemUseCase,
   removeTransactionCartItemUseCase,
 } from "@/usecase/transaction/ModifyTransactionCartItemUseCase";
+import { saveTransactionUseCase } from "@/usecase/transaction/SaveTransactionUseCase";
+import { validateCartUseCase } from "@/usecase/transaction/ValidateCartUseCase";
+import { errorWriter } from "@/utils/errorWriter";
 
 import { Icon } from "@iconify/react";
 import { useRouter } from "next/navigation";
-import { useState } from "react";
+import { useEffect, useState } from "react";
+import { toast } from "react-toastify";
 
 const AddTransactionPage = () => {
   const [transactionDate, setTransactionDate] = useState<Date>(new Date());
-  const [transactionType, setTransactionType] = useState<string>("Transaksi");
+  const [transactionType, setTransactionType] = useState<string>("Tunai");
+  const [totalPrice, setTotalPrice] = useState<number>(0);
   const [cart, setCart] = useState<TransactionItemCardEntity[]>([]);
 
   const router = useRouter();
@@ -29,18 +41,20 @@ const AddTransactionPage = () => {
     router.back();
   };
 
-  const { openOverlay, closeOverlay, makeFullScreen } = useOverlay();
+  const { openOverlay, closeOverlay } = useOverlay();
   const handleAddItemToCartClickedEvent = () => {
-    makeFullScreen(true);
-    openOverlay(
-      <TransactionItemSelectionView
-        carts={cart}
-        onSelect={updateCart}
-        onCancel={() => {
-          closeOverlay();
-        }}
-      />
-    );
+    openOverlay({
+      overlayContent: (
+        <TransactionItemSelectionView
+          carts={cart}
+          onSelect={updateCart}
+          onCancel={() => {
+            closeOverlay();
+          }}
+        />
+      ),
+      isFullScreen: true,
+    });
   };
 
   const updateCart = (item: ItemEntity) => {
@@ -54,6 +68,11 @@ const AddTransactionPage = () => {
     closeOverlay();
   };
 
+  useEffect(() => {
+    const newPrice = calculateTotalCartPriceUseCase(cart);
+    setTotalPrice(newPrice);
+  }, [cart]);
+
   const handleAddCartItemEvent = (selectedItemId: number) => {
     const updatedCart = addTransactionCartItemUseCase(cart, selectedItemId);
     setCart(updatedCart);
@@ -62,6 +81,41 @@ const AddTransactionPage = () => {
   const handleSubstractCartItemEvent = (selectedItemId: number) => {
     const updatedCart = removeTransactionCartItemUseCase(cart, selectedItemId);
     setCart(updatedCart);
+  };
+
+  const validateData = () => {
+    const newCartError = validateCartUseCase(cart);
+
+    if (newCartError) {
+      toast.error(newCartError);
+    } else {
+      saveTransaction();
+    }
+  };
+
+  const saveTransaction = async () => {
+    const mappedTransactionType = mapToTransactionType({
+      text: transactionType,
+    });
+
+    try {
+      if (!mappedTransactionType)
+        throw new Error("Tipe transaksi tidak dikenal");
+
+      const entity: TransactionData = {
+        date: transactionDate,
+        totalPrice: totalPrice,
+        transaction: cart.map(mapToTransactionItem),
+        transactionType: mappedTransactionType,
+      };
+      const result = await saveTransactionUseCase(entity);
+      if (result) {
+        toast.success(result);
+        goBack();
+      }
+    } catch (error) {
+      toast.error(errorWriter(error));
+    }
   };
 
   return (
@@ -77,7 +131,11 @@ const AddTransactionPage = () => {
           <h1 className="text-black text-2xl font-bold">Tambah transaksi</h1>
         </div>
 
-        <TRDWButton variant={ButtonVariant.SECONDARY} iconName="bx:edit">
+        <TRDWButton
+          variant={ButtonVariant.SECONDARY}
+          iconName="bx:edit"
+          onClick={validateData}
+        >
           Simpan
         </TRDWButton>
       </div>
@@ -105,16 +163,20 @@ const AddTransactionPage = () => {
           }}
         />
 
-        <TRDWButton
-          iconName="ic:baseline-plus"
-          onClick={handleAddItemToCartClickedEvent}
-        >
-          Tambah Barang
-        </TRDWButton>
+        <div className="flex flex-col w-fit">
+          <TRDWButton
+            iconName="ic:baseline-plus"
+            onClick={handleAddItemToCartClickedEvent}
+          >
+            Tambah Barang
+          </TRDWButton>
+        </div>
       </div>
 
-      <div className="flex flex-col gap-4">
-        <h1 className="font-bold text-lg">Daftar Barang terjual</h1>
+      <div className="flex flex-col gap-4 size-full">
+        <h1 className="flex gap-2 text-lg font-bold">
+          Daftar Barang Terjual <p className="text-red">*</p>
+        </h1>
         <ItemCartListView
           cart={cart}
           onAddClick={handleAddCartItemEvent}
@@ -134,18 +196,21 @@ const ItemCartListView = ({
   onAddClick: (selectedItemId: number) => void;
   onSubstractClick: (selectedItemId: number) => void;
 }) => {
-  if (cart.length <= 0) return null;
+  if (cart.length <= 0)
+    return <TRDWEmptyView label="Tidak ada daftar barang" />;
 
   return (
-    <div className="size-full gap-4 flex flex-col">
-      {cart.map((item) => (
-        <TransactionItemCartCard
-          key={item.item.itemId}
-          cartItem={item}
-          onAddClick={onAddClick}
-          onSubstractClick={onSubstractClick}
-        />
-      ))}
+    <div className="flex flex-col gap-4">
+      <div className="size-full gap-4 flex flex-col">
+        {cart.map((item) => (
+          <TransactionItemCartCard
+            key={item.item.itemId}
+            cartItem={item}
+            onAddClick={onAddClick}
+            onSubstractClick={onSubstractClick}
+          />
+        ))}
+      </div>
     </div>
   );
 };

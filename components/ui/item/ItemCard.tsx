@@ -2,13 +2,10 @@
 
 import { ItemEntity } from "@/models/entity/ItemEntity";
 import { Icon } from "@iconify/react";
-import { VendorTag } from "../vendor/VendorTag";
 import { priceFormatter } from "@/utils/priceFormatter";
 import { TRDWCardLabel } from "../shared/label/TRDWCardLabel";
-import { fetchVendorByIdUseCase } from "@/usecase/vendors/fetch/FetchVendorByIDUseCase";
-import { VendorEntity } from "@/models/entity/VendorEntity";
-import { useEffect, useState } from "react";
 import { CardBackground } from "../shared/cardBackground/CardBackground";
+import { VendorTag } from "../vendor/VendorTag";
 
 export const ItemCard = ({
   item,
@@ -24,7 +21,7 @@ export const ItemCard = ({
       <div className="w-full flex flex-row items-center justify-between gap-10">
         <div className="w-full flex flex-col">
           <div className="flex flex-col border-b-1 border-gray-400/75 pb-2 mb-2">
-            <p className=" text-lg font-bold">{item.itemId}</p>
+            <VendorTag tag={item.itemId} />
           </div>
           <div className="flex gap-4 text-base">
             <TRDWCardLabel

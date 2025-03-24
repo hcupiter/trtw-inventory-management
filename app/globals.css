@@ -52,6 +52,16 @@
   --border-radius-4: 1rem;
 }
 
+/* Hide scrollbar for Webkit browsers (Chrome, Safari) */
+.no-scrollbar::-webkit-scrollbar {
+  display: none;
+}
+
+/* Hide scrollbar for Firefox */
+.no-scrollbar {
+  scrollbar-width: none;
+}
+
 @media (prefers-color-scheme: light) {
   :root {
     --background: #0a0a0a;

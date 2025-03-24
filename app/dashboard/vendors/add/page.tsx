@@ -11,6 +11,10 @@ import { toast } from "react-toastify";
 import { errorWriter } from "@/utils/errorWriter";
 import { VendorDTO } from "@/models/dto/VendorDTO";
 import { saveVendorUseCase } from "@/usecase/vendors/SaveVendorsUseCase";
+import {
+  validateVendorId,
+  validateVendorName,
+} from "@/usecase/vendors/ValidateVendorDataUseCase";
 
 const AddVendorsPage = () => {
   const router = useRouter();
@@ -31,29 +35,13 @@ const AddVendorsPage = () => {
     setIdError("");
     setNameError("");
     try {
-      var idFlag = true;
-      var nameFlag = true;
+      const newIdError = await validateVendorId(vendorId);
+      const newNameError = await validateVendorName(name);
 
-      if (vendorId.length <= 0) {
-        setIdError("Mohon mengisi id vendor!");
-        idFlag = false;
-      } else if (vendorId.length > 7) {
-        setIdError("ID Vendor maksimal 7 huruf!");
-        idFlag = false;
-      } else {
-        const response = await fetch(`/api/vendor/get/vendorId?id=${vendorId}`);
-        if (response.ok) {
-          setIdError("ID sudah terdaftar sebelumnya, mohon membuat id baru");
-          idFlag = false;
-        }
-      }
+      setIdError(newIdError);
+      setNameError(newNameError);
 
-      if (name.length <= 0) {
-        setNameError("Mohon mengisi nama vendor!");
-        nameFlag = false;
-      }
-
-      if (idFlag && nameFlag) {
+      if (!newIdError && !newNameError) {
         const success = await saveData();
         if (success) cleanData();
       }

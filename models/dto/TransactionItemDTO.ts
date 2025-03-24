@@ -1,36 +1,45 @@
+import { fetchVendorByIdUseCase } from "@/usecase/vendors/fetch/FetchVendorByIDUseCase";
 import { TransactionItem } from "../entity/TransactionItem";
 import { z } from "zod";
+import { fetchItemByIdUseCase } from "@/usecase/items/fetch/FetchItemByIdUseCase";
 
 export const TransactionItemSchema = z.object({
   id: z.number().optional(),
-  itemId: z.string(),
-  vendorId: z.string(),
+  itemId: z.number(),
+  vendorId: z.number(),
   name: z.string(),
   qty: z.number(),
   sellPrice: z.number(),
-  transactionId: z.number(),
+  transactionId: z.number().optional(),
 });
 
 export interface TransactionItemDTO {
   id?: number;
-  itemId: string;
-  vendorId: string;
+  itemId: number;
+  vendorId: number;
   name: string;
   qty: number;
   sellPrice: number;
-  transactionId: number;
+  transactionId?: number;
 }
 
-export const mapTransactionItemToEntity = (
+export const mapTransactionItemToEntity = async (
   dto: TransactionItemDTO
-): TransactionItem => {
-  return {
-    id: dto.id,
-    itemId: dto.itemId,
-    vendorId: dto.vendorId,
-    name: dto.name,
-    qty: dto.qty,
-    sellPrice: dto.sellPrice,
-    totalPrice: dto.qty * dto.sellPrice,
-  };
+): Promise<TransactionItem> => {
+  try {
+    const vendor = await fetchVendorByIdUseCase(dto.vendorId);
+    const item = await fetchItemByIdUseCase(dto.itemId);
+    return Promise.resolve({
+      id: dto.id,
+      itemId: item.itemId,
+      vendor: vendor,
+      name: dto.name,
+      qty: dto.qty,
+      sellPrice: dto.sellPrice,
+      totalPrice: dto.qty * dto.sellPrice,
+    });
+  } catch (error) {
+    console.log(error);
+    return Promise.reject(error);
+  }
 };
