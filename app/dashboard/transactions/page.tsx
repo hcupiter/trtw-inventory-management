@@ -7,6 +7,7 @@ import TRDWDatePicker from "@/components/ui/shared/datepicker/TRDWDatePicker";
 import TRDWEmptyView from "@/components/ui/shared/empty/TRDWEmptyView";
 import { ListViewContainer } from "@/components/ui/shared/listViewContainer/ListViewContainer";
 import { TRDWLoadingView } from "@/components/ui/shared/loading/TRDWLoadingView";
+import { TransactionCard } from "@/components/ui/transaction/TransactionCard";
 import { TransactionData } from "@/models/entity/TransactionData";
 import { fetchTransactionByDate } from "@/usecase/transaction/fetch/FetchTransactionByDateUseCase";
 import { validateDateQueryUseCase } from "@/usecase/transaction/ValidateDateQueryUseCase";
@@ -14,6 +15,7 @@ import { errorWriter } from "@/utils/errorWriter";
 import { useRouter } from "next/navigation";
 import { useCallback, useEffect, useState } from "react";
 import { toast } from "react-toastify";
+import { v4 as uuidv4 } from "uuid";
 
 const TransactionsPage = () => {
   const router = useRouter();
@@ -85,7 +87,7 @@ const TransactionsPage = () => {
       </div>
 
       {/* Content */}
-      <div className="flex flex-col w-full h-full items-start justify-items-start">
+      <div className="flex flex-col w-full h-full items-start justify-items-start gap-8">
         {/* Durasi Transaksi */}
         <div className="flex flex-col w-full gap-2">
           <p className="flex text-base font-bold">Durasi transaksi</p>
@@ -141,10 +143,17 @@ const TransactionListView = ({
     return <TRDWEmptyView label={"Tidak ada transaksi..."} />;
 
   return (
-    <div className="w-full h-full">
+    <div className="w-full h-full flex flex-col gap-2">
+      <h1 className="font-bold text-base">Daftar Transaksi</h1>
       <ListViewContainer>
         {transactions.map((transaction) => (
-          <div key={transaction.id}>{transaction.id}</div>
+          <TransactionCard
+            key={transaction.id || uuidv4()}
+            transaction={transaction}
+            onClick={() => {
+              console.log(`TODO: Transaction ${transaction.id} is clicked`);
+            }}
+          />
         ))}
       </ListViewContainer>
     </div>

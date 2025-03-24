@@ -75,6 +75,7 @@ export default function Page() {
   const [transactionReports, setTransactionReports] = useState<
     ItemTransactionReport[]
   >([]);
+
   const [reportMessage, setReportMessage] = useState<string | undefined>();
 
   const fetchItemData = useCallback(async () => {
