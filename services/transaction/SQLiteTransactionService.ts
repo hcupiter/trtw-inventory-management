@@ -54,7 +54,7 @@ export class SQLiteTransactionService implements ITransactionService {
     try {
       const statement = this.sqliteDb.getInstance().prepare(`
       SELECT * FROM TransactionData WHERE isDeleted = 0
-      ORDER BY date ${sort} 
+      ORDER BY DATE(date) ${sort} 
       LIMIT ? OFFSET ?
     `);
 
@@ -76,8 +76,9 @@ export class SQLiteTransactionService implements ITransactionService {
     try {
       const statement = this.sqliteDb.getInstance().prepare(
         `SELECT * FROM TransactionData 
-        WHERE date BETWEEN ? AND ? AND isDeleted = 0
-        ORDER BY date ${sort} LIMIT ? OFFSET ?`
+        WHERE date >= ? AND date <= ?
+        AND isDeleted = 0
+        ORDER BY DATE(date) ${sort} LIMIT ? OFFSET ?`
       );
 
       const transactions = statement.all(from, to, limit, offset);

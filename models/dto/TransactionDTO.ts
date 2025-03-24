@@ -2,7 +2,7 @@ import { z } from "zod";
 import { TransactionData } from "../entity/TransactionData";
 import { fetchTransactionItemsByTransactionIdUseCase } from "@/usecase/transaction/items/FetchTransactionItemsByTransactionIdUseCase";
 import { TransactionType } from "../entity/TransactionType";
-import { FetchTransactionTypeByIdUseCase } from "@/usecase/transaction/type/FetchTransactionTypeByIdUseCase";
+import { fetchTransactionTypeByIdUseCase } from "@/usecase/transaction/type/FetchTransactionTypeByIdUseCase";
 import { TransactionItem } from "../entity/TransactionItem";
 
 export const TransactionSchema = z.object({
@@ -31,7 +31,7 @@ export const mapTransactionDataToEntity = async (
     );
 
     const transactionType: TransactionType =
-      await FetchTransactionTypeByIdUseCase(dto.transactionTypeId);
+      await fetchTransactionTypeByIdUseCase(dto.transactionTypeId);
 
     return Promise.resolve({
       id: dto.id,

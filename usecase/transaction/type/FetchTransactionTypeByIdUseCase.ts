@@ -1,7 +1,7 @@
 import { mapTransactionTypeToEntity } from "@/models/dto/TransactionTypeDTO";
 import { TransactionType } from "@/models/entity/TransactionType";
 
-export const FetchTransactionTypeByIdUseCase = async (id: number) => {
+export const fetchTransactionTypeByIdUseCase = async (id: number) => {
   try {
     // Fetch By Id
     const response = await fetch(`/api/transaction/type?id=${id}`);
@@ -10,8 +10,9 @@ export const FetchTransactionTypeByIdUseCase = async (id: number) => {
     if (!response.ok) {
       throw new Error(data.error || "Gagal mengambil tipe transaksi");
     }
-    const mappedEntity: TransactionType = data.transactionTypes.map(
-      mapTransactionTypeToEntity
+
+    const mappedEntity: TransactionType = mapTransactionTypeToEntity(
+      data.transactionTypes
     );
     return Promise.resolve(mappedEntity);
   } catch (error) {

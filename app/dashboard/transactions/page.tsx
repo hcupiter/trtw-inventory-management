@@ -9,9 +9,11 @@ import { ListViewContainer } from "@/components/ui/shared/listViewContainer/List
 import { TRDWLoadingView } from "@/components/ui/shared/loading/TRDWLoadingView";
 import { TransactionData } from "@/models/entity/TransactionData";
 import { fetchTransactionByDate } from "@/usecase/transaction/fetch/FetchTransactionByDateUseCase";
+import { validateDateQueryUseCase } from "@/usecase/transaction/ValidateDateQueryUseCase";
 import { errorWriter } from "@/utils/errorWriter";
 import { useRouter } from "next/navigation";
 import { useCallback, useEffect, useState } from "react";
+import { toast } from "react-toastify";
 
 const TransactionsPage = () => {
   const router = useRouter();
@@ -24,27 +26,31 @@ const TransactionsPage = () => {
   const [startDate, setStartDate] = useState<Date>(new Date());
   const [endDate, setEndDate] = useState<Date>(new Date());
   const [dateError, setDateError] = useState<string | null>();
-
   const [transactions, setTransactions] = useState<TransactionData[]>([]);
   const [message, setMessage] = useState<string>();
+  const [shouldFetch, setShouldFetch] = useState<boolean>(true); // Flag for initial fetch
 
   const handleSearch = () => {
-    // Validate Date
-    if (startDate > endDate) {
-      setDateError("Error! Hari awal tidak boleh melebihi hari akhir!");
-      return;
+    const isDateValid = validateDate();
+    if (isDateValid) {
+      setShouldFetch(true); // Allow fetching on user action
+      fetchTransactionData();
     }
+  };
 
-    if (startDate > new Date()) {
-      setDateError("Error! Hari awal tidak bisa melebihi hari ini!");
-      return;
-    }
+  const validateDate = (): boolean => {
+    const newDateError = validateDateQueryUseCase({
+      from: startDate,
+      to: endDate,
+    });
 
-    setDateError("");
-    fetchTransactionData();
+    setDateError(newDateError);
+    return !newDateError;
   };
 
   const fetchTransactionData = useCallback(async () => {
+    if (!shouldFetch) return; // Prevent unnecessary fetching
+
     try {
       setMessage("Sedang mengambil data...");
       const fetchedTransaction = await fetchTransactionByDate(
@@ -53,15 +59,16 @@ const TransactionsPage = () => {
       );
       setTransactions(fetchedTransaction);
     } catch (error) {
-      setMessage(errorWriter(error));
+      toast.error(errorWriter(error));
     } finally {
       setMessage(undefined);
+      setShouldFetch(false); // Reset fetch flag after completion
     }
-  }, [startDate, endDate]);
+  }, [shouldFetch]); // Only depends on `shouldFetch`
 
   useEffect(() => {
     fetchTransactionData();
-  }, [fetchTransactionData]);
+  }, [fetchTransactionData]); // Run only on mount
 
   return (
     <div className="flex flex-col justify-items-start w-full h-full">
