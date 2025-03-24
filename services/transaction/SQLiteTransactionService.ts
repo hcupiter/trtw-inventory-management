@@ -103,7 +103,7 @@ export class SQLiteTransactionService implements ITransactionService {
       const statement = this.sqliteDb.getInstance().prepare(
         `SELECT td.* FROM TransactionData td 
           INNER JOIN TransactionItem ti ON td.id = ti.transactionId 
-          WHERE ti.itemId = ? AND td.isDeleted = 0 AND ti.isDeleted = 0 AND td.date BETWEEN ? AND ?
+          WHERE ti.itemId = ? AND td.isDeleted = 0 AND ti.isDeleted = 0 AND (td.date >= ? AND td.date <= ?)
           ORDER BY td.date ${sort} LIMIT ? OFFSET ?`
       );
 

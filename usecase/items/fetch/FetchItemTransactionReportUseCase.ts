@@ -4,6 +4,7 @@ import {
   mapTransactionToItemTransactionReport,
 } from "@/models/entity/ItemTransactionReport";
 import { TransactionData } from "@/models/entity/TransactionData";
+import { formatDateToYYYYMMDD } from "@/utils/dateFormatter";
 
 export const fetchItemTransactionReportUseCase = async (
   itemId: number,
@@ -11,8 +12,11 @@ export const fetchItemTransactionReportUseCase = async (
   to: Date
 ): Promise<ItemTransactionReport[]> => {
   try {
+    const fromDate = formatDateToYYYYMMDD(from);
+    const toDate = formatDateToYYYYMMDD(to);
+
     const transactionsResponse = await fetch(
-      `/api/transaction/get/itemId?id=${itemId}&from=${from.toISOString()}&to=${to.toISOString()}`
+      `/api/transaction/get/itemId?id=${itemId}&from=${fromDate}&to=${toDate})}`
     );
     const transactionsData = await transactionsResponse.json();
     if (!transactionsResponse.ok)

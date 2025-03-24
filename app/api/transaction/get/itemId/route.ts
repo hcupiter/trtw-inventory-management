@@ -1,4 +1,5 @@
 import { transactionService } from "@/utils/appModule";
+import { formatDateToYYYYMMDD } from "@/utils/dateFormatter";
 import { errorWriter } from "@/utils/errorWriter";
 import { NextResponse } from "next/server";
 
@@ -7,8 +8,8 @@ export async function GET(req: Request) {
     const { searchParams } = new URL(req.url);
     const id = Number(searchParams.get("id"));
 
-    const from = searchParams.get("from");
-    const to = searchParams.get("to");
+    const fromParam = searchParams.get("from");
+    const toParam = searchParams.get("to");
 
     if (!id)
       return NextResponse.json(
@@ -17,7 +18,10 @@ export async function GET(req: Request) {
       );
 
     // If there's any parameters from and to, return transaction by range
-    if (from && to) {
+    if (fromParam && toParam) {
+      // Convert to ensure only `YYYY-MM-DD` format is used
+      const from = formatDateToYYYYMMDD(new Date(fromParam));
+      const to = formatDateToYYYYMMDD(new Date(toParam));
       const transactions = await transactionService.getAllByItemId(
         Number(id),
         from,
