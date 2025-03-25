@@ -8,14 +8,14 @@ export interface TransactionData {
   date: Date;
   transactionType: TransactionType;
   totalPrice: number;
-  transaction: TransactionItem[];
+  transactionItems: TransactionItem[];
 }
 
 export const mapToInsertTransactionDTO = (
   transactionData: TransactionData
 ): InsertTransactionDTO => {
   try {
-    for (const item of transactionData.transaction) {
+    for (const item of transactionData.transactionItems) {
       if (!item.id)
         throw new Error(
           `Gagal memasukkan barang karena barang ${item.name} tidak memiliki id`
@@ -28,7 +28,7 @@ export const mapToInsertTransactionDTO = (
         date: formatDateToYYYYMMDD(transactionData.date),
         transactionTypeId: transactionData.transactionType.id,
       },
-      items: transactionData.transaction.map((item) => ({
+      items: transactionData.transactionItems.map((item) => ({
         id: item.id!,
         itemId: item.id!,
         name: item.name,

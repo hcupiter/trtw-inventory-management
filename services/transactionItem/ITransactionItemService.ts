@@ -26,5 +26,6 @@ export interface ItransactionItemService {
     itemId: number
   ): Promise<TransactionItemDTO | null>;
   updateByItemID(transactionItem: TransactionItemDTO): Promise<boolean>;
-  deleteByItemID(id: string): Promise<boolean>;
+  deleteByItemID(id: number): Promise<boolean>;
+  deleteByTransactionId(id: number): Promise<boolean>;
 }

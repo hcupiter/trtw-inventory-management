@@ -38,7 +38,7 @@ export const mapTransactionDataToEntity = async (
       date: new Date(dto.date),
       transactionType: transactionType,
       totalPrice: totalPrice,
-      transaction: transactionItems,
+      transactionItems: transactionItems,
     });
   } catch (error) {
     return Promise.reject(error);

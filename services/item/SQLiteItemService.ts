@@ -152,6 +152,21 @@ export class SQLiteItemService implements IITemService {
     }
   }
 
+  addItemStock(id: number, qty: number): Promise<boolean> {
+    try {
+      const statement = this.sqliteDb.getInstance().prepare(
+        `UPDATE Item 
+          SET stockQty = stockQty + ? 
+          WHERE id = ? AND isDeleted = 0`
+      );
+
+      const results = statement.run(qty, id);
+      return Promise.resolve(results.changes > 0);
+    } catch (error) {
+      return Promise.reject(error);
+    }
+  }
+
   delete(id: string): Promise<boolean> {
     try {
       const statement = this.sqliteDb

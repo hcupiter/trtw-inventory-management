@@ -23,7 +23,6 @@ const TransactionsPage = () => {
   const router = useRouter();
 
   const handleAddTransactionTappedEvent = () => {
-    console.log("Pressed");
     router.push("/dashboard/transactions/add");
   };
 
@@ -73,6 +72,11 @@ const TransactionsPage = () => {
   useEffect(() => {
     fetchTransactionData();
   }, [fetchTransactionData]); // Run only on mount
+
+  const handleTransactionCardClicked = (transactionId?: number) => {
+    if (!transactionId) toast.error("Tidak ada transaksi id");
+    router.push(`/dashboard/transactions/${transactionId}`);
+  };
 
   return (
     <div className="flex flex-col justify-items-start w-full h-full">
@@ -126,7 +130,11 @@ const TransactionsPage = () => {
 
         {/* Data Transaksi */}
         <div className="w-full h-full">
-          <TransactionListView transactions={transactions} message={message} />
+          <TransactionListView
+            transactions={transactions}
+            message={message}
+            onClick={handleTransactionCardClicked}
+          />
         </div>
       </div>
     </div>
@@ -136,9 +144,11 @@ const TransactionsPage = () => {
 const TransactionListView = ({
   transactions,
   message,
+  onClick,
 }: {
   transactions: TransactionData[];
   message?: string;
+  onClick: (transactionId?: number) => void;
 }) => {
   if (message) return <TRDWLoadingView label={message} />;
   if (transactions.length <= 0)
@@ -153,7 +163,7 @@ const TransactionListView = ({
             key={transaction.id || uuidv4()}
             transaction={transaction}
             onClick={() => {
-              console.log(`TODO: Transaction ${transaction.id} is clicked`);
+              onClick(transaction.id);
             }}
           />
         ))}

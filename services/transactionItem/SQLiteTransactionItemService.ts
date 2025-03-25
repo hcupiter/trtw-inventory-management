@@ -158,12 +158,26 @@ export class SQLiteTransactionItemService implements ItransactionItemService {
     }
   }
 
-  deleteByItemID(id: string): Promise<boolean> {
+  deleteByItemID(id: number): Promise<boolean> {
     try {
       const statement = this.sqliteDb.getInstance().prepare(
         `UPDATE TransactionItem 
         SET isDeleted = 1
         WHERE id = ?`
+      );
+      const result = statement.run(id);
+      return Promise.resolve(result.changes > 0);
+    } catch (error) {
+      return Promise.reject(error);
+    }
+  }
+
+  deleteByTransactionId(id: number): Promise<boolean> {
+    try {
+      const statement = this.sqliteDb.getInstance().prepare(
+        `UPDATE TransactionItem 
+        SET isDeleted = 1
+        WHERE transactionId = ?`
       );
       const result = statement.run(id);
       return Promise.resolve(result.changes > 0);

@@ -16,7 +16,7 @@ const DashboardLayout = ({ children }: { children: React.ReactNode }) => {
   return (
     <div className="h-screen flex w-screen">
       {/* Sidebar */}
-      <aside className="w-92 bg-blue flex flex-col justify-between pl-8 py-8">
+      <aside className="w-[20vw] bg-blue flex flex-col justify-between pl-8 py-8">
         {/* Top */}
         <div className="flex flex-col gap-8">
           {/* Title */}
@@ -58,7 +58,7 @@ const DashboardLayout = ({ children }: { children: React.ReactNode }) => {
       </aside>
 
       {/* Page Content */}
-      <main className="flex p-6 w-full h-full overflow-hidden">{children}</main>
+      <main className="flex p-6 w-full h-screen">{children}</main>
     </div>
   );
 };

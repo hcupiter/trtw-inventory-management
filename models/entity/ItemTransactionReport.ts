@@ -15,7 +15,7 @@ export const mapTransactionToItemTransactionReport = (
   itemId: string
 ): ItemTransactionReport | undefined => {
   try {
-    const item = entity.transaction.find(
+    const item = entity.transactionItems.find(
       (element) => element.itemId === itemId
     );
 

@@ -119,3 +119,102 @@ const substractItemStockUseCase = async (items: TransactionItemDTO[]) => {
     throw error;
   }
 };
+
+export async function DELETE(req: Request) {
+  const db = database;
+  try {
+    const { searchParams } = new URL(req.url);
+    const id = Number(searchParams.get("id"));
+
+    if (!id) {
+      return NextResponse.json(
+        {
+          error: "Tidak ada id transaksi untuk dihapus",
+        },
+        { status: 400 }
+      );
+    }
+
+    db.beginTransaction();
+    const result = deleteTransactionUseCase({ id: id });
+    if (!result) {
+      return NextResponse.json(
+        {
+          error: "Tidak ada transaksi yang dihapus...",
+        },
+        { status: 400 }
+      );
+    }
+
+    db.commit();
+    return NextResponse.json(
+      { message: `Sukses menghapus data transaksi` },
+      { status: 200 }
+    );
+  } catch (error) {
+    db.rollback();
+    checkAPISchemaError(error);
+    console.log(error);
+    return NextResponse.json(
+      {
+        error: errorWriter(error, "Something went wrong on the server!"),
+      },
+      { status: 500 }
+    );
+  }
+}
+
+const deleteTransactionUseCase = async ({
+  id,
+}: {
+  id: number;
+}): Promise<boolean> => {
+  try {
+    await reAddStockUseCase({ transactionId: id });
+    await deleteTransactionItemUseCase({ transactionId: id });
+
+    const result = await transactionService.delete(id);
+    if (!result) throw Error("Gagal menghapus transaksi");
+    return Promise.resolve(result);
+  } catch (error) {
+    return Promise.reject(error);
+  }
+};
+
+const reAddStockUseCase = async ({
+  transactionId,
+}: {
+  transactionId: number;
+}) => {
+  try {
+    const transactionItemDTOs: TransactionItemDTO[] =
+      await transactionItemService.getByTransactionID(transactionId);
+
+    const reAddStockResult = await Promise.all(
+      transactionItemDTOs.map((element) =>
+        itemService.addItemStock(element.itemId, element.qty)
+      )
+    );
+
+    if (reAddStockResult.some((result) => result === false)) {
+      throw new Error("Gagal mengembalikan stok beberapa barang transaksi");
+    }
+  } catch (error) {
+    throw error;
+  }
+};
+
+const deleteTransactionItemUseCase = async ({
+  transactionId,
+}: {
+  transactionId: number;
+}) => {
+  try {
+    const deleteTransactionItemResult =
+      await transactionItemService.deleteByTransactionId(transactionId);
+    if (!deleteTransactionItemResult)
+      throw new Error("Gagal menghapus item transaksi");
+  } catch (error) {
+    throw error;
+  }
+};

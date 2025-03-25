@@ -24,5 +24,6 @@ export interface IITemService {
   ): Promise<ItemDTO[]>;
   update(item: ItemDTO): Promise<boolean>;
   removeItemStock(id: number, qty: number): Promise<boolean>;
+  addItemStock(id: number, qty: number): Promise<boolean>;
   delete(id: string): Promise<boolean>;
 }

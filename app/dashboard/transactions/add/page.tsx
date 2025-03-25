@@ -7,6 +7,7 @@ import { OverlayConfirmation } from "@/components/ui/shared/confirmation/Overlay
 import TRDWDatePickerLabel from "@/components/ui/shared/datepicker/TRDWDatePickerLabel";
 import TRDWDropdownLabel from "@/components/ui/shared/dropdown/TRDWDropdownLabel";
 import TRDWEmptyView from "@/components/ui/shared/empty/TRDWEmptyView";
+import { ListViewContainer } from "@/components/ui/shared/listViewContainer/ListViewContainer";
 import { TransactionItemCartCard } from "@/components/ui/transaction/item/TransactionItemCartCard";
 import { TransactionItemSelectionView } from "@/components/ui/transaction/TransactionItemSelectionView";
 import { useOverlay } from "@/context/OverlayContext";
@@ -126,7 +127,7 @@ const AddTransactionPage = () => {
       const entity: TransactionData = {
         date: transactionDate,
         totalPrice: totalPrice,
-        transaction: cart.map(mapToTransactionItem),
+        transactionItems: cart.map(mapToTransactionItem),
         transactionType: mappedTransactionType,
       };
       const result = await saveTransactionUseCase(entity);
@@ -140,9 +141,9 @@ const AddTransactionPage = () => {
   };
 
   return (
-    <div className="flex flex-col justify-items-start w-full h-full gap-8">
+    <div className="flex flex-col justify-items-start w-full overflow-auto no-scrollbar gap-8">
       {/* Top Title */}
-      <div className="flex flex-row items-start justify-between w-full">
+      <div className="flex flex-row items-start justify-between w-[80vw] fixed z-50 h-16">
         <div className="flex gap-5 items-center">
           <Icon
             icon={"heroicons-outline:chevron-left"}
@@ -162,7 +163,7 @@ const AddTransactionPage = () => {
       </div>
 
       {/* Content */}
-      <div className="flex flex-col gap-6 w-fit">
+      <div className="flex flex-col gap-6 w-fit pt-16">
         <TRDWDatePickerLabel
           mandatory
           label={"Tanggal Transaksi"}
@@ -198,11 +199,13 @@ const AddTransactionPage = () => {
         <h1 className="flex gap-2 text-lg font-bold">
           Daftar Barang Terjual <p className="text-red">*</p>
         </h1>
-        <ItemCartListView
-          cart={cart}
-          onAddClick={handleAddCartItemEvent}
-          onSubstractClick={handleSubstractCartItemEvent}
-        />
+        <div className="flex w-full h-[45vh]">
+          <ItemCartListView
+            cart={cart}
+            onAddClick={handleAddCartItemEvent}
+            onSubstractClick={handleSubstractCartItemEvent}
+          />
+        </div>
       </div>
     </div>
   );
@@ -221,18 +224,16 @@ const ItemCartListView = ({
     return <TRDWEmptyView label="Tidak ada daftar barang" />;
 
   return (
-    <div className="flex flex-col gap-4">
-      <div className="size-full gap-4 flex flex-col">
-        {cart.map((item) => (
-          <TransactionItemCartCard
-            key={item.item.itemId}
-            cartItem={item}
-            onAddClick={onAddClick}
-            onSubstractClick={onSubstractClick}
-          />
-        ))}
-      </div>
-    </div>
+    <ListViewContainer scrollable={false}>
+      {cart.map((item) => (
+        <TransactionItemCartCard
+          key={item.item.itemId}
+          cartItem={item}
+          onAddClick={onAddClick}
+          onSubstractClick={onSubstractClick}
+        />
+      ))}
+    </ListViewContainer>
   );
 };
 
