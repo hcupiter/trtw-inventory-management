@@ -3,6 +3,7 @@
 import TRDWButton, {
   ButtonVariant,
 } from "@/components/ui/shared/button/TRDWButton";
+import { OverlayConfirmation } from "@/components/ui/shared/confirmation/OverlayConfirmation";
 import TRDWDatePickerLabel from "@/components/ui/shared/datepicker/TRDWDatePickerLabel";
 import TRDWDropdownLabel from "@/components/ui/shared/dropdown/TRDWDropdownLabel";
 import TRDWEmptyView from "@/components/ui/shared/empty/TRDWEmptyView";
@@ -83,6 +84,26 @@ const AddTransactionPage = () => {
     setCart(updatedCart);
   };
 
+  const handleSaveTransactionButtonClick = () => {
+    openOverlay({
+      overlayContent: (
+        <OverlayConfirmation
+          title={"Konfirmasi Simpan Transaksi"}
+          description={
+            "Apakah data sudah benar? (Data transaksi tidak bisa diubah setelah dibuat)"
+          }
+          onConfirm={() => {
+            closeOverlay();
+            validateData();
+          }}
+          onCancel={() => {
+            closeOverlay();
+          }}
+        />
+      ),
+    });
+  };
+
   const validateData = () => {
     const newCartError = validateCartUseCase(cart);
 
@@ -134,7 +155,7 @@ const AddTransactionPage = () => {
         <TRDWButton
           variant={ButtonVariant.SECONDARY}
           iconName="bx:edit"
-          onClick={validateData}
+          onClick={handleSaveTransactionButtonClick}
         >
           Simpan
         </TRDWButton>

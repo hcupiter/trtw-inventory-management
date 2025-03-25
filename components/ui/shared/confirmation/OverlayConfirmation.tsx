@@ -4,11 +4,17 @@ import TRDWButton, { ButtonVariant } from "../button/TRDWButton";
 export const OverlayConfirmation = ({
   title,
   description,
+  actionReversed,
+  confirmButtonLbl,
+  cancelButtonLbl,
   onConfirm,
   onCancel,
 }: {
   title: string;
   description: string;
+  actionReversed?: boolean;
+  confirmButtonLbl?: string;
+  cancelButtonLbl?: string;
   onConfirm: () => void;
   onCancel: () => void;
 }): ReactNode => {
@@ -19,20 +25,20 @@ export const OverlayConfirmation = ({
         <p>{description}</p>
       </div>
 
-      <div className="flex w-full justify-between gap-4">
-        <TRDWButton
-          fullWidth
-          variant={ButtonVariant.DANGER}
-          onClick={onConfirm}
-        >
-          Konfirmasi
-        </TRDWButton>
+      <div
+        className={`flex w-full justify-between gap-4 ${
+          actionReversed ? "flex-row-reverse" : ""
+        }`}
+      >
         <TRDWButton
           fullWidth
           variant={ButtonVariant.SECONDARY}
-          onClick={onCancel}
+          onClick={onConfirm}
         >
-          Batalkan
+          {confirmButtonLbl ? confirmButtonLbl : "Konfirmasi"}
+        </TRDWButton>
+        <TRDWButton fullWidth variant={ButtonVariant.DANGER} onClick={onCancel}>
+          {cancelButtonLbl ? cancelButtonLbl : "Batalkan"}
         </TRDWButton>
       </div>
     </div>

@@ -33,7 +33,7 @@ const ItemAction = ({
   item: ItemEntity;
   onSelect: (item: ItemEntity) => void;
 }) => {
-  if (item.stockQty <= 0) return null;
+  if (item.stockQty <= 0) return <p className="text-red">Stok habis</p>;
   return (
     <TRDWButton
       onClick={() => {
