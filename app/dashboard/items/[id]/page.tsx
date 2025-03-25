@@ -67,8 +67,8 @@ export default function Page() {
     }
   };
 
-  const [itemData, setItemData] = useState<ItemEntity | null>();
-  const [message, setMessage] = useState<string | null>();
+  const [itemData, setItemData] = useState<ItemEntity | undefined>();
+  const [message, setMessage] = useState<string | undefined>();
 
   const [startDate, setStartDate] = useState<Date>(new Date());
   const [endDate, setEndDate] = useState<Date>(new Date());
@@ -78,43 +78,48 @@ export default function Page() {
 
   const [reportMessage, setReportMessage] = useState<string | undefined>();
 
+  const fetchTransactionReportData = useCallback(
+    async ({ itemData }: { itemData: ItemEntity }) => {
+      setReportMessage("Mengambil data...");
+      try {
+        const fetchedTransactionReports =
+          await fetchItemTransactionReportUseCase(
+            idNumber,
+            itemData.itemId,
+            startDate,
+            endDate
+          );
+        setTransactionReports(fetchedTransactionReports);
+      } catch (error) {
+        toast.error(errorWriter(error));
+      } finally {
+        setReportMessage(undefined);
+      }
+    },
+    [idNumber, startDate, endDate]
+  );
+
   const fetchItemData = useCallback(async () => {
     setMessage("Menampilkan data...");
 
     try {
       const fetchedItemData = await fetchItemByIdUseCase(idNumber);
       setItemData(fetchedItemData);
+      fetchTransactionReportData({ itemData: fetchedItemData });
     } catch (error) {
       setMessage(errorWriter(error));
     } finally {
-      setMessage(null);
+      setMessage(undefined);
     }
-  }, [idNumber]);
-
-  const fetchTransactionReportData = useCallback(async () => {
-    setReportMessage("Mengambil data...");
-    try {
-      const fetchedTransactionReports = await fetchItemTransactionReportUseCase(
-        idNumber,
-        startDate,
-        endDate
-      );
-      setTransactionReports(fetchedTransactionReports);
-    } catch (error) {
-      toast.error(errorWriter(error));
-    } finally {
-      setReportMessage(undefined);
-    }
-  }, [idNumber, startDate, endDate]);
+  }, [idNumber, fetchTransactionReportData]);
 
   // Fetch Vendor Details
   useEffect(() => {
     fetchItemData();
-    fetchTransactionReportData();
-  }, [fetchItemData, fetchTransactionReportData]);
+  }, [fetchItemData]);
 
   const handleSearchClicked = () => {
-    fetchTransactionReportData();
+    if (itemData) fetchTransactionReportData({ itemData: itemData });
   };
 
   const handleItemReportClicked = (transactionId: number) => {

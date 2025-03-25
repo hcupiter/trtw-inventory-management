@@ -174,10 +174,12 @@ export default function Page() {
                 </div>
               </div>
 
-              <VendorItemListView
-                items={filteredItems}
-                onClick={handleItemCardTappedEvent}
-              />
+              <div className="w-full max-h-[45vh]">
+                <VendorItemListView
+                  items={filteredItems}
+                  onClick={handleItemCardTappedEvent}
+                />
+              </div>
             </div>
           </div>
         )}

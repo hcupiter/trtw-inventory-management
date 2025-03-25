@@ -2,6 +2,7 @@ import { TransactionItemCardEntity } from "@/models/entity/TransactionItemCartEn
 import { CardBackground } from "../../shared/cardBackground/CardBackground";
 import { priceFormatter } from "@/utils/priceFormatter";
 import TRDWButton, { ButtonVariant } from "../../shared/button/TRDWButton";
+import { VendorTag } from "../../vendor/VendorTag";
 
 export const TransactionItemCartCard = ({
   cartItem,
@@ -17,7 +18,7 @@ export const TransactionItemCartCard = ({
       <CardBackground>
         <div className="flex flex-col w-full">
           <div className="flex gap-2 items-center border-b-1 mb-3 pb-3 border-gray-400/75">
-            <p className="font-bold">{cartItem.item.itemId}</p>
+            <VendorTag tag={cartItem.item.itemId} />
           </div>
 
           <div className="flex w-full justify-between">

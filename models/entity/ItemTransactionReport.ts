@@ -12,18 +12,26 @@ export interface ItemTransactionReport {
 
 export const mapTransactionToItemTransactionReport = (
   entity: TransactionData,
-  itemId: number
-): ItemTransactionReport | null => {
-  const item = entity.transaction.find((element) => element.id === itemId);
+  itemId: string
+): ItemTransactionReport | undefined => {
+  try {
+    const item = entity.transaction.find(
+      (element) => element.itemId === itemId
+    );
 
-  if (!item) return null;
+    if (!item) throw new Error("Barang tidak ditemukan dalam transaksi");
+    if (!entity.id) throw new Error("Transaksi tidak memiliki id!");
 
-  return {
-    transactionId: entity.id,
-    transactionType: entity.transactionType.type,
-    date: entity.date,
-    qty: item.qty,
-    price: item.sellPrice,
-    totalPrice: item.totalPrice,
-  };
+    return {
+      transactionId: entity.id,
+      transactionType: entity.transactionType.type,
+      date: entity.date,
+      qty: item.qty,
+      price: item.sellPrice,
+      totalPrice: item.totalPrice,
+    };
+  } catch (error) {
+    console.log(error);
+    return undefined;
+  }
 };

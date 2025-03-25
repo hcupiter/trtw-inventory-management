@@ -7,7 +7,8 @@ import { TransactionData } from "@/models/entity/TransactionData";
 import { formatDateToYYYYMMDD } from "@/utils/dateFormatter";
 
 export const fetchItemTransactionReportUseCase = async (
-  itemId: number,
+  id: number,
+  itemId: string,
   from: Date,
   to: Date
 ): Promise<ItemTransactionReport[]> => {
@@ -16,13 +17,13 @@ export const fetchItemTransactionReportUseCase = async (
     const toDate = formatDateToYYYYMMDD(to);
 
     const transactionsResponse = await fetch(
-      `/api/transaction/get/itemId?id=${itemId}&from=${fromDate}&to=${toDate})}`
+      `/api/transaction/get/itemId?id=${id}&from=${fromDate}&to=${toDate}`
     );
     const transactionsData = await transactionsResponse.json();
     if (!transactionsResponse.ok)
       throw new Error(
         transactionsData.error ||
-          `Gagal mengambil data transaksi berdasarkan item id ${itemId}`
+          `Gagal mengambil data transaksi berdasarkan item id ${id}`
       );
 
     const mappedTransactionsEntity: TransactionData[] = await Promise.all(
@@ -31,7 +32,7 @@ export const fetchItemTransactionReportUseCase = async (
 
     const report: ItemTransactionReport[] = mappedTransactionsEntity
       .map((element) => mapTransactionToItemTransactionReport(element, itemId))
-      .filter((report) => report !== null); // Remove null values
+      .filter((report) => report !== undefined); // Remove null values
 
     return Promise.resolve(report);
   } catch (error) {

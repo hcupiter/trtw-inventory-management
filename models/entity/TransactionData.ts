@@ -1,3 +1,4 @@
+import { formatDateToYYYYMMDD } from "@/utils/dateFormatter";
 import { InsertTransactionDTO } from "../dto/InsertTransactionDTO";
 import { TransactionItem } from "./TransactionItem";
 import { TransactionType } from "./TransactionType";
@@ -24,7 +25,7 @@ export const mapToInsertTransactionDTO = (
     return {
       transaction: {
         id: transactionData.id,
-        date: transactionData.date.toISOString(),
+        date: formatDateToYYYYMMDD(transactionData.date),
         transactionTypeId: transactionData.transactionType.id,
       },
       items: transactionData.transaction.map((item) => ({

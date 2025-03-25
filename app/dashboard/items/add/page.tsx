@@ -46,20 +46,22 @@ const AddItemsPage = () => {
   const { openOverlay, closeOverlay } = useOverlay();
   const handleChangeVendorTappedEvent = () => {
     setVendorError("");
-    openOverlay(
-      <ItemSelectVendorView
-        onSelect={(selectedVendor) => {
-          setVendor(selectedVendor);
-          if (vendor) {
-            if (selectedVendor.id !== vendor.id)
+    openOverlay({
+      overlayContent: (
+        <ItemSelectVendorView
+          onSelect={(selectedVendor) => {
+            setVendor(selectedVendor);
+            if (vendor) {
+              if (selectedVendor.id !== vendor.id)
+                toast.success("Sukses memilih vendor");
+            } else {
               toast.success("Sukses memilih vendor");
-          } else {
-            toast.success("Sukses memilih vendor");
-          }
-        }}
-        onCancel={closeOverlay}
-      />
-    );
+            }
+          }}
+          onCancel={closeOverlay}
+        />
+      ),
+    });
   };
 
   const validateData = async () => {

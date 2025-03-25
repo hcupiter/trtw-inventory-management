@@ -80,12 +80,14 @@ const ItemsPage = () => {
         />
 
         {/* Data Items */}
-        <ItemsListView
-          items={filteredItems}
-          onTap={(id) => {
-            handleItemCardTappedEvent(id);
-          }}
-        />
+        <div className="w-full max-h-[75vh]">
+          <ItemsListView
+            items={filteredItems}
+            onTap={(id) => {
+              handleItemCardTappedEvent(id);
+            }}
+          />
+        </div>
       </div>
     </div>
   );

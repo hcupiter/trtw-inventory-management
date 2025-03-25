@@ -5,6 +5,7 @@ import TRDWButton, {
 } from "@/components/ui/shared/button/TRDWButton";
 import TRDWDatePicker from "@/components/ui/shared/datepicker/TRDWDatePicker";
 import TRDWEmptyView from "@/components/ui/shared/empty/TRDWEmptyView";
+import { TRDWLabel } from "@/components/ui/shared/label/TRDWLabel";
 import { ListViewContainer } from "@/components/ui/shared/listViewContainer/ListViewContainer";
 import { TRDWLoadingView } from "@/components/ui/shared/loading/TRDWLoadingView";
 import { TransactionCard } from "@/components/ui/transaction/TransactionCard";
@@ -12,6 +13,7 @@ import { TransactionData } from "@/models/entity/TransactionData";
 import { fetchTransactionByDate } from "@/usecase/transaction/fetch/FetchTransactionByDateUseCase";
 import { validateDateQueryUseCase } from "@/usecase/transaction/ValidateDateQueryUseCase";
 import { errorWriter } from "@/utils/errorWriter";
+import { priceFormatter } from "@/utils/priceFormatter";
 import { useRouter } from "next/navigation";
 import { useCallback, useEffect, useState } from "react";
 import { toast } from "react-toastify";
@@ -66,7 +68,7 @@ const TransactionsPage = () => {
       setMessage(undefined);
       setShouldFetch(false); // Reset fetch flag after completion
     }
-  }, [shouldFetch]); // Only depends on `shouldFetch`
+  }, [shouldFetch, startDate, endDate]); // Only depends on `shouldFetch`
 
   useEffect(() => {
     fetchTransactionData();
@@ -143,7 +145,7 @@ const TransactionListView = ({
     return <TRDWEmptyView label={"Tidak ada transaksi..."} />;
 
   return (
-    <div className="w-full h-full flex flex-col gap-2">
+    <div className="w-full max-h-[70vh] flex flex-col gap-2">
       <h1 className="font-bold text-base">Daftar Transaksi</h1>
       <ListViewContainer>
         {transactions.map((transaction) => (
@@ -156,6 +158,39 @@ const TransactionListView = ({
           />
         ))}
       </ListViewContainer>
+      <TransactionSummary transactions={transactions} />
+    </div>
+  );
+};
+
+const TransactionSummary = ({
+  transactions,
+}: {
+  transactions: TransactionData[];
+}) => {
+  const tunaiPrice = transactions.reduce((sum, transaction) => {
+    if (transaction.transactionType.type.toLowerCase() === "tunai")
+      return sum + transaction.totalPrice;
+    else return sum;
+  }, 0);
+
+  const transferPrice = transactions.reduce((sum, transaction) => {
+    if (transaction.transactionType.type.toLowerCase() === "transfer")
+      return sum + transaction.totalPrice;
+    else return sum;
+  }, 0);
+
+  return (
+    <div className="flex flex-col gap-3 mt-4">
+      <p className="font-bold">Jumlah Pembayaran</p>
+      <div className="flex flex-col gap-2">
+        <TRDWLabel title="Tunai">
+          <p className="text-mint">{priceFormatter(tunaiPrice)}</p>
+        </TRDWLabel>
+        <TRDWLabel title="Transfer">
+          <p className="text-blue">{priceFormatter(transferPrice)}</p>
+        </TRDWLabel>
+      </div>
     </div>
   );
 };
