@@ -1,16 +1,16 @@
-import { TransactionData } from "@/models/entity/TransactionData";
 import { CardBackground } from "../shared/cardBackground/CardBackground";
 import { TRDWCardLabel } from "../shared/label/TRDWCardLabel";
 import { formatDateToIndonesian } from "@/utils/dateFormatter";
 import { priceFormatter } from "@/utils/priceFormatter";
 import { TransactionType } from "@/models/entity/TransactionType";
 import { Icon } from "@iconify/react";
+import { TransactionSummary } from "@/models/entity/TransactionSummary";
 
 export const TransactionCard = ({
   transaction,
   onClick,
 }: {
-  transaction: TransactionData;
+  transaction: TransactionSummary;
   onClick: (id: number) => void;
 }) => {
   return (

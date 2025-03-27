@@ -114,6 +114,24 @@ export class SQLiteTransactionService implements ITransactionService {
     }
   }
 
+  getTotalPriceFor(transactionId: number): Promise<number> {
+    try {
+      const statement = this.sqliteDb.getInstance().prepare(
+        `SELECT SUM(ti.sellPrice * ti.qty) AS sum
+          FROM TransactionData td 
+          INNER JOIN TransactionItem ti ON td.id = ti.transactionId 
+          WHERE ti.transactionId = ? 
+            AND td.isDeleted = 0 
+            AND ti.isDeleted = 0`
+      );
+
+      const results = statement.get(transactionId);
+      return Promise.resolve((results as number) || -1);
+    } catch (error) {
+      return Promise.reject(error);
+    }
+  }
+
   update(transaction: TransactionDTO): Promise<number | null> {
     try {
       if (!transaction.id)

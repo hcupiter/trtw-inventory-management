@@ -26,6 +26,6 @@ export const validateVendorId = async (
 
 export const validateVendorName = async (name?: string): Promise<string> => {
   if (!name) return Promise.resolve("Mohon mengisi nama vendor");
-  if (name.length > 25) return Promise.resolve("Nama maksimum 25 karakter");
+  if (name.length > 50) return Promise.resolve("Nama maksimum 25 karakter");
   return Promise.resolve("");
 };

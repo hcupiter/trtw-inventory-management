@@ -24,6 +24,7 @@ export interface ITransactionService {
     offset?: number,
     sort?: QuerySortOrder
   ): Promise<TransactionDTO[]>;
+  getTotalPriceFor(transactionId: number): Promise<number>;
   update(transaction: TransactionDTO): Promise<number | null>;
   delete(id: number): Promise<boolean>;
 }

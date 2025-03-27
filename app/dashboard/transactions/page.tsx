@@ -9,7 +9,7 @@ import { TRDWLabel } from "@/components/ui/shared/label/TRDWLabel";
 import { ListViewContainer } from "@/components/ui/shared/listViewContainer/ListViewContainer";
 import { TRDWLoadingView } from "@/components/ui/shared/loading/TRDWLoadingView";
 import { TransactionCard } from "@/components/ui/transaction/TransactionCard";
-import { TransactionData } from "@/models/entity/TransactionData";
+import { TransactionSummary } from "@/models/entity/TransactionSummary";
 import { fetchTransactionByDate } from "@/usecase/transaction/fetch/FetchTransactionByDateUseCase";
 import { validateDateQueryUseCase } from "@/usecase/transaction/ValidateDateQueryUseCase";
 import { errorWriter } from "@/utils/errorWriter";
@@ -29,7 +29,7 @@ const TransactionsPage = () => {
   const [startDate, setStartDate] = useState<Date>(new Date());
   const [endDate, setEndDate] = useState<Date>(new Date());
   const [dateError, setDateError] = useState<string | null>();
-  const [transactions, setTransactions] = useState<TransactionData[]>([]);
+  const [transactions, setTransactions] = useState<TransactionSummary[]>([]);
   const [message, setMessage] = useState<string>();
   const [shouldFetch, setShouldFetch] = useState<boolean>(true); // Flag for initial fetch
 
@@ -77,6 +77,20 @@ const TransactionsPage = () => {
     if (!transactionId) toast.error("Tidak ada transaksi id");
     router.push(`/dashboard/transactions/${transactionId}`);
   };
+
+  useEffect(() => {
+    sessionStorage.setItem("startDate", startDate.toISOString());
+    sessionStorage.setItem("endDate", endDate.toISOString());
+  }, [startDate, endDate]);
+
+  useEffect(() => {
+    const storedStartDate = sessionStorage.getItem("startDate");
+    const storedEndDate = sessionStorage.getItem("endDate");
+    if (storedStartDate && storedEndDate) {
+      setStartDate(new Date(storedStartDate));
+      setEndDate(new Date(storedEndDate));
+    }
+  }, []);
 
   return (
     <div className="flex flex-col justify-items-start w-full h-full">
@@ -146,7 +160,7 @@ const TransactionListView = ({
   message,
   onClick,
 }: {
-  transactions: TransactionData[];
+  transactions: TransactionSummary[];
   message?: string;
   onClick: (transactionId?: number) => void;
 }) => {
@@ -168,15 +182,15 @@ const TransactionListView = ({
           />
         ))}
       </ListViewContainer>
-      <TransactionSummary transactions={transactions} />
+      <TransactionPaymentSummaryView transactions={transactions} />
     </div>
   );
 };
 
-const TransactionSummary = ({
+const TransactionPaymentSummaryView = ({
   transactions,
 }: {
-  transactions: TransactionData[];
+  transactions: TransactionSummary[];
 }) => {
   const tunaiPrice = transactions.reduce((sum, transaction) => {
     if (transaction.transactionType.type.toLowerCase() === "tunai")
@@ -190,16 +204,22 @@ const TransactionSummary = ({
     else return sum;
   }, 0);
 
+  console.log("Tunai Price, Transfer price", tunaiPrice, transferPrice);
+
   return (
     <div className="flex flex-col gap-3 mt-4">
       <p className="font-bold">Jumlah Pembayaran</p>
       <div className="flex flex-col gap-2">
-        <TRDWLabel title="Tunai">
-          <p className="text-mint">{priceFormatter(tunaiPrice)}</p>
-        </TRDWLabel>
-        <TRDWLabel title="Transfer">
-          <p className="text-blue">{priceFormatter(transferPrice)}</p>
-        </TRDWLabel>
+        {tunaiPrice > 0 ? (
+          <TRDWLabel title="Tunai">
+            <p className="text-mint">{priceFormatter(tunaiPrice)}</p>
+          </TRDWLabel>
+        ) : null}
+        {transferPrice > 0 ? (
+          <TRDWLabel title="Transfer">
+            <p className="text-blue">{priceFormatter(transferPrice)}</p>
+          </TRDWLabel>
+        ) : null}
       </div>
     </div>
   );

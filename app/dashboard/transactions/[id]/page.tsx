@@ -2,11 +2,6 @@
 import { OverlayConfirmation } from "@/components/ui/shared/confirmation/OverlayConfirmation";
 import { TRDWLoadingView } from "@/components/ui/shared/loading/TRDWLoadingView";
 import { useOverlay } from "@/context/OverlayContext";
-import { ItemEntity } from "@/models/entity/ItemEntity";
-import { ItemTransactionReport } from "@/models/entity/ItemTransactionReport";
-import { deleteItemUseCase } from "@/usecase/items/DeleteItemUseCase";
-import { fetchItemByIdUseCase } from "@/usecase/items/fetch/FetchItemByIdUseCase";
-import { fetchItemTransactionReportUseCase } from "@/usecase/items/fetch/FetchItemTransactionReportUseCase";
 import { errorWriter } from "@/utils/errorWriter";
 import { useParams, useRouter } from "next/navigation";
 import { useCallback, useEffect, useState } from "react";
@@ -18,9 +13,7 @@ import TRDWButton, {
 import TRDWEmptyView from "@/components/ui/shared/empty/TRDWEmptyView";
 import { TRDWLabel } from "@/components/ui/shared/label/TRDWLabel";
 import { priceFormatter } from "@/utils/priceFormatter";
-import { DateRangeSelector } from "@/components/ui/shared/dateRangeSelector/DateRangeSelector";
 import { ListViewContainer } from "@/components/ui/shared/listViewContainer/ListViewContainer";
-import { ItemTransactionReportCard } from "@/components/ui/item/ItemTransactionReportCard";
 import { deleteTransactionUseCase } from "@/usecase/transaction/DeleteTransactionUseCase";
 import { TransactionData } from "@/models/entity/TransactionData";
 import { fetchTransactionByIdUseCase } from "@/usecase/transaction/fetch/FetchTransactionByIdUseCase";

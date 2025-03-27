@@ -1,11 +1,14 @@
-import { mapTransactionDataToEntity } from "@/models/dto/TransactionDTO";
-import { TransactionData } from "@/models/entity/TransactionData";
+import {
+  mapTransactionDataToEntity,
+  mapTransactionDataToSummary,
+} from "@/models/dto/TransactionDTO";
+import { TransactionSummary } from "@/models/entity/TransactionSummary";
 import { formatDateToYYYYMMDD } from "@/utils/dateFormatter";
 
 export const fetchTransactionByDate = async (
   from: Date,
   to: Date
-): Promise<TransactionData[]> => {
+): Promise<TransactionSummary[]> => {
   try {
     const fromDate = formatDateToYYYYMMDD(from);
     const toDate = formatDateToYYYYMMDD(to);
@@ -22,8 +25,8 @@ export const fetchTransactionByDate = async (
           `Gagal mengambil data transaksi dari ${from.toDateString()} hingga ${to.toDateString()}`
       );
 
-    const mappedEntity: TransactionData[] = await Promise.all(
-      data.transactions.map(mapTransactionDataToEntity)
+    const mappedEntity: TransactionSummary[] = await Promise.all(
+      data.transactions.map(mapTransactionDataToSummary)
     );
 
     return Promise.resolve(mappedEntity);

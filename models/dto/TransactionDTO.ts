@@ -4,6 +4,8 @@ import { fetchTransactionItemsByTransactionIdUseCase } from "@/usecase/transacti
 import { TransactionType } from "../entity/TransactionType";
 import { fetchTransactionTypeByIdUseCase } from "@/usecase/transaction/type/FetchTransactionTypeByIdUseCase";
 import { TransactionItem } from "../entity/TransactionItem";
+import { fetchTransactionPriceByTransactionId } from "@/usecase/transaction/fetch/FetchTransactionPriceByTransactionIdUseCase";
+import { TransactionSummary } from "../entity/TransactionSummary";
 
 export const TransactionSchema = z.object({
   id: z.number().optional(),
@@ -16,6 +18,25 @@ export interface TransactionDTO {
   date: string;
   transactionTypeId: number;
 }
+
+export const mapTransactionDataToSummary = async (
+  dto: TransactionDTO
+): Promise<TransactionSummary> => {
+  try {
+    if (!dto.id) throw new Error("Tidak ada id transaksi");
+    const totalPrice = await fetchTransactionPriceByTransactionId(dto.id);
+    const transactionType: TransactionType =
+      await fetchTransactionTypeByIdUseCase(dto.transactionTypeId);
+    return Promise.resolve({
+      id: dto.id,
+      date: new Date(dto.date),
+      totalPrice: totalPrice,
+      transactionType: transactionType,
+    });
+  } catch (error) {
+    return Promise.reject(error);
+  }
+};
 
 export const mapTransactionDataToEntity = async (
   dto: TransactionDTO
