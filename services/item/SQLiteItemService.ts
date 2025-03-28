@@ -39,7 +39,7 @@ export class SQLiteItemService implements IITemService {
     try {
       const statement = this.sqliteDb
         .getInstance()
-        .prepare("SELECT * FROM Item WHERE id = ? AND isDeleted = 0");
+        .prepare("SELECT * FROM Item WHERE id = ?");
       const results = statement.get(id);
       return Promise.resolve(results as ItemDTO | null);
     } catch (error) {
@@ -51,7 +51,7 @@ export class SQLiteItemService implements IITemService {
     try {
       const statement = this.sqliteDb
         .getInstance()
-        .prepare("SELECT * FROM Item WHERE itemId = ? AND isDeleted = 0");
+        .prepare("SELECT * FROM Item WHERE itemId = ?");
       const results = statement.get(itemId);
       return Promise.resolve(results as ItemDTO | null);
     } catch (error) {

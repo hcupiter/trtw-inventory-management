@@ -10,6 +10,8 @@ import TRDWButton, { ButtonVariant } from "../shared/button/TRDWButton";
 import { VendorTag } from "../vendor/VendorTag";
 import { OverlayContentTitle } from "../shared/overlay/OverlayContentTitle";
 import { OverlayContentContainer } from "../shared/overlay/OverlayContentContainer";
+import { ListViewContainer } from "../shared/listViewContainer/ListViewContainer";
+import { filterVendorsUseCase } from "@/usecase/vendors/FilterVendorsUseCase";
 
 export const ItemSelectVendorView = ({
   onSelect,
@@ -19,6 +21,7 @@ export const ItemSelectVendorView = ({
   onCancel: () => void;
 }) => {
   const [vendors, setVendors] = useState<VendorEntity[]>([]);
+  const [filteredVendors, setFilteredVendors] = useState<VendorEntity[]>([]);
   const [searchText, setSearchText] = useState<string>("");
   const [message, setMessage] = useState<string | undefined>();
 
@@ -28,6 +31,7 @@ export const ItemSelectVendorView = ({
       try {
         const fetched = await fetchVendorUseCase();
         setVendors(fetched);
+        setFilteredVendors(fetched);
       } catch (error) {
         setMessage(errorWriter(error));
       } finally {
@@ -42,6 +46,11 @@ export const ItemSelectVendorView = ({
     onSelect(vendor);
     onCancel();
   };
+
+  useEffect(() => {
+    const filtered = filterVendorsUseCase(searchText, vendors);
+    setFilteredVendors(filtered);
+  }, [searchText]);
 
   if (message) return <TRDWLoadingView label={message} />;
 
@@ -60,16 +69,20 @@ export const ItemSelectVendorView = ({
       />
 
       {/* Content */}
-      <div className="flex flex-col gap-3 overflow-y-scroll">
-        {vendors.map((element) => (
-          <ItemVendorSelectVendorCard
-            key={element.id}
-            vendor={element}
-            onTap={(vendor) => {
-              handleVendorTapped(vendor);
-            }}
-          />
-        ))}
+      <div className="flex w-full h-full">
+        <div className="flex w-full max-h-[40vh]">
+          <ListViewContainer scrollable>
+            {filteredVendors.map((element) => (
+              <ItemVendorSelectVendorCard
+                key={element.id}
+                vendor={element}
+                onTap={(vendor) => {
+                  handleVendorTapped(vendor);
+                }}
+              />
+            ))}
+          </ListViewContainer>
+        </div>
       </div>
     </OverlayContentContainer>
   );

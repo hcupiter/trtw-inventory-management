@@ -143,7 +143,7 @@ const AddTransactionPage = () => {
   return (
     <div className="flex flex-col justify-items-start w-full overflow-auto no-scrollbar gap-8">
       {/* Top Title */}
-      <div className="flex flex-row items-start justify-between w-[80vw] fixed z-50 h-16">
+      <div className="flex flex-row items-start justify-between w-[80vw] fixed z-50 h-16 bg-white">
         <div className="flex gap-5 items-center">
           <Icon
             icon={"heroicons-outline:chevron-left"}

@@ -36,9 +36,7 @@ export class SQLiteTransactionService implements ITransactionService {
     try {
       const statement = this.sqliteDb
         .getInstance()
-        .prepare(
-          "SELECT * FROM TransactionData WHERE id = ? AND isDeleted = 0"
-        );
+        .prepare("SELECT * FROM TransactionData WHERE id = ?");
       const transaction = statement.get(id);
       return Promise.resolve(transaction as TransactionDTO | null);
     } catch (error) {

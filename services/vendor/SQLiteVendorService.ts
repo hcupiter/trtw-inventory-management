@@ -38,7 +38,7 @@ export class SQLiteVendorService implements IVendorService {
     try {
       const statement = this.sqliteDb
         .getInstance()
-        .prepare(`SELECT * FROM Vendor WHERE id = ? AND isDeleted = 0`);
+        .prepare(`SELECT * FROM Vendor WHERE id = ?`);
       const results = statement.get(id);
       return Promise.resolve((results as VendorDTO) ?? null);
     } catch (error) {
@@ -50,7 +50,7 @@ export class SQLiteVendorService implements IVendorService {
     try {
       const statement = this.sqliteDb
         .getInstance()
-        .prepare(`SELECT * FROM Vendor WHERE vendorId = ? AND isDeleted = 0`);
+        .prepare(`SELECT * FROM Vendor WHERE vendorId = ?`);
       const results = statement.get(vendorId);
       return Promise.resolve((results as VendorDTO) ?? null);
     } catch (error) {

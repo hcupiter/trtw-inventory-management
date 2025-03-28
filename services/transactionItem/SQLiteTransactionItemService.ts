@@ -62,9 +62,7 @@ export class SQLiteTransactionItemService implements ItransactionItemService {
     try {
       const statement = this.sqliteDb
         .getInstance()
-        .prepare(
-          "SELECT * FROM TransactionItem WHERE itemId = ? AND isDeleted = 0"
-        );
+        .prepare("SELECT * FROM TransactionItem WHERE itemId = ?");
 
       const transactionItem = statement.get(id);
       return Promise.resolve(transactionItem as TransactionItemDTO | null);

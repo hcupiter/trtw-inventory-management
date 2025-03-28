@@ -23,6 +23,7 @@ import { ItemSelectVendorField } from "@/components/ui/item/ItemSelectVendorFiel
 import { useOverlay } from "@/context/OverlayContext";
 import { ItemSelectVendorView } from "@/components/ui/item/ItemSelectVendorView";
 import { isNumeric } from "@/utils/validateNumeric";
+import { formatNumber, getRawNumber } from "@/utils/numberFormatter";
 
 const AddItemsPage = () => {
   const router = useRouter();
@@ -61,6 +62,7 @@ const AddItemsPage = () => {
           onCancel={closeOverlay}
         />
       ),
+      isFullScreen: true,
     });
   };
 
@@ -179,10 +181,11 @@ const AddItemsPage = () => {
           mandatory
           label={"Harga per biji (Rp)"}
           placeholder={"Masukkan harga barang per biji disini..."}
-          value={price}
+          value={formatNumber(Number(price))}
           onChange={(event) => {
-            const val = event.target.value;
-            if (isNumeric(val)) setPrice(val);
+            const val = getRawNumber(event.target.value); // Only digits
+            console.log(val);
+            if (isNumeric(val)) setPrice(val); // Store raw number
             setPriceError("");
           }}
           error={priceError}
@@ -191,10 +194,10 @@ const AddItemsPage = () => {
           mandatory
           label={"Stok Barang"}
           placeholder={"Masukkan stok barang disini..."}
-          value={stock}
+          value={formatNumber(Number(stock))}
           onChange={(event) => {
-            const val = event.target.value;
-            if (isNumeric(val)) setStock(val);
+            const val = getRawNumber(event.target.value); // Only digits
+            if (isNumeric(val)) setStock(val); // Store raw number
             setStockError("");
           }}
           error={stockError}

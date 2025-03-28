@@ -21,6 +21,7 @@ import { priceFormatter } from "@/utils/priceFormatter";
 import { DateRangeSelector } from "@/components/ui/shared/dateRangeSelector/DateRangeSelector";
 import { ListViewContainer } from "@/components/ui/shared/listViewContainer/ListViewContainer";
 import { ItemTransactionReportCard } from "@/components/ui/item/ItemTransactionReportCard";
+import { CardBackground } from "@/components/ui/shared/cardBackground/CardBackground";
 
 export default function Page() {
   const params = useParams<{ id: string }>();
@@ -123,17 +124,16 @@ export default function Page() {
   };
 
   const handleItemReportClicked = (transactionId: number) => {
-    // TODO
-    console.log(`transactionId ${transactionId} is clicked`);
+    router.push(`/dashboard/transactions/${transactionId}`);
   };
 
   if (message) return <TRDWLoadingView label={message} />;
   if (!itemData) return <TRDWEmptyView label="Tidak ada data barang" />;
 
   return (
-    <div className="flex flex-col justify-items-start w-full h-full gap-8">
+    <div className="flex flex-col justify-items-start w-full gap-8 overflow-auto no-scrollbar">
       {/* Top Title */}
-      <div className="flex flex-row items-start justify-between w-full">
+      <div className="flex flex-row items-start justify-between w-[80vw] fixed z-50 h-16 bg-white">
         <div className="flex gap-5 items-center">
           <Icon
             icon={"heroicons-outline:chevron-left"}
@@ -162,7 +162,7 @@ export default function Page() {
       </div>
 
       {/* Content */}
-      <div className="flex flex-col gap-6 w-full h-full px-4">
+      <div className="flex flex-col gap-6 w-full h-full px-4 pt-16">
         <div className="flex flex-col gap-8 w-full h-full">
           {/* Vendor Data */}
           <div className="flex flex-col gap-6">
@@ -226,7 +226,47 @@ const ItemTransactionReportListView = ({
             onClick={onItemClick}
           />
         ))}
+        <TransactionPaymentSummaryView transactions={transactionReports} />
       </ListViewContainer>
+    </div>
+  );
+};
+
+const TransactionPaymentSummaryView = ({
+  transactions,
+}: {
+  transactions: ItemTransactionReport[];
+}) => {
+  if (transactions.length <= 0) return null;
+  const tunaiPrice = transactions.reduce((sum, transaction) => {
+    if (transaction.transactionType.toLowerCase() === "tunai")
+      return sum + transaction.totalPrice;
+    else return sum;
+  }, 0);
+
+  const transferPrice = transactions.reduce((sum, transaction) => {
+    if (transaction.transactionType.toLowerCase() === "transfer")
+      return sum + transaction.totalPrice;
+    else return sum;
+  }, 0);
+
+  console.log("Tunai Price, Transfer price", tunaiPrice, transferPrice);
+
+  return (
+    <div className="flex flex-col gap-3 mt-4">
+      <p className="font-bold">Jumlah Pembayaran</p>
+      <div className="flex flex-col gap-2">
+        {tunaiPrice > 0 ? (
+          <TRDWLabel title="Tunai">
+            <p className="text-mint">{priceFormatter(tunaiPrice)}</p>
+          </TRDWLabel>
+        ) : null}
+        {transferPrice > 0 ? (
+          <TRDWLabel title="Transfer">
+            <p className="text-blue">{priceFormatter(transferPrice)}</p>
+          </TRDWLabel>
+        ) : null}
+      </div>
     </div>
   );
 };
