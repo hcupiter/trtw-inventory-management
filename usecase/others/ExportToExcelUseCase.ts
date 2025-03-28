@@ -76,12 +76,15 @@ export const exportToExcelUseCase = async ({
           });
         }
 
-        // Calculate total price per transaction type
-        if (!transactionSummary[transaction.transactionType.type]) {
-          transactionSummary[transaction.transactionType.type] = 0;
+        // Only calculate the non deleted transaction
+        if (!transaction.isDeleted) {
+          // Calculate total price per transaction type
+          if (!transactionSummary[transaction.transactionType.type]) {
+            transactionSummary[transaction.transactionType.type] = 0;
+          }
+          transactionSummary[transaction.transactionType.type] +=
+            item.qty * item.sellPrice;
         }
-        transactionSummary[transaction.transactionType.type] +=
-          item.qty * item.sellPrice;
       });
     });
 
