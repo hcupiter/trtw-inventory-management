@@ -1,9 +1,6 @@
-import { TransactionData } from "@/models/entity/TransactionData";
 import { fetchTransactionByDateAuditUseCase } from "../transaction/fetch/FetchTransactionByDateAuditUseCase";
 import ExcelJS from "exceljs";
 import { TransactionAudit } from "@/models/entity/TransactionAudit";
-import path from "path";
-import fs from "fs";
 
 export const exportToExcelUseCase = async ({
   startDate,
@@ -18,6 +15,10 @@ export const exportToExcelUseCase = async ({
         from: startDate,
         to: endDate,
       });
+
+    if (transactions.length === 0) {
+      throw new Error("No transactions found for the selected date range.");
+    }
 
     const workbook = new ExcelJS.Workbook();
     const sheet = workbook.addWorksheet("Transaksi");
@@ -53,15 +54,7 @@ export const exportToExcelUseCase = async ({
     });
 
     // Apply auto-filter for better usability
-    sheet.autoFilter = "A1:G1";
-
-    // Define the file path
-    const filePath = path.join(process.cwd(), "public", "transactions.xlsx");
-
-    // Ensure the directory exists
-    if (!fs.existsSync(path.dirname(filePath))) {
-      fs.mkdirSync(path.dirname(filePath), { recursive: true });
-    }
+    sheet.autoFilter = "A1:H1";
 
     // Generate Excel buffer
     const buffer = await workbook.xlsx.writeBuffer();
@@ -78,13 +71,16 @@ export const exportToExcelUseCase = async ({
     a.download = `transactions_${startDate.toISOString().split("T")[0]}_to_${
       endDate.toISOString().split("T")[0]
     }.xlsx`;
+    document.body.appendChild(a); // Append to DOM to be safe
     a.click();
+    document.body.removeChild(a); // Clean up
 
     // Cleanup
     URL.revokeObjectURL(url);
 
-    return Promise.resolve(true);
+    return true;
   } catch (error) {
-    return Promise.reject(error);
+    console.error("Error exporting to Excel:", error);
+    return false;
   }
 };

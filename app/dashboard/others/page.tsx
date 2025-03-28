@@ -1,9 +1,17 @@
 "use client";
 
 import TRDWButton from "@/components/ui/shared/button/TRDWButton";
+import { OverlayConfirmation } from "@/components/ui/shared/confirmation/OverlayConfirmation";
 import TRDWDatePicker from "@/components/ui/shared/datepicker/TRDWDatePicker";
+import { OverlayContentContainer } from "@/components/ui/shared/overlay/OverlayContentContainer";
+import { OverlayContentTitle } from "@/components/ui/shared/overlay/OverlayContentTitle";
+import { useOverlay } from "@/context/OverlayContext";
+import { exportToExcelUseCase } from "@/usecase/others/ExportToExcelUseCase";
 import { validateDateQueryUseCase } from "@/usecase/transaction/ValidateDateQueryUseCase";
+import { formatDateToIndonesian } from "@/utils/dateFormatter";
+import { errorWriter } from "@/utils/errorWriter";
 import { useCallback, useState } from "react";
+import { toast } from "react-toastify";
 
 export const Page = () => {
   return (
@@ -38,8 +46,20 @@ const TransactionDuration = () => {
   const [endDate, setEndDate] = useState<Date>(new Date());
   const [dateError, setDateError] = useState<string>();
 
+  const { openOverlay, closeOverlay } = useOverlay();
+
   const handleExport = () => {
     const isDateValid = validateDate();
+    if (isDateValid)
+      openOverlay({
+        overlayContent: (
+          <ExportExcelView
+            onCancel={closeOverlay}
+            from={startDate}
+            to={endDate}
+          />
+        ),
+      });
   };
 
   const validateDate = useCallback(() => {
@@ -80,6 +100,58 @@ const TransactionDuration = () => {
       </div>
       {dateError && <span className="text-red">{dateError}</span>}
     </div>
+  );
+};
+
+const ExportExcelView = ({
+  from,
+  to,
+  onCancel,
+}: {
+  from: Date;
+  to: Date;
+  onCancel: () => void;
+}) => {
+  const [loading, setLoading] = useState<boolean>(false);
+
+  const handleExportData = async () => {
+    setLoading(true);
+
+    try {
+      const result = await exportToExcelUseCase({
+        startDate: from,
+        endDate: to,
+      });
+
+      if (result) toast.success("Sukses mengekspor data!");
+    } catch (error) {
+      toast.error(errorWriter(error));
+      onCancel();
+    } finally {
+      setLoading(false);
+      onCancel();
+    }
+  };
+
+  if (loading)
+    return (
+      <OverlayContentContainer>
+        <div className="flex flex-col gap-2 items-center justify-center">
+          <div className="font-bold text-lg">Sedang mengekspor data...</div>
+          <div className="text-base">Mohon tunggu sebentar...</div>
+        </div>
+      </OverlayContentContainer>
+    );
+
+  return (
+    <OverlayConfirmation
+      title="Konfirmasi export data ke excel"
+      description={`Apakah anda yakin untuk mengekspor data transaksi dari tanggal ${formatDateToIndonesian(
+        from
+      )} hingga tanggal ${formatDateToIndonesian(to)}`}
+      onConfirm={handleExportData}
+      onCancel={onCancel}
+    />
   );
 };
 
