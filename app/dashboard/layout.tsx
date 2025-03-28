@@ -42,6 +42,11 @@ const DashboardLayout = ({ children }: { children: React.ReactNode }) => {
               href={"/dashboard/vendors"}
               iconName={"material-symbols:person-outline"}
             />
+            <DashboardItems
+              label={"Lainnya"}
+              href={"/dashboard/others"}
+              iconName={"gravity-ui:gear"}
+            />
           </div>
         </div>
 

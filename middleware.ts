@@ -42,6 +42,7 @@ export function middleware(req: NextRequest) {
       "/dashboard/transactions",
       "/dashboard/items",
       "/dashboard/vendors",
+      "/dashboard/others",
     ];
     if (
       isDashboardSubpage &&
