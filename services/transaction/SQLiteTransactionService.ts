@@ -67,15 +67,16 @@ export class SQLiteTransactionService implements ITransactionService {
   getAllRange(
     from: string,
     to: string,
+    audit: boolean = false,
     limit: number = defaultLimit,
     offset: number = defaultOffset,
     sort: QuerySortOrder = QuerySortOrder.ASC
   ): Promise<TransactionDTO[]> {
     try {
+      const auditConfig = audit ? "" : " AND isDeleted = 0";
       const statement = this.sqliteDb.getInstance().prepare(
         `SELECT * FROM TransactionData 
-        WHERE date >= ? AND date <= ?
-        AND isDeleted = 0
+        WHERE date >= ? AND date <= ? ${auditConfig}
         ORDER BY DATE(date) ${sort} LIMIT ? OFFSET ?`
       );
 

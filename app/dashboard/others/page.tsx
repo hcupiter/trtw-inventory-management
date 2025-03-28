@@ -3,7 +3,7 @@
 import TRDWButton from "@/components/ui/shared/button/TRDWButton";
 import TRDWDatePicker from "@/components/ui/shared/datepicker/TRDWDatePicker";
 import { validateDateQueryUseCase } from "@/usecase/transaction/ValidateDateQueryUseCase";
-import { useState } from "react";
+import { useCallback, useState } from "react";
 
 export const Page = () => {
   return (
@@ -42,7 +42,7 @@ const TransactionDuration = () => {
     const isDateValid = validateDate();
   };
 
-  const validateDate = (): boolean => {
+  const validateDate = useCallback(() => {
     const newDateError = validateDateQueryUseCase({
       from: startDate,
       to: endDate,
@@ -50,7 +50,7 @@ const TransactionDuration = () => {
 
     setDateError(newDateError);
     return !newDateError;
-  };
+  }, [startDate, endDate]);
 
   return (
     <div className="flex flex-col w-full gap-2">

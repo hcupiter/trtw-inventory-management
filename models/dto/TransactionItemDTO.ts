@@ -11,6 +11,7 @@ export const TransactionItemSchema = z.object({
   qty: z.number(),
   sellPrice: z.number(),
   transactionId: z.number().optional(),
+  isDeleted: z.boolean().optional(),
 });
 
 export interface TransactionItemDTO {
@@ -21,6 +22,7 @@ export interface TransactionItemDTO {
   qty: number;
   sellPrice: number;
   transactionId?: number;
+  isDeleted?: boolean;
 }
 
 export const mapTransactionItemToEntity = async (

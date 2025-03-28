@@ -8,6 +8,7 @@ export async function GET(req: Request) {
     const { searchParams } = new URL(req.url);
     const fromParam = searchParams.get("from");
     const toParam = searchParams.get("to");
+    const audit = searchParams.get("audit");
 
     if (!fromParam || !toParam) {
       return NextResponse.json(
@@ -20,7 +21,12 @@ export async function GET(req: Request) {
     const from = formatDateToYYYYMMDD(new Date(fromParam));
     const to = formatDateToYYYYMMDD(new Date(toParam));
 
-    const transactions = await transactionService.getAllRange(from, to);
+    const isAudit: boolean = audit?.toLowerCase() === "true";
+    const transactions = await transactionService.getAllRange(
+      from,
+      to,
+      isAudit
+    );
     return NextResponse.json({ transactions }, { status: 200 });
   } catch (error) {
     return NextResponse.json(

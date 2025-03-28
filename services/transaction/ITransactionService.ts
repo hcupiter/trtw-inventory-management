@@ -12,6 +12,7 @@ export interface ITransactionService {
   getAllRange(
     from: string,
     to: string,
+    audit?: boolean,
     limit?: number,
     offset?: number,
     sort?: QuerySortOrder

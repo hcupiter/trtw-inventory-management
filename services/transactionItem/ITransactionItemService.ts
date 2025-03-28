@@ -11,6 +11,7 @@ export interface ItransactionItemService {
   getByItemID(id: number): Promise<TransactionItemDTO | null>;
   getByTransactionID(
     id: number,
+    audit?: boolean,
     limit?: number,
     offset?: number,
     sort?: QuerySortOrder

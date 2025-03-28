@@ -9,6 +9,7 @@ export const ItemSchema = z.object({
   price: z.number(),
   stockQty: z.number(),
   vendorId: z.number(),
+  isDeleted: z.boolean().optional(),
 });
 
 export interface ItemDTO {
@@ -18,6 +19,7 @@ export interface ItemDTO {
   price: number;
   stockQty: number;
   vendorId: number;
+  isDeleted?: boolean;
 }
 
 export const mapItemToEntity = async (dto: ItemDTO): Promise<ItemEntity> => {

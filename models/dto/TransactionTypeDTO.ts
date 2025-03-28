@@ -4,11 +4,13 @@ import { z } from "zod";
 export const TransactionTypeSchema = z.object({
   id: z.number(),
   type: z.string(),
+  isDeleted: z.boolean().optional(),
 });
 
 export interface TransactionTypeDTO {
   id: number;
   type: string;
+  isDeleted?: boolean;
 }
 
 export const mapTransactionTypeToEntity = (

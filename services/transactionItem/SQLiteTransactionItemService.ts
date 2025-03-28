@@ -73,14 +73,16 @@ export class SQLiteTransactionItemService implements ItransactionItemService {
 
   getByTransactionID(
     id: number,
+    audit: boolean = false,
     limit: number = defaultLimit,
     offset: number = defaultOffset,
     sort: QuerySortOrder = defaultSort
   ): Promise<TransactionItemDTO[]> {
     try {
+      const auditConfig = audit ? "" : "AND isDeleted = 0";
       const statement = this.sqliteDb.getInstance().prepare(
         `SELECT * FROM TransactionItem 
-        WHERE transactionID = ? AND isDeleted = 0 
+        WHERE transactionID = ? ${auditConfig}
         ORDER BY id ${sort} LIMIT ? OFFSET ?`
       );
 

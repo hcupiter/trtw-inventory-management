@@ -7,6 +7,7 @@ export const VendorSchema = z.object({
   name: z.string(),
   address: z.string().optional(),
   phone: z.string().optional(),
+  isDeleted: z.boolean().optional(),
 });
 
 export interface VendorDTO {
@@ -15,6 +16,7 @@ export interface VendorDTO {
   name: string;
   address?: string;
   phone?: string;
+  isDeleted?: boolean;
 }
 
 export const mapVendorToEntity = (dto: VendorDTO): VendorEntity => {
