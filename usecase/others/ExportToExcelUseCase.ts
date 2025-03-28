@@ -1,6 +1,8 @@
 import { fetchTransactionByDateAuditUseCase } from "../transaction/fetch/FetchTransactionByDateAuditUseCase";
 import ExcelJS from "exceljs";
 import { TransactionAudit } from "@/models/entity/TransactionAudit";
+import { formatNumber } from "@/utils/numberFormatter";
+import { priceFormatter } from "@/utils/priceFormatter";
 
 export const exportToExcelUseCase = async ({
   startDate,
@@ -35,26 +37,71 @@ export const exportToExcelUseCase = async ({
     ];
 
     // Apply bold formatting to headers
-    sheet.getRow(1).font = { bold: true };
+    const headerRow = sheet.getRow(1);
+    headerRow.font = { bold: true };
+    headerRow.alignment = { horizontal: "center" };
+    headerRow.eachCell((cell) => {
+      cell.fill = {
+        type: "pattern",
+        pattern: "solid",
+        fgColor: { argb: "FFFFCC00" }, // Yellow header background
+      };
+    });
+
+    // Store total amount per transaction type
+    const transactionSummary: Record<string, number> = {};
 
     // Flatten transaction data (map each transaction item to a row)
     transactions.forEach((transaction) => {
       transaction.transactionItems.forEach((item) => {
-        sheet.addRow({
+        const row = sheet.addRow({
           transactionId: transaction.id,
           date: transaction.date.toISOString().split("T")[0], // Format date as YYYY-MM-DD
           transactionType: transaction.transactionType.type,
           itemName: item.name,
-          quantity: item.qty,
-          pricePerItem: item.sellPrice,
-          totalItemPrice: item.qty * item.sellPrice,
-          isDeleted: transaction.isDeleted,
+          quantity: formatNumber(item.qty),
+          pricePerItem: priceFormatter(item.sellPrice),
+          totalItemPrice: priceFormatter(item.qty * item.sellPrice),
+          isDeleted: transaction.isDeleted ? "Yes" : "No",
         });
+
+        // Apply red background if isDeleted is true
+        if (transaction.isDeleted) {
+          row.eachCell((cell) => {
+            cell.fill = {
+              type: "pattern",
+              pattern: "solid",
+              fgColor: { argb: "FFFF9999" }, // Light red background
+            };
+          });
+        }
+
+        // Calculate total price per transaction type
+        if (!transactionSummary[transaction.transactionType.type]) {
+          transactionSummary[transaction.transactionType.type] = 0;
+        }
+        transactionSummary[transaction.transactionType.type] +=
+          item.qty * item.sellPrice;
       });
     });
 
     // Apply auto-filter for better usability
     sheet.autoFilter = "A1:H1";
+
+    // Add empty row for separation
+    sheet.addRow({});
+
+    // Add summary rows
+    Object.entries(transactionSummary).forEach(([type, total]) => {
+      const summaryRow = sheet.addRow({
+        transactionType: type,
+        totalItemPrice: priceFormatter(total),
+      });
+
+      summaryRow.eachCell((cell) => {
+        cell.font = { bold: true };
+      });
+    });
 
     // Generate Excel buffer
     const buffer = await workbook.xlsx.writeBuffer();
