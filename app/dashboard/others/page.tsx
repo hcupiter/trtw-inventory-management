@@ -4,9 +4,8 @@ import TRDWButton from "@/components/ui/shared/button/TRDWButton";
 import { OverlayConfirmation } from "@/components/ui/shared/confirmation/OverlayConfirmation";
 import TRDWDatePicker from "@/components/ui/shared/datepicker/TRDWDatePicker";
 import { OverlayContentContainer } from "@/components/ui/shared/overlay/OverlayContentContainer";
-import { OverlayContentTitle } from "@/components/ui/shared/overlay/OverlayContentTitle";
 import { useOverlay } from "@/context/OverlayContext";
-import { exportToExcelUseCase } from "@/usecase/others/ExportToExcelUseCase";
+import { exportTransactionToExcelUseCase } from "@/usecase/others/ExportTransactionToExcelUseCase";
 import { validateDateQueryUseCase } from "@/usecase/transaction/ValidateDateQueryUseCase";
 import { formatDateToIndonesian } from "@/utils/dateFormatter";
 import { errorWriter } from "@/utils/errorWriter";
@@ -118,7 +117,7 @@ const ExportExcelView = ({
     setLoading(true);
 
     try {
-      const result = await exportToExcelUseCase({
+      const result = await exportTransactionToExcelUseCase({
         startDate: from,
         endDate: to,
       });
