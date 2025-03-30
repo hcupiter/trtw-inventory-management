@@ -3,6 +3,8 @@ import { fetchVendorTransactionReportUseCase } from "../vendors/fetch/FetchVendo
 import { VendorTransactionReport } from "@/models/entity/VendorTransactionReport";
 import { formatDateToIndonesian, formatDateToYYYYMMDD } from "@/utils/dateFormatter";
 import { downloadExcel } from "./DownloadExcelUseCase";
+import { formatNumber } from "@/utils/numberFormatter";
+import { priceFormatter } from "@/utils/priceFormatter";
 
 /**
  * Apply styles to the header row.
@@ -29,7 +31,11 @@ export const exportVendorTransactionReportToExcel = async ({
   endDate: Date;
 }): Promise<boolean> => {
   try {
-    const reports: VendorTransactionReport[] = await fetchVendorTransactionReportUseCase(vendorId, startDate, endDate);
+    const reports: VendorTransactionReport[] = await fetchVendorTransactionReportUseCase(
+      vendorId,
+      startDate,
+      endDate
+    );
     if (reports.length === 0) {
       throw new Error("Tidak ada transaksi pada range tanggal terpilih...");
     }
@@ -57,13 +63,16 @@ export const exportVendorTransactionReportToExcel = async ({
       vendorId: report.transactionItem.vendor.vendorId,
       itemId: report.transactionItem.itemId,
       itemName: report.transactionItem.name,
-      quantity: report.transactionItem.qty,
-      sellPrice: report.transactionItem.sellPrice,
-      totalPrice: report.transactionItem.totalPrice,
+      quantity: formatNumber(report.transactionItem.qty),
+      sellPrice: priceFormatter(report.transactionItem.sellPrice),
+      totalPrice: priceFormatter(report.transactionItem.totalPrice),
     }));
 
     // Reduce to calculate total amount
-    const totalTransactionAmount = reports.reduce((total, report) => total + report.transactionItem.totalPrice, 0);
+    const totalTransactionAmount = reports.reduce(
+      (total, report) => total + report.transactionItem.totalPrice,
+      0
+    );
 
     // Add rows to the sheet
     transactionRows.forEach((row) => sheet.addRow(row));
@@ -74,12 +83,24 @@ export const exportVendorTransactionReportToExcel = async ({
     // Add a summary row
     sheet.addRow({
       itemName: "Total Transaction Amount",
-      totalPrice: totalTransactionAmount,
+      totalPrice: priceFormatter(totalTransactionAmount),
+    });
+
+    // ✅ Auto-fit column widths
+    sheet.columns.forEach((column) => {
+      let maxLength = 0;
+      column.eachCell?.((cell) => {
+        const cellValue = cell.value ? cell.value.toString() : "";
+        maxLength = Math.max(maxLength, cellValue.length);
+      });
+      column.width = maxLength + 2; // Add padding
     });
 
     return await downloadExcel(
       workbook,
-      `vendor_transaction_report_${formatDateToYYYYMMDD(startDate)}_to_${formatDateToYYYYMMDD(endDate)}`
+      `vendor_transaction_report_${formatDateToYYYYMMDD(startDate)}_to_${formatDateToYYYYMMDD(
+        endDate
+      )}`
     );
   } catch (error) {
     return Promise.reject(error);
