@@ -3,14 +3,13 @@ import ExcelJS from "exceljs";
 import { TransactionAudit } from "@/models/entity/TransactionAudit";
 import { formatNumber } from "@/utils/numberFormatter";
 import { priceFormatter } from "@/utils/priceFormatter";
+import { downloadExcel } from "./DownloadExcelUseCase";
+import { formatDateToYYYYMMDD } from "@/utils/dateFormatter";
 
 /**
  * Fetch transactions within a given date range.
  */
-const fetchTransactions = async (
-  startDate: Date,
-  endDate: Date
-): Promise<TransactionAudit[]> => {
+const fetchTransactions = async (startDate: Date, endDate: Date): Promise<TransactionAudit[]> => {
   return fetchTransactionByDateAuditUseCase({ from: startDate, to: endDate });
 };
 
@@ -127,9 +126,7 @@ export const exportTransactionToExcelUseCase = async ({
           // Apply Styling for transfer transaction type
           if (transaction.transactionType.type.toLowerCase() === "transfer") {
             styleTransferRow(row);
-          } else if (
-            transaction.transactionType.type.toLowerCase() === "tunai"
-          ) {
+          } else if (transaction.transactionType.type.toLowerCase() === "tunai") {
             styleTunaiRow(row);
           }
         }
@@ -137,8 +134,7 @@ export const exportTransactionToExcelUseCase = async ({
         // Calculate total price per transaction type (excluding deleted)
         if (!transaction.isDeleted) {
           transactionSummary[transaction.transactionType.type] =
-            (transactionSummary[transaction.transactionType.type] || 0) +
-            item.qty * item.sellPrice;
+            (transactionSummary[transaction.transactionType.type] || 0) + item.qty * item.sellPrice;
         }
       });
     });
@@ -167,43 +163,12 @@ export const exportTransactionToExcelUseCase = async ({
     });
 
     // Generate and download the Excel file
-    return await downloadExcel(workbook, startDate, endDate);
+    return await downloadExcel(
+      workbook,
+      `transaction_${formatDateToYYYYMMDD(startDate)}_to_${formatDateToYYYYMMDD(endDate)}`
+    );
   } catch (error) {
     console.error("Error exporting to Excel:", error);
     return Promise.reject(error);
-  }
-};
-
-/**
- * Create and download the Excel file.
- */
-const downloadExcel = async (
-  workbook: ExcelJS.Workbook,
-  startDate: Date,
-  endDate: Date
-): Promise<boolean> => {
-  try {
-    const buffer = await workbook.xlsx.writeBuffer();
-
-    const blob = new Blob([buffer], {
-      type: "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet",
-    });
-
-    const url = URL.createObjectURL(blob);
-    const a = document.createElement("a");
-    a.href = url;
-    a.download = `transactions_${startDate.toISOString().split("T")[0]}_to_${
-      endDate.toISOString().split("T")[0]
-    }.xlsx`;
-
-    document.body.appendChild(a);
-    a.click();
-    document.body.removeChild(a);
-    URL.revokeObjectURL(url);
-
-    return true;
-  } catch (error) {
-    console.error("Error generating Excel file:", error);
-    return false;
   }
 };
