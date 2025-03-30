@@ -3,6 +3,7 @@ import { QuerySortOrder } from "../utils/QuerySortOrder";
 import { IVendorService } from "./IVendorService";
 import { IDatabase } from "../database/IDatabase";
 import { database } from "@/utils/appModule";
+import { VendorTransactionReportDTO } from "@/models/dto/VendorTransactionReportDTO";
 
 const defaultOffset = 0;
 const defaultLimit = 1000;
@@ -94,6 +95,27 @@ export class SQLiteVendorService implements IVendorService {
       return Promise.reject(error);
     }
   }
+
+  getVendorTransactionReport(
+    vendorId: number,
+    from: string,
+    to: string
+  ): Promise<VendorTransactionReportDTO[]> {
+    try {
+      const statement = this.sqliteDb.getInstance().prepare(
+        `SELECT td.id AS transactionId, td.date AS date, ti.id AS transactionItemId
+          FROM TransactionData td 
+          INNER JOIN TransactionItem ti ON td.id = ti.transactionId
+          WHERE ti.vendorId = ? AND (td.date >= ? AND td.date <= ?) 
+          AND td.isDeleted = 0 AND ti.isDeleted = 0`
+      );
+      const results = statement.all(vendorId, from, to);
+      return Promise.resolve(results as VendorTransactionReportDTO[]);
+    } catch (error) {
+      return Promise.reject(error);
+    }
+  }
+
   update(vendor: VendorDTO): Promise<boolean> {
     try {
       if (!vendor.id) throw new Error("Tidak ada id untuk update vendor");
