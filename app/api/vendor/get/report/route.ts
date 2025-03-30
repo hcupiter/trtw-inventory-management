@@ -18,9 +18,9 @@ export async function GET(req: Request) {
     const from = formatDateToYYYYMMDD(new Date(fromParam));
     const to = formatDateToYYYYMMDD(new Date(toParam));
 
-    const result = await vendorService.getVendorTransactionReport(Number(vendorIdParam), from, to);
+    const results = await vendorService.getVendorTransactionReport(Number(vendorIdParam), from, to);
 
-    return NextResponse.json({ result }, { status: 200 });
+    return NextResponse.json({ results }, { status: 200 });
   } catch (error) {
     console.log(error);
     return NextResponse.json({ error: errorWriter(error, "Something on the server went wrong") }, { status: 500 });
