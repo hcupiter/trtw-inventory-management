@@ -12,6 +12,7 @@ import { OverlayContentTitle } from "../shared/overlay/OverlayContentTitle";
 import { OverlayContentContainer } from "../shared/overlay/OverlayContentContainer";
 import { ListViewContainer } from "../shared/listViewContainer/ListViewContainer";
 import { filterVendorsUseCase } from "@/usecase/vendors/FilterVendorsUseCase";
+import { CardBackground } from "../shared/cardBackground/CardBackground";
 
 export const ItemSelectVendorView = ({
   onSelect,
@@ -96,29 +97,31 @@ const ItemVendorSelectVendorCard = ({
   onTap: (vendor: VendorEntity) => void;
 }) => {
   return (
-    <div className="flex w-full items-center justify-between bg-white-smoke p-4 rounded-lg">
-      {/* Label */}
-      <div className="flex gap-4 items-center">
-        <div className="w-24">
-          <VendorTag tag={vendor.vendorId} />
+    <CardBackground>
+      <div className="flex w-full justify-between gap-4">
+        {/* Label */}
+        <div className="flex gap-4 items-center">
+          <div className="w-[8vw">
+            <VendorTag tag={vendor.vendorId} />
+          </div>
+          <div className="flex flex-col">
+            <p className="text-xs text-gray">Nama Vendor</p>
+            <p className="text-base text-black font-bold">{vendor.name}</p>
+          </div>
         </div>
-        <div className="w-112 flex flex-col">
-          <p className="text-xs text-gray">Nama Vendor</p>
-          <p className="text-base text-black font-bold">{vendor.name}</p>
-        </div>
-      </div>
 
-      {/* Select  */}
-      <div className="flex w-fit">
-        <TRDWButton
-          variant={ButtonVariant.SECONDARY}
-          onClick={() => {
-            onTap(vendor);
-          }}
-        >
-          Pilih
-        </TRDWButton>
+        {/* Select  */}
+        <div className="flex w-fit">
+          <TRDWButton
+            variant={ButtonVariant.SECONDARY}
+            onClick={() => {
+              onTap(vendor);
+            }}
+          >
+            Pilih
+          </TRDWButton>
+        </div>
       </div>
-    </div>
+    </CardBackground>
   );
 };
