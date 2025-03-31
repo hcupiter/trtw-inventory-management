@@ -15,9 +15,7 @@ export const mapTransactionToItemTransactionReport = (
   itemId: string
 ): ItemTransactionReport | undefined => {
   try {
-    const item = entity.transactionItems.find(
-      (element) => element.itemId === itemId
-    );
+    const item = entity.transactionItems.find((element) => element.itemId === itemId);
 
     if (!item) throw new Error("Barang tidak ditemukan dalam transaksi");
     if (!entity.id) throw new Error("Transaksi tidak memiliki id!");

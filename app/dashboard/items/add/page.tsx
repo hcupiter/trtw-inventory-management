@@ -89,8 +89,8 @@ const AddItemsPage = () => {
         const entity: ItemEntity = {
           itemId: itemId,
           name: name,
-          price: Number(price),
-          stockQty: Number(stock),
+          price: Number(getRawNumber(price)),
+          stockQty: Number(getRawNumber(stock)),
           vendor: vendor,
         };
 

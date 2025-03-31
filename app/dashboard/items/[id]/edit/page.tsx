@@ -23,7 +23,7 @@ import { isNumeric } from "@/utils/validateNumeric";
 import { updateItemUseCase } from "@/usecase/items/UpdateItemUseCase";
 import { fetchItemByIdUseCase } from "@/usecase/items/fetch/FetchItemByIdUseCase";
 import { TRDWLoadingView } from "@/components/ui/shared/loading/TRDWLoadingView";
-import { getRawNumber } from "@/utils/numberFormatter";
+import { formatNumber, getRawNumber } from "@/utils/numberFormatter";
 
 const Page = () => {
   const params = useParams<{ id: string }>();
@@ -98,8 +98,8 @@ const Page = () => {
           id: idNumber,
           itemId: itemId,
           name: name,
-          price: Number(price),
-          stockQty: Number(stock),
+          price: Number(getRawNumber(price)),
+          stockQty: Number(getRawNumber(stock)),
           vendor: vendor,
         };
 
@@ -126,8 +126,8 @@ const Page = () => {
   const setData = (entity?: ItemEntity) => {
     setItemId(entity?.itemId || "");
     setName(entity?.name || "");
-    setPrice(String(entity?.price) || "");
-    setStock(String(entity?.stockQty) || "");
+    setPrice(formatNumber(entity?.price || ""));
+    setStock(formatNumber(entity?.stockQty || ""));
     setVendor(entity?.vendor || null);
   };
 
@@ -200,7 +200,7 @@ const Page = () => {
           value={price}
           onChange={(event) => {
             const val = getRawNumber(event.target.value); // Only digits
-            if (isNumeric(val)) setPrice(val); // Store raw number
+            if (isNumeric(val)) setPrice(formatNumber(val)); // Store raw number
             setPriceError("");
           }}
           error={priceError}
@@ -293,7 +293,7 @@ const UpdateStockComponent = ({
           value={stock}
           onChange={(event) => {
             const val = getRawNumber(event.target.value); // Only digits
-            if (isNumeric(val)) setStock(val); // Store raw number
+            if (isNumeric(val)) setStock(formatNumber(val)); // Store raw number
             setStockError("");
           }}
           error={stockError}
