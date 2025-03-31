@@ -1,12 +1,10 @@
 "use client";
 
-import TRDWButton, {
-  ButtonVariant,
-} from "@/components/ui/shared/button/TRDWButton";
+import TRDWButton, { ButtonVariant } from "@/components/ui/shared/button/TRDWButton";
 import TRDWTextField from "@/components/ui/shared/textfield/TRDWTextField";
 import { useParams, useRouter } from "next/navigation";
 import { Icon } from "@iconify/react";
-import { useEffect, useState } from "react";
+import { useCallback, useEffect, useState } from "react";
 import { toast } from "react-toastify";
 import { errorWriter } from "@/utils/errorWriter";
 import { VendorEntity } from "@/models/entity/VendorEntity";
@@ -25,6 +23,7 @@ import { isNumeric } from "@/utils/validateNumeric";
 import { updateItemUseCase } from "@/usecase/items/UpdateItemUseCase";
 import { fetchItemByIdUseCase } from "@/usecase/items/fetch/FetchItemByIdUseCase";
 import { TRDWLoadingView } from "@/components/ui/shared/loading/TRDWLoadingView";
+import { getRawNumber } from "@/utils/numberFormatter";
 
 const Page = () => {
   const params = useParams<{ id: string }>();
@@ -60,8 +59,7 @@ const Page = () => {
           onSelect={(selectedVendor) => {
             setVendor(selectedVendor);
             if (vendor) {
-              if (selectedVendor.id !== vendor.id)
-                toast.success("Sukses memilih vendor");
+              if (selectedVendor.id !== vendor.id) toast.success("Sukses memilih vendor");
             } else {
               toast.success("Sukses memilih vendor");
             }
@@ -88,13 +86,7 @@ const Page = () => {
     setStockError(newStockError);
     setVendorError(newVendorError);
 
-    if (
-      !newIdError &&
-      !newNameError &&
-      !newPriceError &&
-      !newStockError &&
-      !newVendorError
-    ) {
+    if (!newIdError && !newNameError && !newPriceError && !newStockError && !newVendorError) {
       updateItem();
     }
   };
@@ -171,11 +163,7 @@ const Page = () => {
           <h1 className="text-black text-2xl font-bold">Edit Barang</h1>
         </div>
 
-        <TRDWButton
-          variant={ButtonVariant.SECONDARY}
-          iconName="bx:edit"
-          onClick={validateData}
-        >
+        <TRDWButton variant={ButtonVariant.SECONDARY} iconName="bx:edit" onClick={validateData}>
           Simpan
         </TRDWButton>
       </div>
@@ -211,24 +199,20 @@ const Page = () => {
           placeholder={"Masukkan harga barang per biji disini..."}
           value={price}
           onChange={(event) => {
-            const val = event.target.value;
-            if (isNumeric(val)) setPrice(val);
+            const val = getRawNumber(event.target.value); // Only digits
+            if (isNumeric(val)) setPrice(val); // Store raw number
             setPriceError("");
           }}
           error={priceError}
         />
-        <TRDWTextField
-          mandatory
-          label={"Stok Barang"}
-          placeholder={"Masukkan stok barang disini..."}
-          value={stock}
-          onChange={(event) => {
-            const val = event.target.value;
-            if (isNumeric(val)) setStock(val);
-            setStockError("");
-          }}
-          error={stockError}
+
+        <UpdateStockComponent
+          stock={stock}
+          setStock={setStock}
+          stockError={stockError}
+          setStockError={setStockError}
         />
+
         <ItemSelectVendorField
           mandatory
           label="Vendor"
@@ -236,6 +220,106 @@ const Page = () => {
           onVendorChangeTapped={() => handleChangeVendorTappedEvent()}
           error={vendorError}
         />
+      </div>
+    </div>
+  );
+};
+
+const UpdateStockComponent = ({
+  stock,
+  setStock,
+  stockError,
+  setStockError,
+}: {
+  stock: string;
+  setStock: (val: string) => void;
+  stockError: string;
+  setStockError: (val: string) => void;
+}) => {
+  const [toUpdateStock, setToUpdateStock] = useState<string>("");
+  const [toUpdateStockError, setToUpdateStockError] = useState<string>("");
+
+  const stockNum = () => {
+    const tempStock = getRawNumber(stock);
+    if (isNumeric(tempStock)) return Number(tempStock);
+  };
+
+  const toUpdateStockNum = () => {
+    const tempStock = getRawNumber(toUpdateStock);
+    if (isNumeric(tempStock)) return Number(tempStock);
+  };
+
+  const validateToUpdateStock = () => {
+    const newToUpdateStockError = validateItemStock(Number(toUpdateStock));
+    setToUpdateStockError(newToUpdateStockError);
+    if (newToUpdateStockError) return true;
+  };
+
+  const handleAddStock = () => {
+    if (validateToUpdateStock()) return;
+
+    const tempStock = stockNum();
+    const tempToUpdateStock = toUpdateStockNum();
+    if (tempStock && tempToUpdateStock) {
+      const newStock = tempStock + tempToUpdateStock;
+      setStock(String(newStock));
+      setToUpdateStock("");
+    }
+  };
+
+  const handleSubstractStock = () => {
+    if (validateToUpdateStock()) return;
+
+    const tempStock = stockNum();
+    const tempToUpdateStock = toUpdateStockNum();
+    if (tempStock && tempToUpdateStock) {
+      const newStock = tempStock - tempToUpdateStock;
+      if (newStock >= 0) {
+        setStock(String(newStock));
+        setToUpdateStock("");
+      } else
+        setToUpdateStockError("Jumlah stock yang dikurangi tidak boleh melebihi stok tersedia!");
+    }
+  };
+
+  return (
+    <div className="flex w-full gap-4">
+      <div className="w-[20vw]">
+        <TRDWTextField
+          disabled
+          mandatory
+          label={"Stok Barang"}
+          placeholder={"Masukkan stok barang disini..."}
+          value={stock}
+          onChange={(event) => {
+            const val = getRawNumber(event.target.value); // Only digits
+            if (isNumeric(val)) setStock(val); // Store raw number
+            setStockError("");
+          }}
+          error={stockError}
+        />
+      </div>
+      <div className="flex flex-col items-start w-full gap-4">
+        <div className="w-[40vw]">
+          <TRDWTextField
+            label="Ubah stok"
+            placeholder="Masukkan jumlah stok barang yang mau diubah disini..."
+            value={toUpdateStock}
+            onChange={(event) => {
+              const val = getRawNumber(event.target.value);
+              if (isNumeric(val)) setToUpdateStock(val);
+            }}
+            error={toUpdateStockError}
+          />
+        </div>
+        <div className="flex gap-2 w-fit">
+          <TRDWButton variant={ButtonVariant.SECONDARY} onClick={handleAddStock}>
+            Tambah Stok
+          </TRDWButton>
+          <TRDWButton variant={ButtonVariant.DANGER} onClick={handleSubstractStock}>
+            Kurang Stok
+          </TRDWButton>
+        </div>
       </div>
     </div>
   );

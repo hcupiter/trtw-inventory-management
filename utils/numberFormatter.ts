@@ -6,5 +6,5 @@ export const formatNumber = (num: string | number) => {
 export const isNumeric = (value: string) => /^\d+$/.test(value); // Only allows numbers
 
 export const getRawNumber = (val: string) => {
-  return val.replace(/\D/g, "") || "0"; // Remove non-numeric characters
+  return val.replace(/\D/g, "");
 };

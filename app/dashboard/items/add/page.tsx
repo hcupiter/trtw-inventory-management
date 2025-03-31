@@ -1,8 +1,6 @@
 "use client";
 
-import TRDWButton, {
-  ButtonVariant,
-} from "@/components/ui/shared/button/TRDWButton";
+import TRDWButton, { ButtonVariant } from "@/components/ui/shared/button/TRDWButton";
 import TRDWTextField from "@/components/ui/shared/textfield/TRDWTextField";
 import { useRouter } from "next/navigation";
 import { Icon } from "@iconify/react";
@@ -53,8 +51,7 @@ const AddItemsPage = () => {
           onSelect={(selectedVendor) => {
             setVendor(selectedVendor);
             if (vendor) {
-              if (selectedVendor.id !== vendor.id)
-                toast.success("Sukses memilih vendor");
+              if (selectedVendor.id !== vendor.id) toast.success("Sukses memilih vendor");
             } else {
               toast.success("Sukses memilih vendor");
             }
@@ -81,13 +78,7 @@ const AddItemsPage = () => {
     setStockError(newStockError);
     setVendorError(newVendorError);
 
-    if (
-      !newIdError &&
-      !newNameError &&
-      !newPriceError &&
-      !newStockError &&
-      !newVendorError
-    ) {
+    if (!newIdError && !newNameError && !newPriceError && !newStockError && !newVendorError) {
       saveItem();
     }
   };
@@ -143,11 +134,7 @@ const AddItemsPage = () => {
           <h1 className="text-black text-2xl font-bold">Tambah Barang</h1>
         </div>
 
-        <TRDWButton
-          variant={ButtonVariant.SECONDARY}
-          iconName="bx:edit"
-          onClick={validateData}
-        >
+        <TRDWButton variant={ButtonVariant.SECONDARY} iconName="bx:edit" onClick={validateData}>
           Simpan
         </TRDWButton>
       </div>
@@ -184,7 +171,6 @@ const AddItemsPage = () => {
           value={formatNumber(Number(price))}
           onChange={(event) => {
             const val = getRawNumber(event.target.value); // Only digits
-            console.log(val);
             if (isNumeric(val)) setPrice(val); // Store raw number
             setPriceError("");
           }}
