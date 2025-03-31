@@ -7,9 +7,7 @@ import { useParams, useRouter } from "next/navigation";
 import { useCallback, useEffect, useState } from "react";
 import { toast } from "react-toastify";
 import { Icon } from "@iconify/react";
-import TRDWButton, {
-  ButtonVariant,
-} from "@/components/ui/shared/button/TRDWButton";
+import TRDWButton, { ButtonVariant } from "@/components/ui/shared/button/TRDWButton";
 import TRDWEmptyView from "@/components/ui/shared/empty/TRDWEmptyView";
 import { TRDWLabel } from "@/components/ui/shared/label/TRDWLabel";
 import { priceFormatter } from "@/utils/priceFormatter";
@@ -52,8 +50,7 @@ export default function Page() {
     try {
       const idToDelete = Number(params.id);
 
-      if (!idToDelete)
-        throw new Error("Id transaksi yang akan dihapus tidak valid");
+      if (!idToDelete) throw new Error("Id transaksi yang akan dihapus tidak valid");
 
       const result = await deleteTransactionUseCase(idToDelete);
       toast.success(result);
@@ -65,18 +62,14 @@ export default function Page() {
     }
   };
 
-  const [transactionData, setTransactionData] = useState<
-    TransactionData | undefined
-  >();
+  const [transactionData, setTransactionData] = useState<TransactionData | undefined>();
   const [message, setMessage] = useState<string | undefined>();
 
   const fetchTransactionData = useCallback(async () => {
     setMessage("Menampilkan data...");
 
     try {
-      const fetchedData = await fetchTransactionByIdUseCase(
-        transactionIdNumber
-      );
+      const fetchedData = await fetchTransactionByIdUseCase(transactionIdNumber);
       setTransactionData(fetchedData);
     } catch (error) {
       setMessage(errorWriter(error));
@@ -91,8 +84,7 @@ export default function Page() {
   }, [fetchTransactionData]);
 
   if (message) return <TRDWLoadingView label={message} />;
-  if (!transactionData)
-    return <TRDWEmptyView label="Tidak ada data transaksi" />;
+  if (!transactionData) return <TRDWEmptyView label="Tidak ada data transaksi" />;
 
   return (
     <div className="flex flex-col justify-items-start w-full h-full gap-8 overflow-auto no-scrollbar">
@@ -104,7 +96,7 @@ export default function Page() {
             className="w-7 h-7 hover:text-blue"
             onClick={goBack}
           />
-          <h1 className="text-black text-2xl font-bold">Detail Barang</h1>
+          <h1 className="text-black text-2xl font-bold">Detail Transaksi</h1>
         </div>
 
         <div className="flex gap-4">
@@ -113,7 +105,7 @@ export default function Page() {
             iconName="tabler:trash"
             onClick={handleDeleteTransactionDataClicked}
           >
-            Hapus Barang
+            Hapus Transaksi
           </TRDWButton>
         </div>
       </div>
@@ -123,18 +115,13 @@ export default function Page() {
         <div className="flex flex-col gap-8 w-full h-full">
           {/* Transaction Data */}
           <div className="flex flex-col gap-6">
-            <TRDWLabel
-              title="ID transaksi"
-              description={String(transactionData.id) || "no-data"}
-            />
+            <TRDWLabel title="ID transaksi" description={String(transactionData.id) || "no-data"} />
             <TRDWLabel
               title="Tanggal transaksi"
               description={formatDateToIndonesian(transactionData.date)}
             />
             <TRDWLabel title="Pembayaran">
-              <DisplayTransactionType
-                transactionType={transactionData.transactionType}
-              />
+              <DisplayTransactionType transactionType={transactionData.transactionType} />
             </TRDWLabel>
             <TRDWLabel
               title="Total Transaksi"
@@ -145,9 +132,7 @@ export default function Page() {
           {/* Transaction Items */}
           <div className="flex flex-col gap-6 w-full h-full">
             <h1 className="font-bold">Barang terjual</h1>
-            <TransactionItemListView
-              transactionItems={transactionData.transactionItems}
-            />
+            <TransactionItemListView transactionItems={transactionData.transactionItems} />
           </div>
         </div>
       </div>
@@ -155,16 +140,10 @@ export default function Page() {
   );
 }
 
-const TransactionItemListView = ({
-  transactionItems,
-}: {
-  transactionItems: TransactionItem[];
-}) => {
+const TransactionItemListView = ({ transactionItems }: { transactionItems: TransactionItem[] }) => {
   if (!transactionItems) return <TRDWLoadingView label="Mengambil data..." />;
   if (transactionItems.length <= 0)
-    return (
-      <TRDWEmptyView label={"Tidak ada barang terjual selama transaksi.."} />
-    );
+    return <TRDWEmptyView label={"Tidak ada barang terjual selama transaksi.."} />;
 
   return (
     <div className="flex w-full h-full items-start">
@@ -177,11 +156,7 @@ const TransactionItemListView = ({
   );
 };
 
-const DisplayTransactionType = ({
-  transactionType,
-}: {
-  transactionType: TransactionType;
-}) => {
+const DisplayTransactionType = ({ transactionType }: { transactionType: TransactionType }) => {
   if (transactionType.type.toLowerCase() === "tunai")
     return <p className="text-mint">{transactionType.type}</p>;
   else if (transactionType.type.toLowerCase() === "transfer")

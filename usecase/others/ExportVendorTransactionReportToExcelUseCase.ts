@@ -86,7 +86,7 @@ export const exportVendorTransactionReportToExcel = async ({
       totalPrice: priceFormatter(totalTransactionAmount),
     });
 
-    // ✅ Auto-fit column widths
+    // Auto-fit column widths
     sheet.columns.forEach((column) => {
       let maxLength = 0;
       column.eachCell?.((cell) => {
