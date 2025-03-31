@@ -20,11 +20,7 @@ export const ItemTransactionReportCard = ({
       }}
     >
       <div className="flex flex-row gap-2">
-        <TRDWCardLabel
-          width={4}
-          title={"Id"}
-          description={String(report.transactionId)}
-        />
+        <TRDWCardLabel width={4} title={"Id"} description={String(report.transactionId)} />
         <TRDWCardLabel
           width={12}
           title={"Tanggal transaksi"}
@@ -36,20 +32,9 @@ export const ItemTransactionReportCard = ({
           title={"Harga per barang"}
           description={priceFormatter(report.price)}
         />
-        <TRDWCardLabel
-          width={8}
-          title={"Jumlah beli"}
-          description={String(report.qty)}
-        />
-        <TRDWCardLabel
-          width={10}
-          title={"Total"}
-          description={priceFormatter(report.totalPrice)}
-        />
-        <TRDWCardTransactionTypeLabel
-          label="Pembayaran"
-          transactionType={report.transactionType}
-        />
+        <TRDWCardLabel width={8} title={"Jumlah dijual"} description={String(report.qty)} />
+        <TRDWCardLabel width={10} title={"Total"} description={priceFormatter(report.totalPrice)} />
+        <TRDWCardTransactionTypeLabel label="Pembayaran" transactionType={report.transactionType} />
       </div>
 
       <Icon icon={"line-md:chevron-right"} />
