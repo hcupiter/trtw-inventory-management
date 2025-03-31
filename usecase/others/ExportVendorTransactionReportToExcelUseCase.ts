@@ -85,7 +85,12 @@ const createVendorItemSummarySheet = (
   });
 
   // Add headers
-  const headerRow = sheet.addRow(["Item Name", "Sell Price", "Total Quantity Sold"]);
+  const headerRow = sheet.addRow([
+    "Item Name",
+    "Sell Price",
+    "Total Quantity Sold",
+    "Total Amount",
+  ]);
   styleHeaderRow(headerRow);
 
   // Apply header row styling
@@ -94,8 +99,23 @@ const createVendorItemSummarySheet = (
   // Insert grouped data
   groupedTransactions.forEach(({ price, qty }, key) => {
     const [itemName] = key.split("-");
-    sheet.addRow([itemName, priceFormatter(price), qty]);
+    sheet.addRow([itemName, priceFormatter(price), qty, priceFormatter(price * qty)]);
   });
+
+  // Add an empty row
+  sheet.addRow([]);
+
+  // Add Grand Total Amount
+  const grandTotalAmount = Array.from(groupedTransactions.values()).reduce(
+    (total, { price, qty }) => total + price * qty,
+    0
+  );
+
+  const grandTotalRow = sheet.addRow([
+    "Total Transaction Amount: ",
+    priceFormatter(grandTotalAmount),
+  ]);
+  grandTotalRow.font = { bold: true };
 
   // Add an empty row
   sheet.addRow([]);
