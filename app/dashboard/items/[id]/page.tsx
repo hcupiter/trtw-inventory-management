@@ -133,20 +133,6 @@ export default function Page() {
     [idNumber, fetchTransactionReportData]
   );
 
-  useEffect(() => {
-    sessionStorage.setItem("startDate", startDate.toISOString());
-    sessionStorage.setItem("endDate", endDate.toISOString());
-  }, [startDate, endDate]);
-
-  useEffect(() => {
-    const storedStartDate = sessionStorage.getItem("startDate");
-    const storedEndDate = sessionStorage.getItem("endDate");
-    if (storedStartDate && storedEndDate) {
-      setStartDate(new Date(storedStartDate));
-      setEndDate(new Date(storedEndDate));
-    }
-  }, []);
-
   // Fetch Vendor Details on mount
   useEffect(() => {
     fetchItemData(startDate, endDate);

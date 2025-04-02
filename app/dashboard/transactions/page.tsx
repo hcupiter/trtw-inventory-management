@@ -1,8 +1,6 @@
 "use client";
 
-import TRDWButton, {
-  ButtonVariant,
-} from "@/components/ui/shared/button/TRDWButton";
+import TRDWButton, { ButtonVariant } from "@/components/ui/shared/button/TRDWButton";
 import TRDWDatePicker from "@/components/ui/shared/datepicker/TRDWDatePicker";
 import TRDWEmptyView from "@/components/ui/shared/empty/TRDWEmptyView";
 import { TRDWLabel } from "@/components/ui/shared/label/TRDWLabel";
@@ -56,10 +54,7 @@ const TransactionsPage = () => {
 
     try {
       setMessage("Sedang mengambil data...");
-      const fetchedTransaction = await fetchTransactionByDate(
-        startDate,
-        endDate
-      );
+      const fetchedTransaction = await fetchTransactionByDate(startDate, endDate);
       setTransactions(fetchedTransaction);
     } catch (error) {
       toast.error(errorWriter(error));
@@ -77,20 +72,6 @@ const TransactionsPage = () => {
     if (!transactionId) toast.error("Tidak ada transaksi id");
     router.push(`/dashboard/transactions/${transactionId}`);
   };
-
-  useEffect(() => {
-    sessionStorage.setItem("startDate", startDate.toISOString());
-    sessionStorage.setItem("endDate", endDate.toISOString());
-  }, [startDate, endDate]);
-
-  useEffect(() => {
-    const storedStartDate = sessionStorage.getItem("startDate");
-    const storedEndDate = sessionStorage.getItem("endDate");
-    if (storedStartDate && storedEndDate) {
-      setStartDate(new Date(storedStartDate));
-      setEndDate(new Date(storedEndDate));
-    }
-  }, []);
 
   return (
     <div className="flex flex-col justify-items-start w-full h-full">
@@ -132,10 +113,7 @@ const TransactionsPage = () => {
                 }}
               />
             </div>
-            <TRDWButton
-              iconName="material-symbols:search"
-              onClick={handleSearch}
-            >
+            <TRDWButton iconName="material-symbols:search" onClick={handleSearch}>
               Cari
             </TRDWButton>
           </div>
@@ -165,8 +143,7 @@ const TransactionListView = ({
   onClick: (transactionId?: number) => void;
 }) => {
   if (message) return <TRDWLoadingView label={message} />;
-  if (transactions.length <= 0)
-    return <TRDWEmptyView label={"Tidak ada transaksi..."} />;
+  if (transactions.length <= 0) return <TRDWEmptyView label={"Tidak ada transaksi..."} />;
 
   return (
     <div className="w-full max-h-[70vh] flex flex-col gap-2">
