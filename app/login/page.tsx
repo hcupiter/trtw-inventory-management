@@ -26,7 +26,7 @@ export default function LoginPage() {
     <div className="flex flex-col items-center justify-center w-screen h-screen">
       <div className="flex flex-col items-start w-2xl gap-8">
         <div className="gap-0">
-          <h1 className="text-2xl font-bold">TRDW</h1>
+          <h1 className="text-2xl font-bold">TRTW</h1>
           <p className="text-lg text-gray">Inventory management app</p>
         </div>
 
