@@ -1,3 +1,5 @@
+import { Icon } from "@iconify/react/dist/iconify.js";
+
 const TRDWDropdown = ({
   contents,
   selected,
@@ -12,14 +14,10 @@ const TRDWDropdown = ({
   };
 
   return (
-    <div className="w-40">
-      <select
-        value={selected}
-        onChange={handleChange}
-        className="text-black px-4 py-4 bg-gray-200 rounded-lg appearance-none"
-      >
+    <div className="flex text-black bg-gray-200 rounded-lg w-fit px-4">
+      <select value={selected} onChange={handleChange} className="w-[8vw] py-4 focus:outline-none">
         {contents.map((item, index) => (
-          <option key={index} value={item}>
+          <option key={index} value={item} className="select-none">
             {item}
           </option>
         ))}
