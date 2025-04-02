@@ -1,5 +1,3 @@
-import { TransactionType } from "@/models/entity/TransactionType";
-
 export const TRDWCardTransactionTypeLabel = ({
   label,
   transactionType,
@@ -15,18 +13,10 @@ export const TRDWCardTransactionTypeLabel = ({
   );
 };
 
-const TransactionTypeDisplayer = ({
-  transactionType,
-}: {
-  transactionType: string;
-}) => {
+const TransactionTypeDisplayer = ({ transactionType }: { transactionType: string }) => {
   const lowercased = transactionType.toLowerCase();
   if (lowercased === "transfer")
-    return (
-      <div className="font-bold text-base text-blue">{transactionType}</div>
-    );
+    return <div className="font-bold text-base text-blue">{transactionType}</div>;
   else if (lowercased === "tunai")
-    return (
-      <div className="font-bold text-base text-mint">{transactionType}</div>
-    );
+    return <div className="font-bold text-base text-mint">{transactionType}</div>;
 };

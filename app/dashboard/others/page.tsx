@@ -16,7 +16,7 @@ import { errorWriter } from "@/utils/errorWriter";
 import { useCallback, useState } from "react";
 import { toast } from "react-toastify";
 
-export const Page = () => {
+const Page = () => {
   return (
     <div className="flex flex-col justify-items-start w-full h-screen gap-8 overflow-auto no-scrollbar">
       <TopTitle />
@@ -24,6 +24,8 @@ export const Page = () => {
     </div>
   );
 };
+
+export default Page;
 
 const Content = () => {
   return (
@@ -225,5 +227,3 @@ const ExportExcelView = ({
     />
   );
 };
-
-export default Page;

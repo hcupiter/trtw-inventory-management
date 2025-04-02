@@ -4,7 +4,7 @@ import TRDWButton, { ButtonVariant } from "@/components/ui/shared/button/TRDWBut
 import TRDWTextField from "@/components/ui/shared/textfield/TRDWTextField";
 import { useParams, useRouter } from "next/navigation";
 import { Icon } from "@iconify/react";
-import { useCallback, useEffect, useState } from "react";
+import { useEffect, useState } from "react";
 import { toast } from "react-toastify";
 import { errorWriter } from "@/utils/errorWriter";
 import { VendorEntity } from "@/models/entity/VendorEntity";

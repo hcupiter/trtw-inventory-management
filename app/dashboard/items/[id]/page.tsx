@@ -24,6 +24,7 @@ import { GetItemTransactionSummary } from "@/usecase/items/GetItemTransactionSum
 import { TRDWCardLabel } from "@/components/ui/shared/label/TRDWCardLabel";
 import { formatNumber } from "@/utils/numberFormatter";
 import { TRTWSelectionTag } from "@/components/ui/shared/selectionTag/TRTWSelectionTag";
+import { validateDateQueryUseCase } from "@/usecase/transaction/ValidateDateQueryUseCase";
 
 export default function Page() {
   const params = useParams<{ id: string }>();
@@ -74,6 +75,8 @@ export default function Page() {
 
   const [startDate, setStartDate] = useState<Date>(new Date());
   const [endDate, setEndDate] = useState<Date>(new Date());
+  const [shouldFetch, setShouldFetch] = useState<boolean>(true); // Flag for initial fetch
+  const [dateError, setDateError] = useState<string>();
   const [transactionReports, setTransactionReports] = useState<ItemTransactionReport[]>([]);
 
   const [reportMessage, setReportMessage] = useState<string | undefined>();
@@ -88,6 +91,8 @@ export default function Page() {
       startDate: Date;
       endDate: Date;
     }) => {
+      if (!shouldFetch) return; // Prevent unnecessary fetching
+
       setReportMessage("Mengambil data...");
       try {
         const fetchedTransactionReports = await fetchItemTransactionReportUseCase(
@@ -101,37 +106,72 @@ export default function Page() {
         toast.error(errorWriter(error));
       } finally {
         setReportMessage(undefined);
+        setShouldFetch(false); // Reset fetch flag after completion
       }
     },
-    [idNumber]
+    [idNumber, shouldFetch]
   );
 
-  const fetchItemData = useCallback(async () => {
-    setMessage("Menampilkan data...");
+  const fetchItemData = useCallback(
+    async (startDate: Date, endDate: Date) => {
+      setMessage("Menampilkan data...");
 
-    try {
-      const fetchedItemData = await fetchItemByIdUseCase(idNumber);
-      setItemData(fetchedItemData);
-      fetchTransactionReportData({
-        itemData: fetchedItemData,
-        startDate: startDate,
-        endDate: endDate,
-      });
-    } catch (error) {
-      setMessage(errorWriter(error));
-    } finally {
-      setMessage(undefined);
-    }
-  }, [idNumber, fetchTransactionReportData]);
+      try {
+        const fetchedItemData = await fetchItemByIdUseCase(idNumber);
+        setItemData(fetchedItemData);
+        fetchTransactionReportData({
+          itemData: fetchedItemData,
+          startDate: startDate,
+          endDate: endDate,
+        });
+      } catch (error) {
+        setMessage(errorWriter(error));
+      } finally {
+        setMessage(undefined);
+      }
+    },
+    [idNumber, fetchTransactionReportData]
+  );
 
-  // Fetch Vendor Details
   useEffect(() => {
-    fetchItemData();
-  }, [fetchItemData]);
+    sessionStorage.setItem("startDate", startDate.toISOString());
+    sessionStorage.setItem("endDate", endDate.toISOString());
+  }, [startDate, endDate]);
+
+  useEffect(() => {
+    const storedStartDate = sessionStorage.getItem("startDate");
+    const storedEndDate = sessionStorage.getItem("endDate");
+    if (storedStartDate && storedEndDate) {
+      setStartDate(new Date(storedStartDate));
+      setEndDate(new Date(storedEndDate));
+    }
+  }, []);
+
+  // Fetch Vendor Details on mount
+  useEffect(() => {
+    fetchItemData(startDate, endDate);
+    // Only `idNumber` and `fetchTransactionReportData` affect `fetchItemData`
+  }, [fetchItemData, startDate, endDate]);
 
   const handleSearchClicked = () => {
-    if (itemData)
-      fetchTransactionReportData({ itemData: itemData, startDate: startDate, endDate: endDate });
+    const isDateValid = validateDate();
+    if (!isDateValid) setShouldFetch(false);
+    else {
+      setShouldFetch(true); // Allow fetching on user action
+      if (itemData)
+        fetchTransactionReportData({ itemData: itemData, startDate: startDate, endDate: endDate });
+      return;
+    }
+  };
+
+  const validateDate = (): boolean => {
+    const newDateError = validateDateQueryUseCase({
+      from: startDate,
+      to: endDate,
+    });
+
+    setDateError(newDateError);
+    return !newDateError;
   };
 
   const handleItemReportClicked = (transactionId: number) => {
@@ -194,6 +234,7 @@ export default function Page() {
                 onStartDateChanged={setStartDate}
                 onEndDateChanged={setEndDate}
                 onSearchClicked={handleSearchClicked}
+                error={dateError}
               />
             </div>
 

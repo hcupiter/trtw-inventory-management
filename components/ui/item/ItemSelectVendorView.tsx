@@ -1,7 +1,7 @@
 "use client";
 
 import { VendorEntity } from "@/models/entity/VendorEntity";
-import { useEffect, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import { TRDWLoadingView } from "../shared/loading/TRDWLoadingView";
 import { fetchVendorUseCase } from "@/usecase/vendors/fetch/FetchVendorsUseCase";
 import { errorWriter } from "@/utils/errorWriter";
@@ -22,7 +22,6 @@ export const ItemSelectVendorView = ({
   onCancel: () => void;
 }) => {
   const [vendors, setVendors] = useState<VendorEntity[]>([]);
-  const [filteredVendors, setFilteredVendors] = useState<VendorEntity[]>([]);
   const [searchText, setSearchText] = useState<string>("");
   const [message, setMessage] = useState<string | undefined>();
 
@@ -32,7 +31,6 @@ export const ItemSelectVendorView = ({
       try {
         const fetched = await fetchVendorUseCase();
         setVendors(fetched);
-        setFilteredVendors(fetched);
       } catch (error) {
         setMessage(errorWriter(error));
       } finally {
@@ -48,10 +46,10 @@ export const ItemSelectVendorView = ({
     onCancel();
   };
 
-  useEffect(() => {
-    const filtered = filterVendorsUseCase(searchText, vendors);
-    setFilteredVendors(filtered);
-  }, [searchText]);
+  const filteredVendors = useMemo(() => {
+    if (searchText.length <= 0) return vendors;
+    return filterVendorsUseCase(searchText, vendors);
+  }, [vendors, searchText]);
 
   if (message) return <TRDWLoadingView label={message} />;
 
