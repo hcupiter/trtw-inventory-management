@@ -1,9 +1,7 @@
 "use client";
 
 import DashboardItems from "@/components/ui/dashboard/dashboardItems/DashboardItems";
-import TRDWButton, {
-  ButtonVariant,
-} from "@/components/ui/shared/button/TRDWButton";
+import TRDWButton, { ButtonVariant } from "@/components/ui/shared/button/TRDWButton";
 import { useAuth } from "@/context/AuthContext";
 
 const DashboardLayout = ({ children }: { children: React.ReactNode }) => {
@@ -22,7 +20,7 @@ const DashboardLayout = ({ children }: { children: React.ReactNode }) => {
           {/* Title */}
           <div className="pe-8 pl-5 gap-0">
             <p className="text-base text-white">Aplikasi Manajemen Inventory</p>
-            <p className="text-lg text-white font-bold">TRDW</p>
+            <p className="text-lg text-white font-bold">TRTW</p>
           </div>
 
           {/* Navigatior */}
@@ -52,11 +50,7 @@ const DashboardLayout = ({ children }: { children: React.ReactNode }) => {
 
         {/* Logout Button */}
         <div className="pe-8">
-          <TRDWButton
-            variant={ButtonVariant.PRIMARY}
-            fullWidth
-            onClick={handleLogout}
-          >
+          <TRDWButton variant={ButtonVariant.PRIMARY} fullWidth onClick={handleLogout}>
             Logout
           </TRDWButton>
         </div>

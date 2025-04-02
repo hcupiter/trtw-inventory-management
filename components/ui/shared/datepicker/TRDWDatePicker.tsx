@@ -24,7 +24,7 @@ const TRDWDatePicker = ({
         value={formatDateToYYYYMMDD(selected || new Date())}
         {...props}
         onChange={(e) => onChange(e.target.value ? new Date(e.target.value) : null)}
-        className="text-black bg-transparent appearance-none focus:outline-none"
+        className="text-black bg-transparent appearance-none focus:outline-none cursor-pointer select-none"
       />
     </div>
   );
