@@ -3,15 +3,36 @@
   "version": "0.1.0",
   "private": true,
   "main": "electron/main.js",
+  "description": "A Personal Inventory management app for tugu wacana shop, Cisarua. Not for public!",
+  "author": "Hans Arthur Cupiterson (github.com/hcupiter)",
   "scripts": {
     "dev": "next dev --turbopack",
     "electron": "electron .",
-    "build": "next build",
+    "build:next": "next build",
     "build:electron": "electron-builder",
     "build:all": "npm run build:next && npm run build:electron",
     "start": "next start",
     "lint": "next lint",
     "test": "jest"
+  },
+  "build": {
+    "appId": "id.hcupiter.inventoryApp",
+    "files": [
+      "next.config.ts",
+      "package.json",
+      "electron/**/*",
+      "pages/**/*",
+      "public/**/*",
+      ".next/**/*",
+      "assets/**/*",
+      "database.sqlite"
+    ],
+    "win": {
+      "icon": "assets/appicon.png"
+    },
+    "mac": {
+      "icon": "assets/appicon.png"
+    }
   },
   "dependencies": {
     "@tailwindcss/vite": "^4.0.12",
