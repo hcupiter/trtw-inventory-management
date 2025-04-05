@@ -33,10 +33,12 @@ function createWindow() {
     mainWindow = null;
   });
 }
-// Function to start the Next.js server as a child process
+
 function startNextServer() {
-  // Here, we're running "npm run dev". For production, you'll likely run "next start"
-  nextProcess = spawn("npm", ["run", "start"], { shell: true });
+  nextProcess = spawn("npm", ["run", "start"], {
+    shell: true,
+    detached: true,
+  });
 
   nextProcess.stdout.on("data", (data) => {
     console.log(`Next.js: ${data}`);
@@ -45,6 +47,18 @@ function startNextServer() {
   nextProcess.stderr.on("data", (data) => {
     console.error(`Next.js error: ${data}`);
   });
+}
+
+function killNextServer() {
+  if (nextProcess) {
+    // On Unix-like systems, a negative PID kills the entire group.
+    try {
+      process.kill(-nextProcess.pid);
+      console.log("Killed Next.js server process group.");
+    } catch (error) {
+      console.error("Error killing Next.js server process group:", error);
+    }
+  }
 }
 
 // When Electron is ready, start Next.js and then create the window
@@ -57,7 +71,7 @@ app.on("ready", () => {
 // Quit the app when all windows are closed, and kill the Next.js process
 app.on("window-all-closed", () => {
   if (process.platform !== "darwin") {
-    if (nextProcess) nextProcess.kill();
+    killNextServer();
     app.quit();
   }
 });
