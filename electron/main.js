@@ -1,14 +1,17 @@
 const { app, BrowserWindow } = require("electron");
 const { spawn } = require("child_process");
+const path = require("path");
 
 let mainWindow;
 let nextProcess;
 
 // Function to create the Electron window
 function createWindow() {
+  const iconPath = path.join(__dirname, "..", "assets", "appicon.png");
   mainWindow = new BrowserWindow({
     width: 1024,
     height: 768,
+    iconPath: iconPath,
     webPreferences: {
       // In production you may want to disable Node integration for security
       nodeIntegration: false,
@@ -19,14 +22,13 @@ function createWindow() {
   // Maximize
   mainWindow.maximize();
 
-  // Load the Next.js app running on localhost (default port 3000)
+  // Load url
   mainWindow.loadURL("http://localhost:3000");
 
   mainWindow.on("closed", () => {
     mainWindow = null;
   });
 }
-
 // Function to start the Next.js server as a child process
 function startNextServer() {
   // Here, we're running "npm run dev". For production, you'll likely run "next start"
