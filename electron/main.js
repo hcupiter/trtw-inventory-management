@@ -35,7 +35,7 @@ function createWindow() {
 }
 
 function startNextServer() {
-  nextProcess = spawn("npm", ["run", "start"], {
+  nextProcess = spawn("npm", ["run", "dev"], {
     shell: true,
     detached: true,
   });
