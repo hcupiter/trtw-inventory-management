@@ -36,7 +36,7 @@ function createWindow() {
 // Function to start the Next.js server as a child process
 function startNextServer() {
   // Here, we're running "npm run dev". For production, you'll likely run "next start"
-  nextProcess = spawn("npm", ["run", "dev"], { shell: true });
+  nextProcess = spawn("npm", ["run", "start"], { shell: true });
 
   nextProcess.stdout.on("data", (data) => {
     console.log(`Next.js: ${data}`);
