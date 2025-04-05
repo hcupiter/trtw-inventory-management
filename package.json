@@ -6,7 +6,6 @@
   "scripts": {
     "dev": "next dev --turbopack",
     "electron": "electron .",
-    "dev:all": "concurrently \"npm run dev\" \"npm run electron\"",
     "build": "next build",
     "start": "next start",
     "lint": "next lint",
