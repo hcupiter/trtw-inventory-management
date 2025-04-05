@@ -9,13 +9,14 @@
     "dev": "next dev --turbopack",
     "electron": "electron .",
     "build:next": "next build",
-    "build:electron": "electron-builder --win",
+    "build:electron": "electron-builder --win --x64",
     "build:all": "npm run build:next && npm run build:electron",
     "start": "next start",
     "lint": "next lint",
     "test": "jest"
   },
   "build": {
+    "productName": "Aplikasi Inventaris Tugu Wacana",
     "appId": "id.hcupiter.inventoryApp",
     "files": [
       "next.config.ts",
@@ -28,10 +29,15 @@
       "database.sqlite"
     ],
     "win": {
-      "icon": "assets/appicon.png"
+      "target": "nsis",
+      "icon": "assets/appicon.ico",
+      "executableName": "inventory-app"
     },
     "mac": {
       "icon": "assets/appicon.png"
+    },
+    "nsis": {
+      "shortcutName": "Aplikasi Inventaris Tugu Wacana"
     }
   },
   "dependencies": {
