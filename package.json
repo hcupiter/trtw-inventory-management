@@ -7,6 +7,8 @@
     "dev": "next dev --turbopack",
     "electron": "electron .",
     "build": "next build",
+    "build:electron": "electron-builder",
+    "build:all": "npm run build:next && npm run build:electron",
     "start": "next start",
     "lint": "next lint",
     "test": "jest"
