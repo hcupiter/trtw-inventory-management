@@ -4,9 +4,9 @@
   "private": true,
   "main": "electron/main.js",
   "scripts": {
-    "dev": "next dev",
+    "dev": "next dev --turbopack",
     "electron": "electron .",
-    "start:all": "concurrently \"npm run dev\" \"npm run electron\"",
+    "dev:all": "concurrently \"npm run dev\" \"npm run electron\"",
     "build": "next build",
     "start": "next start",
     "lint": "next lint",
