@@ -22,6 +22,10 @@ function createWindow() {
   // Maximize
   mainWindow.maximize();
 
+  if (process.platform === "darwin") {
+    app.dock.setIcon(iconPath);
+  }
+
   // Load url
   mainWindow.loadURL("http://localhost:3000");
 
