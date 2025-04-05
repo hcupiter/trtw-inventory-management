@@ -35,6 +35,7 @@ function createWindow() {
 }
 
 function startNextServer() {
+  const waitOn = require("wait-on");
   nextProcess = spawn("npm", ["run", "dev"], {
     shell: true,
     detached: true,
@@ -46,6 +47,23 @@ function startNextServer() {
 
   nextProcess.stderr.on("data", (data) => {
     console.error(`Next.js error: ${data}`);
+  });
+
+  // Use wait-on to poll the server URL
+  const opts = {
+    resources: ["http://localhost:3000"],
+    delay: 1000,
+    interval: 1000,
+    timeout: 30000, // wait up to 30 seconds
+  };
+
+  waitOn(opts, (err) => {
+    if (err) {
+      console.error("Error waiting for Next.js server:", err);
+      app.quit();
+    } else {
+      createWindow();
+    }
   });
 }
 
@@ -64,8 +82,6 @@ function killNextServer() {
 // When Electron is ready, start Next.js and then create the window
 app.on("ready", () => {
   startNextServer();
-  // Wait a few seconds to let Next.js start before creating the window.
-  setTimeout(createWindow, 3000);
 });
 
 // Quit the app when all windows are closed, and kill the Next.js process
