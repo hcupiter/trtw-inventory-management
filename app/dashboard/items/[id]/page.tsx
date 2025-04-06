@@ -82,19 +82,12 @@ export default function Page() {
   const [reportMessage, setReportMessage] = useState<string | undefined>();
 
   const fetchTransactionReportData = useCallback(
-    async ({
-      itemData,
-      startDate,
-      endDate,
-    }: {
-      itemData: ItemEntity;
-      startDate: Date;
-      endDate: Date;
-    }) => {
+    async (itemData: ItemEntity, idNumber: number, startDate: Date, endDate: Date) => {
       if (!shouldFetch) return; // Prevent unnecessary fetching
-
       setReportMessage("Mengambil data...");
+
       try {
+        if (!itemData) return;
         const fetchedTransactionReports = await fetchItemTransactionReportUseCase(
           idNumber,
           itemData.itemId,
@@ -109,43 +102,39 @@ export default function Page() {
         setShouldFetch(false); // Reset fetch flag after completion
       }
     },
-    [idNumber, shouldFetch]
+    [shouldFetch]
   );
 
-  const fetchItemData = useCallback(
-    async (startDate: Date, endDate: Date) => {
-      setMessage("Menampilkan data...");
+  const fetchItemData = useCallback(async () => {
+    setMessage("Menampilkan data...");
 
-      try {
-        const fetchedItemData = await fetchItemByIdUseCase(idNumber);
-        setItemData(fetchedItemData);
-        fetchTransactionReportData({
-          itemData: fetchedItemData,
-          startDate: startDate,
-          endDate: endDate,
-        });
-      } catch (error) {
-        setMessage(errorWriter(error));
-      } finally {
-        setMessage(undefined);
-      }
-    },
-    [idNumber, fetchTransactionReportData]
-  );
+    try {
+      const fetchedItemData = await fetchItemByIdUseCase(idNumber);
+      setItemData(fetchedItemData);
+    } catch (error) {
+      setMessage(errorWriter(error));
+    } finally {
+      setMessage(undefined);
+    }
+  }, [idNumber]);
 
   // Fetch Vendor Details on mount
   useEffect(() => {
-    fetchItemData(startDate, endDate);
+    fetchItemData();
     // Only `idNumber` and `fetchTransactionReportData` affect `fetchItemData`
-  }, [fetchItemData, startDate, endDate]);
+  }, [fetchItemData]);
+
+  useEffect(() => {
+    if (!itemData) return;
+    fetchTransactionReportData(itemData, idNumber, startDate, endDate);
+  }, [fetchTransactionReportData, itemData, idNumber, startDate, endDate]);
 
   const handleSearchClicked = () => {
     const isDateValid = validateDate();
     if (!isDateValid) setShouldFetch(false);
     else {
       setShouldFetch(true); // Allow fetching on user action
-      if (itemData)
-        fetchTransactionReportData({ itemData: itemData, startDate: startDate, endDate: endDate });
+      if (itemData) fetchTransactionReportData(itemData, idNumber, startDate, endDate);
       return;
     }
   };
