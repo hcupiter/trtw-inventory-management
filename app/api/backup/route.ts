@@ -5,30 +5,38 @@ import path from "path";
 import { Dropbox } from "dropbox";
 import { errorWriter } from "@/utils/errorWriter";
 
-export async function POST(req: Request) {
+export async function POST() {
   try {
     const cookie = await cookies();
     const sessionToken = cookie.get("session")?.value;
 
-    if (!sessionToken) return NextResponse.json({ error: "Invalid Credentials" }, { status: 500 });
+    if (!sessionToken)
+      return NextResponse.json(
+        { error: "Invalid Credentials" },
+        { status: 500 }
+      );
 
     // Define the path to your SQLite database (adjust if needed)
     const dbPath = path.join(process.cwd(), "database.sqlite");
 
     // Check if the database file exists
     if (!fs.existsSync(dbPath))
-      return NextResponse.json({ error: "Database tidak ditemukan" }, { status: 404 });
+      return NextResponse.json(
+        { error: "Database tidak ditemukan" },
+        { status: 404 }
+      );
 
     // Read the database file into a Buffer
     const fileBuffer = fs.readFileSync(dbPath);
 
     const accessToken = process.env.DROPBOX_ACCESS_TOKEN;
-    if (!accessToken) return NextResponse.json({ error: "No Access Token" }, { status: 404 });
+    if (!accessToken)
+      return NextResponse.json({ error: "No Access Token" }, { status: 404 });
 
     // Initialize Dropbox client
     const dbx = new Dropbox({
       accessToken: accessToken,
-      fetch: fetch as any,
+      fetch: fetch,
     });
 
     // Define the Dropbox path for the backup

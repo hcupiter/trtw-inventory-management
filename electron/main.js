@@ -36,7 +36,7 @@ function createWindow() {
 
 function startNextServer() {
   const waitOn = require("wait-on");
-  nextProcess = spawn("npm", ["run", "dev"], {
+  nextProcess = spawn("npm", ["run", "start"], {
     shell: true,
     detached: true,
   });
@@ -71,7 +71,7 @@ function killNextServer() {
   if (nextProcess) {
     // On Unix-like systems, a negative PID kills the entire group.
     try {
-      process.kill(-nextProcess.pid);
+      process.kill(nextProcess.pid);
       console.log("Killed Next.js server process group.");
     } catch (error) {
       console.error("Error killing Next.js server process group:", error);

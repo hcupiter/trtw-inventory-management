@@ -27,7 +27,8 @@
       "public/**/*",
       ".next/**/*",
       "assets/**/*",
-      "database.sqlite"
+      "database.sqlite",
+      ".env"
     ],
     "win": {
       "target": "nsis",

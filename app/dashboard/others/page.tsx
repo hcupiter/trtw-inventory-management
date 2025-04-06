@@ -64,7 +64,10 @@ const ExportTransactionToExcelContent = () => {
 
 const ExportVendorTransactionReportToExcelContent = () => {
   const [vendor, setVendor] = useState<VendorEntity>();
-  const processExport = async (startDate: Date, endDate: Date): Promise<boolean> => {
+  const processExport = async (
+    startDate: Date,
+    endDate: Date
+  ): Promise<boolean> => {
     try {
       if (!vendor) throw new Error("Mohon pilih vendor untuk diekspor");
       return await exportVendorTransactionReportToExcel({
@@ -86,7 +89,8 @@ const ExportVendorTransactionReportToExcelContent = () => {
           onSelect={(selectedVendor) => {
             setVendor(selectedVendor);
             if (vendor) {
-              if (selectedVendor.id !== vendor.id) toast.success("Sukses memilih vendor");
+              if (selectedVendor.id !== vendor.id)
+                toast.success("Sukses memilih vendor");
             } else {
               toast.success("Sukses memilih vendor");
             }
@@ -251,25 +255,38 @@ const BackupDatabaseView = () => {
     if (loading)
       openOverlay({
         overlayContent: (
-          <StatusOverlay title="Sedang membackup database..." description="Mohon tunggu sebentar" />
+          <StatusOverlay
+            title="Sedang membackup database..."
+            description="Mohon tunggu sebentar"
+          />
         ),
       });
-  }, [loading]);
+  }, [loading, openOverlay]);
 
   return (
     <div className="flex flex-col gap-2">
       <div className="flex flex-col">
         <h1 className="font-bold text-lg w-fit">Backup Database</h1>
-        <p className="w-fit">Harap backup database secara berkala agar mudah untuk dikembalikan</p>
+        <p className="w-fit">
+          Harap backup database secara berkala agar mudah untuk dikembalikan
+        </p>
       </div>
       <div className="flex w-fit">
-        <TRDWButton onClick={handleBackupButtonPressed}>Backup database</TRDWButton>
+        <TRDWButton onClick={handleBackupButtonPressed}>
+          Backup database
+        </TRDWButton>
       </div>
     </div>
   );
 };
 
-const StatusOverlay = ({ title, description }: { title: string; description: string }) => {
+const StatusOverlay = ({
+  title,
+  description,
+}: {
+  title: string;
+  description: string;
+}) => {
   return (
     <OverlayContentContainer>
       <div className="flex flex-col gap-2 items-center justify-center">
