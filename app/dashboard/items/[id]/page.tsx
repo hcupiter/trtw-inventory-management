@@ -116,7 +116,7 @@ export default function Page() {
     } finally {
       setMessage(undefined);
     }
-  }, [idNumber, fetchTransactionReportData]);
+  }, [idNumber]);
 
   // Fetch Vendor Details on mount
   useEffect(() => {
@@ -127,7 +127,7 @@ export default function Page() {
   useEffect(() => {
     if (!itemData) return;
     fetchTransactionReportData(itemData, idNumber, startDate, endDate);
-  }, [fetchTransactionReportData]);
+  }, [fetchTransactionReportData, itemData, idNumber, startDate, endDate]);
 
   const handleSearchClicked = () => {
     const isDateValid = validateDate();
