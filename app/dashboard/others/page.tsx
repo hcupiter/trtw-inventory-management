@@ -8,12 +8,13 @@ import TRDWDatePicker from "@/components/ui/shared/datepicker/TRDWDatePicker";
 import { OverlayContentContainer } from "@/components/ui/shared/overlay/OverlayContentContainer";
 import { useOverlay } from "@/context/OverlayContext";
 import { VendorEntity } from "@/models/entity/VendorEntity";
+import { BackupDatabaseUseCase } from "@/usecase/others/BackupDatabaseUseCase";
 import { exportTransactionToExcelUseCase } from "@/usecase/others/ExportTransactionToExcelUseCase";
 import { exportVendorTransactionReportToExcel } from "@/usecase/others/ExportVendorTransactionReportToExcelUseCase";
 import { validateDateQueryUseCase } from "@/usecase/transaction/ValidateDateQueryUseCase";
 import { formatDateToIndonesian } from "@/utils/dateFormatter";
 import { errorWriter } from "@/utils/errorWriter";
-import { useCallback, useState } from "react";
+import { useCallback, useEffect, useState } from "react";
 import { toast } from "react-toastify";
 
 const Page = () => {
@@ -32,6 +33,7 @@ const Content = () => {
     <div className="flex flex-col gap-6 w-full h-full px-4 pt-16 *:border-b-1 *:border-gray-300 *:pb-3">
       <ExportTransactionToExcelContent />
       <ExportVendorTransactionReportToExcelContent />
+      <BackupDatabaseView />
     </div>
   );
 };
@@ -225,5 +227,55 @@ const ExportExcelView = ({
       onConfirm={handleExportData}
       onCancel={onCancel}
     />
+  );
+};
+
+const BackupDatabaseView = () => {
+  const [loading, setLoading] = useState<boolean>(false);
+  const { openOverlay, closeOverlay } = useOverlay();
+
+  const handleBackupButtonPressed = async () => {
+    try {
+      setLoading(true);
+      const backupDatabaseResult = await BackupDatabaseUseCase();
+      toast.success(backupDatabaseResult);
+    } catch (error) {
+      setLoading(false);
+      toast.error(errorWriter(error));
+    } finally {
+      closeOverlay();
+    }
+  };
+
+  useEffect(() => {
+    if (loading)
+      openOverlay({
+        overlayContent: (
+          <StatusOverlay title="Sedang membackup database..." description="Mohon tunggu sebentar" />
+        ),
+      });
+  }, [loading]);
+
+  return (
+    <div className="flex flex-col gap-2">
+      <div className="flex flex-col">
+        <h1 className="font-bold text-lg w-fit">Backup Database</h1>
+        <p className="w-fit">Harap backup database secara berkala agar mudah untuk dikembalikan</p>
+      </div>
+      <div className="flex w-fit">
+        <TRDWButton onClick={handleBackupButtonPressed}>Backup database</TRDWButton>
+      </div>
+    </div>
+  );
+};
+
+const StatusOverlay = ({ title, description }: { title: string; description: string }) => {
+  return (
+    <OverlayContentContainer>
+      <div className="flex flex-col gap-2 items-center justify-center">
+        <div className="font-bold text-lg">{title}</div>
+        <div className="text-base">{description}</div>
+      </div>
+    </OverlayContentContainer>
   );
 };
