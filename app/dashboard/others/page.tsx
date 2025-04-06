@@ -235,24 +235,10 @@ const ExportExcelView = ({
 };
 
 const BackupDatabaseView = () => {
-  const [loading, setLoading] = useState<boolean>(false);
   const { openOverlay, closeOverlay } = useOverlay();
 
   const handleBackupButtonPressed = async () => {
     try {
-      setLoading(true);
-      const backupDatabaseResult = await BackupDatabaseUseCase();
-      toast.success(backupDatabaseResult);
-    } catch (error) {
-      setLoading(false);
-      toast.error(errorWriter(error));
-    } finally {
-      closeOverlay();
-    }
-  };
-
-  useEffect(() => {
-    if (loading)
       openOverlay({
         overlayContent: (
           <StatusOverlay
@@ -261,7 +247,15 @@ const BackupDatabaseView = () => {
           />
         ),
       });
-  }, [loading, openOverlay]);
+      const backupDatabaseResult = await BackupDatabaseUseCase();
+      toast.success(backupDatabaseResult);
+    } catch (error) {
+      closeOverlay();
+      toast.error(errorWriter(error));
+    } finally {
+      closeOverlay();
+    }
+  };
 
   return (
     <div className="flex flex-col gap-2">

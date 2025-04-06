@@ -71,7 +71,7 @@ function killNextServer() {
   if (nextProcess) {
     // On Unix-like systems, a negative PID kills the entire group.
     try {
-      process.kill(nextProcess.pid);
+      nextProcess.kill();
       console.log("Killed Next.js server process group.");
     } catch (error) {
       console.error("Error killing Next.js server process group:", error);
