@@ -1,3 +1,5 @@
+import { PromptDownloadUseCase } from "./PromptDownloadUseCase";
+
 export const BackupDatabaseUseCase = async (): Promise<boolean> => {
   try {
     const response = await fetch("/api/backup");
@@ -11,19 +13,7 @@ export const BackupDatabaseUseCase = async (): Promise<boolean> => {
     // Get the file as a Blob
     const blob = await response.blob();
 
-    // Create an object URL for the blob
-    const url = window.URL.createObjectURL(blob);
-
-    // Create an anchor element and set its attributes for downloading
-    const a = document.createElement("a");
-    a.href = url;
-    a.download = "database.sqlite"; // You can set the desired file name here
-    document.body.appendChild(a);
-    a.click();
-
-    // Clean up: remove the anchor and revoke the object URL
-    document.body.removeChild(a);
-    window.URL.revokeObjectURL(url);
+    PromptDownloadUseCase(blob, "database.sqlite");
     return Promise.resolve(true);
   } catch (error) {
     console.error(error);
