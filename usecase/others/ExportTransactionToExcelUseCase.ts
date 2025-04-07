@@ -3,13 +3,16 @@ import ExcelJS from "exceljs";
 import { TransactionAudit } from "@/models/entity/TransactionAudit";
 import { formatNumber } from "@/utils/numberFormatter";
 import { priceFormatter } from "@/utils/priceFormatter";
-import { downloadExcel } from "./DownloadExcelUseCase";
+import { downloadExcel } from "./database/DownloadExcelUseCase";
 import { formatDateToYYYYMMDD } from "@/utils/dateFormatter";
 
 /**
  * Fetch transactions within a given date range.
  */
-const fetchTransactions = async (startDate: Date, endDate: Date): Promise<TransactionAudit[]> => {
+const fetchTransactions = async (
+  startDate: Date,
+  endDate: Date
+): Promise<TransactionAudit[]> => {
   return fetchTransactionByDateAuditUseCase({ from: startDate, to: endDate });
 };
 
@@ -126,7 +129,9 @@ export const exportTransactionToExcelUseCase = async ({
           // Apply Styling for transfer transaction type
           if (transaction.transactionType.type.toLowerCase() === "transfer") {
             styleTransferRow(row);
-          } else if (transaction.transactionType.type.toLowerCase() === "tunai") {
+          } else if (
+            transaction.transactionType.type.toLowerCase() === "tunai"
+          ) {
             styleTunaiRow(row);
           }
         }
@@ -134,7 +139,8 @@ export const exportTransactionToExcelUseCase = async ({
         // Calculate total price per transaction type (excluding deleted)
         if (!transaction.isDeleted) {
           transactionSummary[transaction.transactionType.type] =
-            (transactionSummary[transaction.transactionType.type] || 0) + item.qty * item.sellPrice;
+            (transactionSummary[transaction.transactionType.type] || 0) +
+            item.qty * item.sellPrice;
         }
       });
     });
@@ -165,7 +171,9 @@ export const exportTransactionToExcelUseCase = async ({
     // Generate and download the Excel file
     return await downloadExcel(
       workbook,
-      `transaction_${formatDateToYYYYMMDD(startDate)}_to_${formatDateToYYYYMMDD(endDate)}`
+      `transaction_${formatDateToYYYYMMDD(startDate)}_to_${formatDateToYYYYMMDD(
+        endDate
+      )}`
     );
   } catch (error) {
     console.error("Error exporting to Excel:", error);

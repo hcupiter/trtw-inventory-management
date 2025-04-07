@@ -80,7 +80,7 @@ const ItemsPage = () => {
         />
 
         {/* Data Items */}
-        <div className="w-full max-h-[75vh]">
+        <div className="w-full max-h-[70vh]">
           <ItemsListView
             items={filteredItems}
             onTap={(id) => {

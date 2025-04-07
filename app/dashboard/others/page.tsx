@@ -2,24 +2,34 @@
 
 import { ItemSelectVendorField } from "@/components/ui/item/ItemSelectVendorField";
 import { ItemSelectVendorView } from "@/components/ui/item/ItemSelectVendorView";
-import TRDWButton from "@/components/ui/shared/button/TRDWButton";
+import TRDWButton, {
+  ButtonVariant,
+} from "@/components/ui/shared/button/TRDWButton";
+import { TRTWCheckbox } from "@/components/ui/shared/checkbox/TRTWCheckbox";
 import { OverlayConfirmation } from "@/components/ui/shared/confirmation/OverlayConfirmation";
 import TRDWDatePicker from "@/components/ui/shared/datepicker/TRDWDatePicker";
+import { TRTWFilePicker } from "@/components/ui/shared/filePicker/TRTWFilePicker";
 import { OverlayContentContainer } from "@/components/ui/shared/overlay/OverlayContentContainer";
+import { OverlayContentTitle } from "@/components/ui/shared/overlay/OverlayContentTitle";
+import TRDWTextField from "@/components/ui/shared/textfield/TRDWTextField";
 import { useOverlay } from "@/context/OverlayContext";
 import { VendorEntity } from "@/models/entity/VendorEntity";
-import { BackupDatabaseUseCase } from "@/usecase/others/BackupDatabaseUseCase";
+import { BackupDatabaseUseCase } from "@/usecase/others/database/BackupDatabaseUseCase";
+import {
+  ValidateFileDatabaseUseCase,
+  ValidatePasswordDatabaseUseCase,
+} from "@/usecase/others/database/ValidateDatabaseUseCase";
 import { exportTransactionToExcelUseCase } from "@/usecase/others/ExportTransactionToExcelUseCase";
 import { exportVendorTransactionReportToExcel } from "@/usecase/others/ExportVendorTransactionReportToExcelUseCase";
 import { validateDateQueryUseCase } from "@/usecase/transaction/ValidateDateQueryUseCase";
 import { formatDateToIndonesian } from "@/utils/dateFormatter";
 import { errorWriter } from "@/utils/errorWriter";
-import { useCallback, useState } from "react";
+import { useCallback, useEffect, useState } from "react";
 import { toast } from "react-toastify";
 
 const Page = () => {
   return (
-    <div className="flex flex-col justify-items-start w-full h-screen gap-8 overflow-auto no-scrollbar">
+    <div className="flex flex-col justify-items-start w-full gap-8 overflow-auto no-scrollbar">
       <TopTitle />
       <Content />
     </div>
@@ -34,6 +44,7 @@ const Content = () => {
       <ExportTransactionToExcelContent />
       <ExportVendorTransactionReportToExcelContent />
       <BackupDatabaseView />
+      <SetBackupDatabaseView />
     </div>
   );
 };
@@ -267,10 +278,145 @@ const BackupDatabaseView = () => {
       </div>
       <div className="flex w-fit">
         <TRDWButton onClick={handleBackupButtonPressed}>
-          Backup database
+          Dapatkan Backup database
         </TRDWButton>
       </div>
     </div>
+  );
+};
+
+const SetBackupDatabaseView = () => {
+  const { openOverlay, closeOverlay } = useOverlay();
+
+  const handleSetBackupDatabaseView = () => {
+    openOverlay({
+      overlayContent: <PromptSetBackupDatabaseView onCancel={closeOverlay} />,
+      isFullScreen: true,
+    });
+  };
+
+  return (
+    <div className="flex flex-col gap-2">
+      <div className="flex flex-col">
+        <h1 className="font-bold text-lg w-fit">Pasang Backup Database</h1>
+        <p className="w-fit">
+          Anda dapat memasang backup database apabila terjadi error atau
+          kesalahan
+        </p>
+      </div>
+      <div className="flex w-fit">
+        <TRDWButton
+          onClick={handleSetBackupDatabaseView}
+          variant={ButtonVariant.SECONDARY}
+        >
+          Pasang Backup Database
+        </TRDWButton>
+      </div>
+    </div>
+  );
+};
+
+const PromptSetBackupDatabaseView = ({
+  onCancel,
+}: {
+  onCancel: () => void;
+}) => {
+  const [file, setFile] = useState<File>();
+  const [accessPass, setAccessPass] = useState<string>("");
+  const [checkboxState, setCheckboxState] = useState({
+    agreement: false,
+  });
+
+  const [accessPassError, setAccessPassError] = useState<string>();
+  const [fileError, setFileError] = useState<string>();
+
+  // Update state when a checkbox changes
+  const handleCheckboxChange = (checkboxId: string, checked: boolean) => {
+    setCheckboxState((prevState) => ({
+      ...prevState,
+      [checkboxId]: checked,
+    }));
+  };
+
+  const validate = async (): Promise<boolean> => {
+    const newAccessPassError = await ValidatePasswordDatabaseUseCase(
+      accessPass
+    );
+    const newFileError = ValidateFileDatabaseUseCase(file);
+
+    setAccessPassError(newAccessPassError);
+    setFileError(newFileError);
+
+    if (!newAccessPassError && !newFileError && checkboxState.agreement)
+      return true;
+    return false;
+  };
+
+  const handleSetDatabase = async () => {
+    try {
+      const isSuccess = await validate();
+      if (!isSuccess) throw new Error("Mohon mengisi keseluruhan input");
+      toast.success("Sukses");
+      onCancel();
+    } catch (error) {
+      console.log(error);
+      toast.error(errorWriter(error));
+    }
+  };
+
+  useEffect(() => {
+    setFileError(undefined);
+  }, [file]);
+
+  useEffect(() => {
+    setAccessPassError(undefined);
+  }, [accessPass]);
+
+  return (
+    <OverlayContentContainer>
+      <div className="flex flex-col gap-6 items-start justify-center w-full h-full">
+        <OverlayContentTitle
+          title="Pasang Backup Database"
+          onCancel={onCancel}
+        />
+        <div className="flex w-full h-full flex-col justify-between gap-6">
+          <div className="w-full flex flex-col gap-2">
+            <TRTWFilePicker
+              mandatory
+              label="File Database"
+              error={fileError}
+              file={file}
+              onChange={(file) => {
+                setFile(file);
+              }}
+            />
+            <TRDWTextField
+              mandatory
+              label="Password"
+              type="password"
+              placeholder="Masukkan akses untuk memasang backup"
+              value={accessPass}
+              onChange={(event) => setAccessPass(event.target.value)}
+              error={accessPassError}
+            />
+            <div className="mt-2 text-blue">
+              <TRTWCheckbox
+                checked={checkboxState.agreement}
+                onChange={(checked) =>
+                  handleCheckboxChange("agreement", checked)
+                }
+                label="Dengan ini saya menyadari kalau memasang backup database akan menggantikan database yang lama dan database sebelumnya tidak dapat dikembalikan lagi"
+              />
+            </div>
+          </div>
+          {checkboxState.agreement && (
+            <TRDWButton onClick={handleSetDatabase}>
+              Terapkan Backup Database
+            </TRDWButton>
+          )}
+        </div>
+      </div>
+    </OverlayContentContainer>
   );
 };
 

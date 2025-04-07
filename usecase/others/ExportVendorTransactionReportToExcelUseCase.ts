@@ -1,8 +1,11 @@
 import ExcelJS from "exceljs";
 import { fetchVendorTransactionReportUseCase } from "../vendors/fetch/FetchVendorTransactionReportUseCase";
 import { VendorTransactionReport } from "@/models/entity/VendorTransactionReport";
-import { formatDateToIndonesian, formatDateToYYYYMMDD } from "@/utils/dateFormatter";
-import { downloadExcel } from "./DownloadExcelUseCase";
+import {
+  formatDateToIndonesian,
+  formatDateToYYYYMMDD,
+} from "@/utils/dateFormatter";
+import { downloadExcel } from "./database/DownloadExcelUseCase";
 import { formatNumber } from "@/utils/numberFormatter";
 import { priceFormatter } from "@/utils/priceFormatter";
 import { autoFitColumns } from "./ExcelAutoFitColumn";
@@ -32,19 +35,23 @@ export const exportVendorTransactionReportToExcel = async ({
   endDate: Date;
 }): Promise<boolean> => {
   try {
-    const reports: VendorTransactionReport[] = await fetchVendorTransactionReportUseCase(
-      vendorId,
-      startDate,
-      endDate
-    );
+    const reports: VendorTransactionReport[] =
+      await fetchVendorTransactionReportUseCase(vendorId, startDate, endDate);
     if (reports.length === 0) {
       throw new Error("Tidak ada transaksi pada range tanggal terpilih...");
     }
-    const vendorIdString = reports.at(0)?.transactionItem.vendor.vendorId || vendorId;
+    const vendorIdString =
+      reports.at(0)?.transactionItem.vendor.vendorId || vendorId;
 
     const workbook = new ExcelJS.Workbook();
-    const vendorTransactionSheet = createVendorTransactionSheet(workbook, reports);
-    const vendorItemSummarySheet = createVendorItemSummarySheet(workbook, reports);
+    const vendorTransactionSheet = createVendorTransactionSheet(
+      workbook,
+      reports
+    );
+    const vendorItemSummarySheet = createVendorItemSummarySheet(
+      workbook,
+      reports
+    );
 
     autoFitColumns([vendorTransactionSheet, vendorItemSummarySheet]);
 
@@ -99,7 +106,12 @@ const createVendorItemSummarySheet = (
   // Insert grouped data
   groupedTransactions.forEach(({ price, qty }, key) => {
     const [itemName] = key.split("-");
-    sheet.addRow([itemName, priceFormatter(price), qty, priceFormatter(price * qty)]);
+    sheet.addRow([
+      itemName,
+      priceFormatter(price),
+      qty,
+      priceFormatter(price * qty),
+    ]);
   });
 
   // Add an empty row
@@ -126,9 +138,15 @@ const createVendorItemSummarySheet = (
   reports.forEach((report) => {
     const quantity = totalQuantityPerItem.get(report.transactionItem.name);
     if (!quantity) {
-      totalQuantityPerItem.set(report.transactionItem.name, report.transactionItem.qty);
+      totalQuantityPerItem.set(
+        report.transactionItem.name,
+        report.transactionItem.qty
+      );
     } else {
-      totalQuantityPerItem.set(report.transactionItem.name, quantity + report.transactionItem.qty);
+      totalQuantityPerItem.set(
+        report.transactionItem.name,
+        quantity + report.transactionItem.qty
+      );
     }
   });
 

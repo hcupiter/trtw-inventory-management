@@ -90,7 +90,7 @@ const VendorsPage = () => {
         />
 
         {/* Data Transaksi */}
-        <div className="w-full max-h-[75vh]">
+        <div className="w-full max-h-[70vh]">
           <VendorListView
             vendors={filteredVendors}
             onClick={handleVendorCardTappedEvent}
