@@ -2,10 +2,33 @@ import { cookies } from "next/headers";
 import { NextResponse } from "next/server";
 import fs from "fs";
 import path from "path";
-import { Dropbox } from "dropbox";
 import { errorWriter } from "@/utils/errorWriter";
 
-export async function POST() {
+// Helper to convert Node.js stream to a global web ReadableStream
+function nodeStreamToWebStream(
+  nodeStream: fs.ReadStream
+): ReadableStream<Uint8Array> {
+  return new ReadableStream<Uint8Array>({
+    start(controller) {
+      nodeStream.on("data", (chunk: string | Buffer) => {
+        // Check if chunk is a string, if so, convert it to a Buffer
+        if (typeof chunk === "string") {
+          controller.enqueue(Buffer.from(chunk));
+        } else {
+          controller.enqueue(chunk);
+        }
+      });
+      nodeStream.on("end", () => {
+        controller.close();
+      });
+      nodeStream.on("error", (err: Error) => {
+        controller.error(err);
+      });
+    },
+  });
+}
+
+export async function GET() {
   try {
     const cookie = await cookies();
     const sessionToken = cookie.get("session")?.value;
@@ -22,39 +45,25 @@ export async function POST() {
     // Check if the database file exists
     if (!fs.existsSync(dbPath))
       return NextResponse.json(
-        { error: "Database tidak ditemukan" },
+        { error: "Database not found" },
         { status: 404 }
       );
 
-    // Read the database file into a Buffer
-    const fileBuffer = fs.readFileSync(dbPath);
+    // Create a Node.js ReadStream
+    const nodeStream = fs.createReadStream(dbPath);
 
-    const accessToken = process.env.DROPBOX_ACCESS_TOKEN;
-    if (!accessToken)
-      return NextResponse.json({ error: "No Access Token" }, { status: 404 });
+    // Convert the Node.js stream to a global web ReadableStream
+    const webStream = nodeStreamToWebStream(nodeStream);
 
-    // Initialize Dropbox client
-    const dbx = new Dropbox({
-      accessToken: accessToken,
-      fetch: fetch,
+    // Return the stream as a response with appropriate headers
+    return new NextResponse(webStream, {
+      headers: {
+        "Content-Type": "application/octet-stream",
+        "Content-Disposition": 'attachment; filename="database.sqlite"',
+      },
     });
-
-    // Define the Dropbox path for the backup
-    const dropboxPath = "/trtw-inventory-management/database_backup.sqlite";
-
-    // Upload the file to Dropbox, overwriting if it exists
-    const response = await dbx.filesUpload({
-      path: dropboxPath,
-      contents: fileBuffer,
-      mode: { ".tag": "overwrite" },
-    });
-
-    if (response.status < 200 || response.status >= 300)
-      return NextResponse.json({ error: "Failed to backup" }, { status: 500 });
-
-    return NextResponse.json({ message: `Backup sukses` }, { status: 200 });
   } catch (error) {
-    console.log("Error at api/backup: ", error);
+    console.error("Error in download API:", error);
     return NextResponse.json({ error: errorWriter(error) }, { status: 500 });
   }
 }
