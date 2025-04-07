@@ -67,3 +67,37 @@ export async function GET() {
     return NextResponse.json({ error: errorWriter(error) }, { status: 500 });
   }
 }
+
+export async function POST(req: Request) {
+  try {
+    // Validate session or other authentication tokens
+    const cookie = await cookies();
+    const sessionToken = cookie.get("session")?.value;
+
+    if (!sessionToken) {
+      return NextResponse.json(
+        { error: "Invalid Credentials" },
+        { status: 500 }
+      );
+    }
+
+    // Read the incoming request body as an ArrayBuffer,
+    // then convert it into a Node.js Buffer.
+    const buffer = Buffer.from(await req.arrayBuffer());
+
+    // Define the path to your SQLite database file
+    const dbPath = path.join(process.cwd(), "database.sqlite");
+
+    // Write the new database file to disk.
+    // This will overwrite the existing file.
+    fs.writeFileSync(dbPath, buffer);
+
+    return NextResponse.json(
+      { message: "Database set successfully" },
+      { status: 200 }
+    );
+  } catch (error) {
+    console.error("Error at api/backup", error);
+    return NextResponse.json({ error: errorWriter(error) }, { status: 500 });
+  }
+}
