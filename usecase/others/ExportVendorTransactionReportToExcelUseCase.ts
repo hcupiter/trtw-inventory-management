@@ -5,7 +5,7 @@ import {
   formatDateToIndonesian,
   formatDateToYYYYMMDD,
 } from "@/utils/dateFormatter";
-import { downloadExcel } from "./database/DownloadExcelUseCase";
+import { downloadExcel } from "./DownloadExcelUseCase";
 import { formatNumber } from "@/utils/numberFormatter";
 import { priceFormatter } from "@/utils/priceFormatter";
 import { autoFitColumns } from "./ExcelAutoFitColumn";

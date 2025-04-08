@@ -3,7 +3,7 @@ import ExcelJS from "exceljs";
 import { TransactionAudit } from "@/models/entity/TransactionAudit";
 import { formatNumber } from "@/utils/numberFormatter";
 import { priceFormatter } from "@/utils/priceFormatter";
-import { downloadExcel } from "./database/DownloadExcelUseCase";
+import { downloadExcel } from "./DownloadExcelUseCase";
 import { formatDateToYYYYMMDD } from "@/utils/dateFormatter";
 
 /**
