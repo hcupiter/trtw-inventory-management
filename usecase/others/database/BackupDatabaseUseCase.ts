@@ -1,5 +1,5 @@
 import { formatDateToYYYYMMDDHHMMSS } from "@/utils/dateFormatter";
-import { PromptDownloadUseCase } from "../PromptDownloadUseCase";
+import { PromptDownloadUseCase } from "./PromptDownloadUseCase";
 
 export const BackupDatabaseUseCase = async (): Promise<boolean> => {
   try {
@@ -16,7 +16,7 @@ export const BackupDatabaseUseCase = async (): Promise<boolean> => {
 
     PromptDownloadUseCase(
       blob,
-      `database_${formatDateToYYYYMMDDHHMMSS(new Date())}.sqlite`
+      `backup_database_${formatDateToYYYYMMDDHHMMSS(new Date())}.sqlite`
     );
     return Promise.resolve(true);
   } catch (error) {
