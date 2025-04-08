@@ -2,12 +2,12 @@ export const SetBackupDatabaseUseCase = async (
   file: File
 ): Promise<boolean> => {
   try {
-    const formData = new FormData();
-    formData.append("file", file, "database.sqlite");
+    // Get raw binary data from the file.
+    const arrayBuffer = await file.arrayBuffer();
 
     const response = await fetch("/api/backup", {
       method: "POST",
-      body: formData,
+      body: arrayBuffer,
       headers: { "Content-Type": "application/octet-stream" },
     });
 

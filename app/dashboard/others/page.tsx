@@ -15,6 +15,7 @@ import TRDWTextField from "@/components/ui/shared/textfield/TRDWTextField";
 import { useOverlay } from "@/context/OverlayContext";
 import { VendorEntity } from "@/models/entity/VendorEntity";
 import { BackupDatabaseUseCase } from "@/usecase/others/database/BackupDatabaseUseCase";
+import { SetBackupDatabaseUseCase } from "@/usecase/others/database/SetBackupDatabaseUseCase";
 import {
   ValidateFileDatabaseUseCase,
   ValidatePasswordDatabaseUseCase,
@@ -321,6 +322,7 @@ const PromptSetBackupDatabaseView = ({
 }: {
   onCancel: () => void;
 }) => {
+  const { openOverlay, closeOverlay } = useOverlay();
   const [file, setFile] = useState<File>();
   const [accessPass, setAccessPass] = useState<string>("");
   const [checkboxState, setCheckboxState] = useState({
@@ -356,7 +358,22 @@ const PromptSetBackupDatabaseView = ({
     try {
       const isSuccess = await validate();
       if (!isSuccess) throw new Error("Mohon mengisi keseluruhan input");
+      if (!file) throw new Error("Tidak ada file terdeteksi");
+      const setBackupDatabase = await SetBackupDatabaseUseCase(file);
+      if (!setBackupDatabase) throw new Error("Gagal memasang backup");
       toast.success("Sukses");
+
+      closeOverlay();
+
+      openOverlay({
+        overlayContent: (
+          <StatusOverlay
+            title="Memperbaharui Data"
+            description="Mohon tunggu sebentar..."
+          />
+        ),
+      });
+      window.location.reload();
       onCancel();
     } catch (error) {
       console.log(error);
