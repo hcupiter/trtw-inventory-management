@@ -3,4 +3,5 @@ export interface IDatabase {
   commit(): void;
   rollback(): void;
   getInstance(): any;
+  resetDatabase(): Promise<boolean>;
 }

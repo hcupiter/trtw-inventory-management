@@ -23,4 +23,23 @@ export class SQLiteDatabase implements IDatabase {
   getInstance(): any {
     return this.db;
   }
+
+  resetDatabase(): Promise<boolean> {
+    const deleteQuery = (tableName: string) => {
+      this.db.prepare(`DELETE FROM ${tableName}`).run();
+      this.db
+        .prepare(`DELETE FROM sqlite_sequence WHERE name='${tableName}';`)
+        .run();
+    };
+
+    try {
+      deleteQuery(`TransactionItem`);
+      deleteQuery(`TransactionData`);
+      deleteQuery(`Item`);
+      deleteQuery(`Vendor`);
+      return Promise.resolve(true);
+    } catch (error) {
+      return Promise.reject(error);
+    }
+  }
 }
