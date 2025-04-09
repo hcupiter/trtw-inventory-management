@@ -36,18 +36,6 @@ function createWindow() {
 
 function startNextServer() {
   const waitOn = require("wait-on");
-  nextProcess = spawn("npm", ["run", "start"], {
-    shell: true,
-    detached: true,
-  });
-
-  nextProcess.stdout.on("data", (data) => {
-    console.log(`Next.js: ${data}`);
-  });
-
-  nextProcess.stderr.on("data", (data) => {
-    console.error(`Next.js error: ${data}`);
-  });
 
   // Use wait-on to poll the server URL
   const opts = {
