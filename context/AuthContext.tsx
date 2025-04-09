@@ -3,6 +3,9 @@
 import { UserEntity } from "@/models/entity/UserEntity";
 import { createContext, useContext, useState, useEffect } from "react";
 import { useRouter } from "next/navigation";
+import { FetchUserSessionUseCase } from "@/usecase/auth/FetchUserSessionUseCase";
+import { LoginUserSessionUseCase } from "@/usecase/auth/LoginUserUseCase";
+import { LogoutUserSessionUseCase } from "@/usecase/auth/LogoutUserSessionUseCase";
 
 export type AuthProps = {
   user: UserEntity | null;
@@ -22,15 +25,8 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
   useEffect(() => {
     const fetchSession = async () => {
       try {
-        const response = await fetch("/api/auth/session", {
-          credentials: "include",
-        });
-        if (response.ok) {
-          const data = await response.json();
-          setUser(data.user);
-        } else {
-          setUser(null);
-        }
+        const user = await FetchUserSessionUseCase();
+        setUser(user);
       } catch (err) {
         console.error("Session fetch failed:", err);
       }
@@ -42,33 +38,43 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
   // ✅ Login Function
   const login = async (email: string, password: string): Promise<boolean> => {
     setError(null);
-    const response = await fetch("/api/auth/login", {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ email, password }),
-      credentials: "include",
-    });
 
-    if (response.ok) {
-      const data = await response.json();
-      setUser(data.user);
-      router.push("/dashboard"); // Redirect after login
-      return true;
-    } else {
-      setError("Invalid email or password");
-      return false;
+    try {
+      const user = await LoginUserSessionUseCase({
+        email: email,
+        password: password,
+      });
+      if (user) {
+        setUser(user);
+        router.push("/dashboard"); // Redirect after login
+        return Promise.resolve(true);
+      } else {
+        setError("Invalid email or password");
+        return Promise.resolve(false);
+      }
+    } catch (error) {
+      console.log(error);
+      return Promise.reject(error);
     }
   };
 
   // ✅ Logout Function
   const logout = async () => {
-    await fetch("/api/auth/logout", { method: "POST", credentials: "include" });
-    setUser(null);
-    router.push("/login"); // Redirect after logout
+    try {
+      const result = await LogoutUserSessionUseCase();
+      if (result) {
+        setUser(null);
+        router.push("/login"); // Redirect after logout
+      }
+    } catch (error) {
+      console.log(error);
+    }
   };
 
   return (
-    <AuthContext.Provider value={{ user, error, login, logout }}>{children}</AuthContext.Provider>
+    <AuthContext.Provider value={{ user, error, login, logout }}>
+      {children}
+    </AuthContext.Provider>
   );
 }
 
