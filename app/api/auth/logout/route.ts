@@ -1,6 +1,7 @@
 import { NextResponse } from "next/server";
 import { cookies } from "next/headers";
 import { errorWriter } from "@/utils/errorWriter";
+import { ipcMain, IpcMainInvokeEvent } from "electron";
 
 export async function POST() {
   try {
@@ -21,3 +22,19 @@ export async function POST() {
     );
   }
 }
+
+export const logoutHandler = ipcMain.handle(
+  "/api/auth/logout",
+  async (event: IpcMainInvokeEvent): Promise<boolean> => {
+    try {
+      const sender = event.sender;
+      const currentSession = sender.session;
+
+      currentSession.cookies.remove("http://localhost", "session");
+      return true;
+    } catch (error) {
+      console.log("Error at ipc login: ", error);
+      return Promise.reject(error);
+    }
+  }
+);

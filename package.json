@@ -11,6 +11,7 @@
     "build:next": "next build",
     "build:electron": "electron-builder --win --x64",
     "build:all": "npm run build:next && npm run build:electron",
+    "export": "next build && next export",
     "start": "next start",
     "prod": "npm run build && npm run start",
     "lint": "next lint",
